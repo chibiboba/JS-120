@@ -12,7 +12,7 @@ The classical approach to planning an object-oriented application includes sever
 2. Extract the significant nouns and verbs from the description.
 3. Organize and associate the verbs with the nouns.
 
-**Nouns** are the objects or *types* of objects and the **verbs** are the behaviors or methods. 
+<u>**Nouns** are the objects or *types* of objects and the **verbs** are the behaviors or methods.</u> 
 
 - In OO design, you shouldn't think about the game flow logic during this early design phase. OOP is all about organizing and modularizing the code into a cohesive structure - objects. 
 - Only after you know what objects you need can you look at orchestrating the program's flow. For now, we won't worry about this step.
@@ -59,7 +59,7 @@ Rule
 For now, let's ignore the question about where "compare" belongs and see what we can do with the information available. Let's start by outlining our object factories and the `compare` method. Since we're not yet ready to implement any details, we'll write some skeleton code and leave the details until later. However, we can begin to think about the states that each object could have.
 
 - using factory functions to create objects.
-- S 
+- state: data, nouns; objects, verbs: methods
 
 ```js
 // oo_rps.js
@@ -93,23 +93,19 @@ let compare = function(move1, move2) {
 };
 ```
 
+
+
 Our design is a bit crude at this point, but these preliminary skeleton objects and methods should help us move ahead. Think of this code as the "back of the envelope" or "napkin" model of the problem. We still have unanswered questions, but it's a good start.
 
 ### Orchestration Engine
 
 Once we've organized our nouns and verbs into objects, we need an *engine* to orchestrate the objects. The engine is where the procedural program flow should be. Let's call the engine object `RPSGame`. We want an easy interface to kick things off, so let's start gameplay by calling a method named `play`:
 
-oo_rps.js
-
 ```js
 RPSGame.play();
 ```
 
 Given that interface, here's our initial attempt at writing the `RPSGame` object:
-
-oo_rps.js
-
-Copy Code
 
 ```js
 const RPSGame = {
@@ -124,10 +120,6 @@ const RPSGame = {
 ```
 
 Lines 4 and 5 are similar and repetitive since both handle the move-choosing part of the problem. This ties into our player object, which has a `choose` method. Can the human and computer both be objects of the player type? If we can do that, then both humans and computers can use the `choose` method. With that insight, let's update the `RPSGame` object:
-
-oo_rps.js
-
-Copy Code
 
 ```js
 const RPSGame = {

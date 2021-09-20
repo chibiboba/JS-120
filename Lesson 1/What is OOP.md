@@ -20,5 +20,5 @@ Definition: **Object-Oriented Programming** is a programming paradigm in which w
   - Problems in OOP are sets of objects with state and behavior. 
 - we need OOP to organize and maintain code. Using OOP to model objects and use real world nouns to represent objects lets programmers think at a higher level of abstraction. 
 - OOP lets programmers write programs that reduces dependencies to maintain code. 
-- OO programs are often much larger than non-OO programs. But the organization of a well-designed oOP program can make the program easier to reason about and maintain. OOP programs are not necessarily more efficient. 
+- OO programs are often much larger than non-OO programs. But the organization of a well-designed OOP program can make the program easier to reason about and maintain. OOP programs are not necessarily more efficient. 
 
