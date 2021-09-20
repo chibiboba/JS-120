@@ -172,12 +172,12 @@ At this point, it seems that we don't need the `createMove`, `createRule`, or `c
 let readline = require('readline-sync');
 
 const RPSGame = {
-  human: createHuman(), 
-  computer: createComputer(), 
+  human: createHuman(),
+  computer: createComputer(),
 
   displayWelcomeMessage() {
     console.log('Welcome to Rock, Paper, Scissors!');
-  }, 
+  },
 
   displayGoodbyeMessage() {
     console.log('Thanks for playing Rock, Paper, Scissors. Goodbye!')
@@ -192,7 +192,7 @@ const RPSGame = {
 
     if ((humanMove === 'rock' && computerMove === 'scissors') ||
         (humanMove === 'paper' && computerMove === 'rock') ||
-        (humanMove === 'scissors' && comptuerMove === 'paper')) {
+        (humanMove === 'scissors' && computerMove === 'paper')) {
       console.log('You win!');
     } else if ((humanMove == 'rock' && computerMove === 'paper') ||
                (humanMove === 'paper' && computerMove === 'scissors') || 
@@ -201,13 +201,13 @@ const RPSGame = {
     } else {
       console.log("It's a tie.");
     }
-  }, 
+  },
 
   playAgain() {
     console.log('Would you like to play again (y/n');
     let answer = readline.question();
     return answer.toLowerCase()[0] === 'y';
-  }, 
+  },
 
   play() { // this method contains our procedural code
     this.displayWelcomeMessage();
@@ -217,13 +217,13 @@ const RPSGame = {
       this.displayWinner();
       if (!this.playAgain()) break;
     }
-    
+
     this.displayGoodbyeMessage();
-  }, 
+  },
 };
 
 RPSGame.play(); // calling on the object's property which has a function value
-// which mean it's a method. 
+// which mean it's a method.
 
 // factory function 1
 function createComputer() {
@@ -264,8 +264,8 @@ function createHuman() {
 // creates an object with the property move: null
 function createPlayer() {
   return {
-    move: null, 
-  }; 
+    move: null,
+  };
 }
 ```
 
