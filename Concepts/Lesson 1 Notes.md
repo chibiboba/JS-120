@@ -14,7 +14,7 @@
 
 ------
 
-- When object properties have function values, we call them **methods**. 
+- **Methods**  are object properties that have function values. 
 
 
 ```js
@@ -29,9 +29,37 @@ const cat = {
 };
 ```
 
-- Methods change the **state** of an object. 
-- **State** means data in an object. 
-- when you use **this** inside a method, it refers to the object that contains the method. You can access properties and methods of an object from within a method using `this` keyword. 
+- **behavior** (method) change the **state** of an object. 
+  - **State** means data in an object. 
+
+------
+
+- when you use **this** <u>inside a method</u>, it refers to the <u>object that contains the method.</u> 
+
+  - 'this' can only be used inside a method, to refer to the object that contains the method.
+  - You can access properties and methods of an object from within a method using `this` keyword. 
+
+- ```js
+  // both of these cause syntax error when trying to define the properties in the object. 
+  
+  let cat = {
+    this.name: "Butterscotch", // 'this' can only be used inside a method, to refer to the object that contains the method.
+    this.age: 13,
+  };
+  
+  let cat = {
+    name = "Butterscotch", // incorrect syntax to define property in an object.
+    age = 13
+  };
+  ```
+
+  ```js
+  // however this works
+  function cat() {
+    this.name = 'Butterscotch';
+    this.age = 13;
+  }
+  ```
 
 ------
 
@@ -89,7 +117,6 @@ const cat = {
   };
   ```
   
-
 - One way to automate the creation of objects is to use the **factory function** (aka object factory) pattern. A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
 
   - Returns objects that represent data of a specific type.
