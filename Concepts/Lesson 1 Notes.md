@@ -1,5 +1,7 @@
 #### Lesson 1 Notes
 
+##### What is OOP
+
 **OOP** (object oriented programming) is thinking about a problem in terms of objects, using objects to organize program. 
 
 - A programming paradigm in which we think about a problem in terms of objects.
@@ -34,6 +36,8 @@ const cat = {
 
 ------
 
+##### this
+
 - when you use **this** <u>inside a method</u>, it refers to the <u>object that contains the method.</u> 
 
   - 'this' can only be used inside a method, to refer to the object that contains the method.
@@ -62,6 +66,8 @@ const cat = {
   ```
 
 ------
+
+##### Collaborator Objects
 
 - Objects that help provide state within another object are called **collaborator objects**. Objects **collaborate** with other objects by using them as part of their state. 
 
@@ -125,7 +131,7 @@ const cat = {
 
 ------
 
-When solving a problem - Steps to planning an object-oriented application
+##### When solving a problem - Steps to planning an object-oriented application
 
 1. Write a textual description of the problem or exercise. 
 2. Extract the **significant** nouns and verbs from the description. 
@@ -136,7 +142,7 @@ When solving a problem - Steps to planning an object-oriented application
 
 ------
 
-Tips
+##### Tips
 
 - You don't want a factory function to create an object whose behavior relies on the object's property. You don't want to use if / else conditionals to create objects of different kinds. 
   - For now, we are using separate factory functions to deal with this issue.
@@ -150,13 +156,13 @@ Tips
 
 ------
 
-Principals
+##### Principles
 
 - Extract duplicated code to a single place. It makes changes to the code less error-prone and tedious. In the long run, it often leads to less work.
 
 ------
 
-Other vocab
+##### Other vocab
 
 **interface of an object**: the state and behaviors exposed by the object for other objects to use. 
 

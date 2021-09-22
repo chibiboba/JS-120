@@ -213,8 +213,6 @@ When you access a property on an object, JavaScript first looks for an "own" pro
 
 The implication here is that when two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. Let's see an example:
 
-Copy Code
-
 ```js
 let a = {
   foo: 1,
