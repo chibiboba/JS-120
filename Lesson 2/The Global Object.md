@@ -4,8 +4,6 @@ JavaScript creates a global object when it starts running. It serves as the **im
 
 In Node.js, the global object is the object named `global`; in the browser, it's the `window` object. You can investigate this in the node REPL or a browser's console:
 
-Copy Code
-
 ```node
 > global
 Object [global] {
@@ -26,16 +24,12 @@ Object [global] {
 
 The global object is available everywhere in your program and houses important global properties. In the previous course, we talked about global values such as `Infinity` and `NaN`, and global functions, such as `isNaN` and `parseInt`. All these entities are properties of the global object! In your console, you can look at the global object to examine those properties.
 
-Copy Code
-
 ```node
 > global.isNaN      // [Function: isNaN]
 > global.Infinity   // Infinity
 ```
 
 Note: don't use `isNaN` in your code. Use `Number.isNaN` instead. The bare `isNaN` function has some odd behavior:
-
-Copy Code
 
 ```node
 Number.isNaN('I am not a number');   // false - this is a correct value
@@ -44,15 +38,11 @@ isNaN('I am not a number');          // true - string gets coerced to NaN
 
 As with other JavaScript objects, you can add properties to the global object at any time:
 
-Copy Code
-
 ```node
 // in Node
 > global.foo = 1
 > global.foo       // 1
 ```
-
-Copy Code
 
 ```node
 // in a browser
@@ -63,8 +53,6 @@ Copy Code
 ### The Global Object and Undeclared Variables
 
 The global object has an interesting property: whenever you assign a value to a variable without using the `let`, `const`, or `var` keywords (we'll discuss `var` later), the variable gets added to the global object as a property. Let's see an example:
-
-Copy Code
 
 ```js
 foo = 'bar';

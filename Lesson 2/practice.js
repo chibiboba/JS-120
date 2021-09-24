@@ -1,12 +1,9 @@
-let cat = {
-  says: 'meow',
+let obj = {
+  func: function () {
+    return this;
+  },
 };
 
-let dog = {};
+let context = obj.func();
 
-Object.setPrototypeOf(dog, cat);
-
-dog.says = 'woof';
-
-console.log(cat.says); // meow
-console.log(dog.says); // woof
+console.log(context);

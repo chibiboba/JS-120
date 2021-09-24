@@ -993,7 +993,7 @@ typeof myFunc; // => "function"
 
 - JavaScript creates a global object when it starts running. 
 - This global object is the **implicit execution context** for function invocations. 
-  - In Node.js, the global object is the object named `global`. 
+  - In Node.js, the global object is the object named `global`. [object global]
   - In the browser, it's the `window` object. 
 - Can investigate this in the node REPL or a browser's console. 
 
@@ -1071,4 +1071,598 @@ foo; // 'bar'
 ------
 
 ### Implicit and Explicit Execution Context
+
+##### Execution Context
+
+- Earlier, we said that `this` refers to the object that contains the method. That's true, but there's a bit more nuance to how JavaScript determines the value of `this` in a function or method call. 
+- **Execution context**:  the **environment** in which a function executes.
+  - In JavaScript, it most commonly refers to the current value of the `this` keyword. 
+    - in other words, `this` refers to the **environment** in which a function executes. 
+  - Execution context of a function or method call is the value of `this` when that code executes. 
+  - The context depends on how the function or method was invoked, not on where the function was defined. 
+    - In other words, <u>***how you invoke***</u> a function or method determines its execution context for that invocation. It doesn't matter how you define the function or method, nor does it matter where or when you called it. 
+    - So two invocations of the same function or method can have very different execution contexts depending on how you make those calls. 
+- There are two basic ways to set the context when calling a function or method
+  1. **Explicit**: The execution context that you set explicitly.
+  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+- Setting the execution context is also called **binding** **`this`** or **setting the binding**. 
+  - A call binds `this` to a specific object when the function or method is called. 
+
+##### Function Execution Context(Implicit)
+
+- Every JavaScript function **<u>call</u>** has an execution context. 
+  - This means `this` keyword is available to every function in your JavaScript program. 
+  - Every time you *call* that function, JavaScript binds some object to `this`. 
+
+```js
+function foo() {
+  console.log("this refers to: " + this);
+}
+
+foo();
+// this refers to: [object global]
+```
+
+- Regular function calls use the global object as their execution context. 
+- Within a regular function call (`foo()`), JavaScript implicitly sets the binding for `this` to the global object. 
+  - Remember in Node, global object is `global` and in browser, global object is `window`. 
+  - This means that when you use `this` inside the function, it refers to the global object. 
+  - Can use `this` to modify access or modify properties of global object. 
+
+```js
+function foo() {
+  this.bar = 'bar';
+}
+
+foo();
+global.bar; // 'bar'
+```
+
+- Regular function calls do not provide explicit context, JavaScript supplies an implicit context: the global object. 
+  - We say the execution context is implicit because function invocation doesn't supply an explicit alternative. 
+
+##### Strict Mode and Implicit Context
+
+- When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object. 
+  - For now, just be aware of this behavioral change. For example, strict mode shows up in JS classes and Coderpad.
+
+```js
+"use strict"; // the quotes are required
+
+function foo() {
+  console.log("this refers to: " + this);
+}
+
+foo(); // this refers to: undefined
+```
+
+##### Method Execution Context (Implicit)
+
+- Method calls / method execution syntax provide an implicit execution context. 
+  - We are using an explicit object to call the method, but JavaScript interprets the object as the implicit context. 
+
+```js
+let foo = {
+  bar: function() {
+    console.log(this);
+  }
+};
+
+foo.bar(); // `foo` is the implicit execution context for `bar`
+// { bar: [Function: bar] }
+```
+
+- The execution context inside a method call is the object used to call the method. 
+- Be careful, however. The first-class nature of JavaScript functions has ramifications for the execution context. <u>Remember that the context is determined solely by how you call the function or method.</u> 
+  - Here, `foo.bar()` is considered a method call since we *call it as a method*; that is, we use the method call syntax `object.method()`.
+  - Since JavaScript functions are first-class objects, `bar` can be called in other ways that change the context:
+
+```js
+let baz = foo.bar;
+baz(); // Object [global] {...}
+```
+
+- In this code, we assign the `foo.bar` method to the `baz` variable. The `foo.bar` property and the `baz` variable now refer to the same function object. 
+
+- What should `baz()` log? 
+
+  - Since `baz` references a method of the `foo` object, you may think that its execution context is foo. But this is wrong. 
+  - Since we are calling `baz` as a standalone function, its execution context is the global object, *not* the `foo` object. 
+
+- Question: so if we instead did this
+
+  ```js
+  let baz = foo();
+  baz.bar; // Then the implicit execution context would be baz object, or foo object? Because when invoking a method, it uses the object used to call the method as the implicit context. 
+  ```
+
+##### Explicit Function and Method Execution Context
+
+- Using parenthesis after a function or method name is not the only way to invoke it.
+  - When you invoke a function with parentheses, JavaScript uses the global object as the implicit context. 
+  - When you invoke a method, it uses the object that you used to call the method as the implicit context. 
+- You can provide an explicit context to any function or method, and it doesn't have to be the global object or the object that contains the method. 
+- Instead, you can use any object -- or even `null` -- as the execution context for any function or method. 
+-  There are two main ways to do that in JavaScript: `call` and `apply`.
+
+##### Explicit Execution Context with `Call`
+
+- Remember that all JavaScript functions are objects: they have properties and methods just like any other object. 
+
+- One method that all JavaScript functions have is the `call` method. 
+
+  - The **`call`** method calls a function with an explicit execution context. 
+  - The first argument to `call` provides the explicit context for the function invocation. 
+  - `Call` does not mutate the object passed as argument to `call`
+
+  ```js
+  // calls logNum and sets explicit execution context to obj (binds this to obj). 
+  // obj becomes the explicit context. 
+  function logNum() {
+    console.log(this.num);
+  }
+  
+  let obj = {
+    num: 42
+  };
+  
+  logNum.call(obj); // logs 42 
+  // This code shows how the execution context is explicitely set to `obj` isntead of global object.
+  // obj is not mutated. 
+  ```
+
+  The code is functionally similar to the following
+
+  ```js
+  // Makes logNum a method(property) inside obj.
+  // Invokes logNum using obj, so the implicit context is obj. 
+  // Mutates obj. 
+  function logNum() {
+    console.log(this.num);
+  }
+  
+  let obj = {
+    num: 42
+  };
+  
+  obj.logNum = logNum; // added new property to obj. 
+  obj.logNum(); // logs 42
+  ```
+
+  ```js
+  // code becomes like this 
+  function logNum() {
+    console.log(this.num);
+  }
+  
+  let obj = {
+    num: 42, 
+    logNum : logNum, // Note that there's no parentheses, just the logNum function identifier, not the logNum() which returns value of undefined. 
+  };
+  
+  obj.logNum(); // logs 42
+  ```
+
+  - This code is different however because we add a new property to the `obj` object, which mutates `obj`. 
+  - we don't mutate the object when we used `call`. 
+
+- Can also use `call` to explicitly set the execution context on methods, not just functions. 
+
+```js
+// Calls the method logNum and sets explicit execution context to obj2. 
+let obj1 = {
+  logNum() {
+    console.log(this.num);
+  }
+};
+
+let obj2 = {
+  num: 42
+};
+
+obj1.logNum.call(obj2); // logs 42
+// This code shows how the execution context is set to obj2 instead of obj1, which is the calling object of method logNum. 
+```
+
+The behavior here is similar to: 
+
+```js
+// Makes obj1.logNum a method (property) of obj2. 
+// So the implicit execution context becomes obj2. 
+// obj2 is mutated. 
+let obj1 = {
+  logNum() {
+    console.log(this.num);
+  }
+};
+
+let obj2 = {
+  num: 42
+};
+
+obj2.logNum = obj1.logNum;
+obj2.logNum(); // logs 42
+```
+
+```js
+// code becomes like this
+let obj1 = {
+  logNum() {
+    console.log(this.num);
+  }
+};
+
+let obj2 = {
+  num: 42, 
+  logNum = obj1.logNum, // Note: no parentheses, we are setting it to the function, not return value of the function. 
+};
+
+obj2.logNum(); // logs 42
+```
+
+- Again there is a difference because `obj2` is mutated when we give it a `logNum` property. 
+  - That's the problem with this pattern. 
+- Supposed our function takes arguments.
+
+```js
+function sumNum(num1) {
+  return this.num + num1;
+}
+
+let obj = {
+  num: 42
+};
+```
+
+```js
+obj.num = sumNum.call(obj, 5);
+console.log(obj.num); // => 47
+```
+
+- We want to call `sumNum` in a way that it updates `obj.num`. 
+- Fortunately `call`method allows you to pass multiple arguments. 
+
+```js
+// Again, can understand code better if we write it directly, which is making sumNum a method inside obj, and passing 5 to sumNum. 
+function sumNum(num1) {
+  return this.num + num1;
+}
+
+let obj = {
+  num: 42
+};
+
+obj.sumNum = sumNum;
+obj.num = obj.sumNum(5);
+console.log(obj.num); // => 47
+```
+
+- The general syntax for `call` is 
+
+```js
+someObject.someMethod.call(context, arg1, arg2, arg3, ...)
+```
+
+##### Explicit Execution Context with `apply`
+
+- Only difference between `apply` and `call` is that `apply` uses an array to pass any arguments to the function. 
+- General syntax of `apply`: 
+
+```js
+someObject.someMethod.apply(context, [arg1, arg2, arg3, ...])
+```
+
+- Useful if you have a list of arguments in an array.
+- But with modern JS(ES6 + ) `apply` isn't needed since you can use `call` in conjunction with the spread operator to accomplish the same thing. 
+
+```js
+let args = [arg1, arg2, arg3];
+someObject.someMethod.call(context, ...args);
+```
+
+##### Summary
+
+- All JavaScript functions and methods execute within an execution context, sometimes called its `this` binding. 
+  - How `this` gets bound depends entirely on how the function is invoked. 
+  - You can't tell a function's execution context by merely looking at how the function is defined or where it's defined: you must examine the invocation itself. 
+- Regular function calls implicitly use the global object as their execution context, while method calls implicitly use the calling object as their context. 
+  - You can override this behavior by setting the execution context explicitly with either `call` or `apply`. 
+- The mechanics of context binding is an essential but difficult concept. Most difficulties arise from forgetting that JavaScript does not use *lexical scoping rules* to determine the binding. 
+  -  For instance, if you use `this` inside a method of `obj`, you expect that `this` refers to `obj`. However, that's not always the case.
+  - It's important to remember that the rules for `this` are entirely different from the rules for variable scope. 
+  - While a variable's scope is determined by where you write the code, `this` depends on how you invoke it.
+
+------
+
+### Practice Problems: Implicit and Explicit Function Execution Contexts
+
+1. What will the following code output? Try to determine the results without running the code.
+
+   ```js
+   function func() {
+     return this;
+   }
+   
+   let context = func();
+   
+   console.log(context);
+   ```
+
+   
+
+2. What will the following code output? Explain the difference, if any, between this output and that of problem 1.
+
+   ```js
+   let obj = {
+     func: function() {
+       return this;
+     },
+   };
+   
+   let context = obj.func();
+   
+   console.log(context);
+   ```
+
+3. What will the following code output?
+
+   ```js
+   message = 'Hello from the global scope!';
+   
+   function deliverMessage() {
+     console.log(this.message);
+   }
+   
+   deliverMessage();
+   
+   let foo = {
+     message: 'Hello from the function scope!',
+   };
+   
+   foo.deliverMessage = deliverMessage;
+   
+   foo.deliverMessage();
+   ```
+
+4. What built-in methods have we learned about that we can use to specify a function's execution context explicitly?
+
+   
+
+5. Take a look at the following code snippet. Use `call` to invoke the `add` method but with `foo` as execution context. What will this return?
+
+   ```js
+   let foo = {
+     a: 1,
+     b: 2,
+   };
+   
+   let bar = {
+      a: 'abc',
+      b: 'def',
+      add: function() {
+        return this.a + this.b;
+      },
+   };
+   ```
+
+------
+
+### Hard Binding Functions with Contexts
+
+- JavaScript has a third way to specify the execution context: the `bind` method on function objects.
+- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
+  - In detail: `bind`'s context is the original function and returns a new function that is permanently bound to the context passed to `bind` as first argument. When we call this new function, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
+  - So basically `bind` just creates a new function which implements an `apply` or `call`, with a permanent context passed to it. 
+- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+
+##### LINGUISTIC NOTES
+
+- `call` / `apply` **invokes** function or method
+- function / method **invokes** `bind`. 
+- A context is **bound** to an object. A function is also **bound** to a context. 
+
+```js
+function sumNum(num1) {
+  return this.num + num1;
+}
+
+let obj = {
+  num: 42
+};
+
+let sumNum2 = sumNum.bind(obj);
+sumNum2(5); // => 47
+// new function sumNum2 is permanently bound to obj. 
+```
+
+- we don't call the function `sumNum` immediately as we do with `call` and `apply`. Instead `bind` returns a new function `sumNum2`. The new function is **permanently ** bound to the object passed as `bind`'s first argument. 
+- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
+
+```js
+let object = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    return this.a + ' ' + this.b;
+  },
+};
+
+let bar = object.foo;
+bar();                                // "undefined undefined" 
+																			// undefined because there is no 'a' property in the global object
+
+let baz = object.foo.bind(object);
+baz();                                // "hello world"
+																			// baz is permanently bound to object, so the context / 'this' now refers to object 
+// baz calls on foo, passing permanent object context to it. 
+```
+
+```js
+let object2 = {
+  a: 'hi',
+  b: 'there',
+};
+
+baz.call(object2);  // "hello world" - `this` still refers to `object`
+```
+
+JavaScript implements `bind` method like this: 
+
+```js
+Function.prototype.bind = function (...args) {
+  let fn = this; // bind's context is the original function function ()
+  let context = args.shift();
+
+  return function () {  										// bind returns a function function(), which is permanently bound to context. 
+    return fn.apply(context, args); // this function calls the original function fn. using apply. 
+  };
+};
+```
+
+- While you learned enough to understand most of the code, it's not really important to wrap your head around it. 
+- What's important is to recognize that `bind`'s context is the original function, and it <u>returns a new function that calls the original function with the context supplied to bind as its first argument.</u> 
+  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
+- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
+  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
+  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
+
+> - A trap is thinking that `bind` permanently alters the original function. 
+> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
+> - The original function isn't changed and doesn't have its context changed. 
+
+```js
+let greetings = {
+  morning: 'Good morning, ',
+  afternoon: 'Good afternoon, ',
+  evening: 'Good evening, ',
+
+  greeting: function(name) {
+    let currentHour = (new Date()).getHours();
+
+    if (currentHour < 12) {
+      console.log(this.morning + name);
+    } else if (currentHour < 18) {
+      console.log(this.afternoon + name);
+    } else {
+      console.log(this.evening + name);
+    }
+  }
+};
+
+let spanishWords = {
+  morning: 'Buenos dias, ',
+  afternoon: 'Buenas tardes, ',
+  evening: 'Buena noches, '
+};
+
+let spanishGreeter = greetings.greeting.bind(spanishWords);
+
+spanishGreeter('Jose'); // spanishGreeter calls on greeting method, with spanishWords as the permanent context. 
+spanishGreeter('Juan');
+```
+
+- `spanishGreeter('Jose')` will log something like `'Buenas tardes, Jose'` instead of `'Good afternoon, Jose'`.
+
+##### Summary
+
+- In this assignment, we saw a third way to specify the execution context.
+
+- Unlike `call` and `apply`, though, `bind` returns a new function that is permanently bound to the context that's provided to `bind` as the first argument. 
+- You cannot alter the execution context of the resulting function, even if you use `call`, `apply`, or try calling `bind` a second time.
+
+------
+
+### Practice Problems: Hard Binding Functions with Contexts
+
+1. What method can we use to bind a function permanently to a particular execution context?
+
+   Show Solution
+
+2. What will the following code log to the console?
+
+   ```js
+   let obj = {
+     message: 'JavaScript',
+   };
+   
+   function foo() {
+     console.log(this.message);
+   }
+   
+   foo.bind(obj);
+   ```
+
+   Show Solution
+
+3. What will the following code output?
+
+   ```js
+   let obj = {
+     a: 2,
+     b: 3,
+   };
+   
+   function foo() {
+     return this.a + this.b;
+   }
+   
+   let bar = foo.bind(obj);
+   
+   console.log(foo());
+   console.log(bar());
+   ```
+
+   Show Solution
+
+4. What will the code below log to the console?
+
+   ```js
+   let positivity = {
+     message: 'JavaScript makes sense!',
+   };
+   
+   let negativity = {
+     message: 'JavaScript makes no sense!',
+   };
+   
+   function foo() {
+     console.log(this.message);
+   }
+   
+   let bar = foo.bind(positivity);
+   
+   negativity.logMessage = bar;
+   negativity.logMessage();
+   ```
+
+   Show Solution
+
+5. What will the code below output?
+
+   ```js
+   let obj = {
+     a: 'Amazebulous!',
+   };
+   let otherObj = {
+     a: "That's not a real word!",
+   };
+   
+   function foo() {
+     console.log(this.a);
+   }
+   
+   let bar = foo.bind(obj);
+   
+   bar.call(otherObj);
+   ```
+
+   Show Solution
+   
+   ```plaintext
+   Amazebulous!
+   ```
+   
+   Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`. In keeping with this, the last line of our code outputs "Amazebulous!", because the function `bar`'s <u>context has been permanently bound to `obj`.</u>
+
+------
 
