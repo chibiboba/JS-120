@@ -1,9 +1,9 @@
-let obj = {
-  func: function () {
-    return this;
+let john = {
+  firstName: 'John',
+  lastName: 'Doe',
+  greetings() {
+    console.log('hello, ' + this.firstName + ' ' + this.lastName);
   },
 };
 
-let context = obj.func();
-
-console.log(context);
+let foo = john.greetings.bind(john); // bind returns a function

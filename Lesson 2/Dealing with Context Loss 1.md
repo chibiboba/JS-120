@@ -90,8 +90,6 @@ However, it's not always possible to pass a context argument to a function or me
 
 Another approach you can use is to hard-bind the method's context using `bind`:
 
-Copy Code
-
 ```js
 function repeatThreeTimes(func) {
   func();
