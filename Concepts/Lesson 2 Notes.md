@@ -2407,6 +2407,22 @@ array.forEach(logData);
 
 ------
 
+### Quiz 2 
+
+Question 7 
+
+Question 7: When does JavaScript bind an object to `this` ? Select all answers that apply.
+
+> D: It binds the execution context based on when the function gets invoked.
+>
+> **Incorrect:**
+>
+> **B**, **D**: The execution context is determined by how a function is called, not by where it is defined or when it gets invoked.
+
+You're correct in that there is some truth to answer choice D, but there's a bit more nuance to it. The point that this question tries to underscore is the importance of *how* a function is called when determining the execution context. The exception I can think of to answer choice D is when `bind` is used to provide an execution context. Recall that `bind` differs from `call` and `apply` in that the function is *not* immediately invoked and a copy of the function is returned with the supplied execution context bound to said copy.
+
+------
+
 ### Lesson 2 Summary
 
 - Every object has an internal `[[Prototype]]` property that points to a special object, the object's prototype. It is used to look up properties that don't exist on the object itself. 
@@ -2447,6 +2463,10 @@ array.forEach(logData);
   - `thisArg` 
 
 ##### Execution context rules
+
+- When is the execution context / `this`/ bound? 
+  - It is bound based on how function is invoked. 
+  - It is usually bound during function invocation /execution actually, there are exceptions such as `bind`, where the function is not immediately invoked and a copy of the function is returned with the execution context bound to the copy.
 
 - By default , if there is no function invocation, the execution context or value of `this` is the object that contains the method that `this` is in. 
 
@@ -2660,13 +2680,19 @@ baz.qux() // baz delegates the invocation of qux to its prototype foo object.
    logReturnVal(turk.getDescription); method is passed to logReturnVal. 
    ```
 
-   On line 16, the context for logReturnVal is global object, since logReturnVal is called as a standalone function. On line 12, func() is invoked as a standalone function too, so the execution context is the global object. (?) 
+   This code outputs: 
 
    ```terminal
    undefined undefined is a undefined.
    ```
-
-4) Consider the following code:
+   
+   On line 16, function `logReturnVal` is invoked, with function referenced by `turk.getDescription` passed to it. The execution context for `logReturnVal` is the global object, so when `func` (which references `turk.getDescription`) is invoked on line 12, `this` refers to the global object. `this.FirstName` , `this.lastName` and `this.occupation` therefore all evaluate to `undefined`.
+   
+   Solution: 
+   
+   When we pass `turk.getDescription` to `logReturnVal` as an argument, we remove the method from its context. As a result, when we execute it as `func`, `this` points to the global object rather than `turk`. Since `global` doesn't have properties defined for `firstName`, `lastName`, or `occupation`, the output isn't what we expect.
+   
+2. Consider the following code:
 
 ```js
 const TESgames = {
