@@ -43,6 +43,37 @@ const cat = {
   - 'this' can only be used inside a method, to refer to the object that contains the method.
   - You can access properties and methods of an object from within a method using `this` keyword. 
 
+
+```js
+let raceCar = {
+  make: 'BMW',
+  fuelLevel: 0.5,
+  engineOn: false,
+
+  startEngine() {
+    this.engineOn = true; // this refers to raceCar
+  },
+
+  drive() {
+    this.fuelLevel -= 0.1;
+  },
+
+  stopEngine() {
+    this.engineOn = false;
+  },
+
+  refuel(percent) {
+    if ((this.fuelLevel + (percent / 100)) <= 1) {
+      this.fuelLevel += (percent / 100);
+    } else {
+      this.fuelLevel = 1;
+    }
+  },
+};
+```
+
+
+
 - ```js
   // both of these cause syntax error when trying to define the properties in the object. 
   
