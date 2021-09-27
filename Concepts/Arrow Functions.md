@@ -1,6 +1,6 @@
 ------
 
-Hi, I am quite confused about execution context, if someone could correct and/or affirm my understanding of how it works. Here some examples. The questions and explanations I have for them are in bullet points. 
+Hi, I am quite confused about execution context, if someone could correct and/or affirm my understanding of how it works. Here some code examples. The questions and explanations I have for them are in bullet points. 
 
 #### Example 1 
 
