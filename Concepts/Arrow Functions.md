@@ -2,7 +2,7 @@
 
 Hi, I am quite confused about execution context, if someone could correct and/or affirm my understanding of how it works. Here some examples. The questions and explanations I have for them are in bullet points. 
 
-##### Example 1 
+#### Example 1 
 
 ```js
 // Question 7 of Practice Problems: Dealing with Context Loss
@@ -40,7 +40,7 @@ This example regards arrow functions. So arrow functions are permanently bound t
 
 ##### Example 1 Continued 
 
-- Based on how the enclosing function is invoked, does the context of the arrow function change? 
+- #### Based on how the enclosing function is invoked, does the context of the arrow function change? 
 
   For example, if we altered the example 1 code into this. 
 
@@ -76,7 +76,7 @@ undefined: Skyrim
 
 ------
 
-##### Example 2
+#### Example 2
 
 ```js
 function foo() {
@@ -93,7 +93,7 @@ In this example, `this` on line 2 refers to the global object, because `foo` was
 
 ------
 
-##### Example 3 (resolved)
+#### Example 3 (resolved)
 
 ```js
 // Question 4 of Practice Problems: Dealing with Context Loss
