@@ -38,7 +38,7 @@ This example regards arrow functions. So arrow functions are permanently bound t
 
 ------
 
-##### Example 1 Continued 
+#### Example 1 Continued 
 
 - #### Based on how the enclosing function is invoked, does the context of the arrow function change? 
 
