@@ -113,5 +113,21 @@ TESgames.listGames();
 The execution context on line 6 is the global object. 
 
 - Q: Is the execution context the global object because `forEach` invokes the callback function, and `forEach` is a method in the global object? 
-- A: Yes. the call back function is executed with the global object as context. 
+
+- A: Yes. the call back function is executed with the global object as context. Because `forEach` context is set to global, if there no second argument specifiying a context is passed to `forEach`. The code for `forEach` looks like this (simplified). 
+
+  ```js
+  function forEach(callback, context) {
+    if (context === undefined) {
+      context = global;
+    }
+  
+    // this[index] refers to the array element
+    for (let index = 0; index < this.length; ++index) {
+      callback.call(context, this[index]);
+    }
+  }
+  ```
+
+  
 
