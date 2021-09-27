@@ -1,19 +1,14 @@
-let logResult = function (func) {
-  let result = func();
-  console.log(result);
-  return result;
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function () {
+    TESgames.titles.forEach(title => {
+      console.log(this.seriesTitle + ': ' + title);
+    });
+  }
 };
 
-let foo = function () {
-  let sue = {
-    name: 'Sue Perkins',
-    age: 37,
-    myAge() {
-      return `${this.name} is ${this.age} years old.`;
-    },
-  };
-  logResult(sue.myAge);
-};
+// TESgames.listGames();
 
-foo();
-// Expected output: Sue Perkins is 37 years old.
+let copy = TESgames.listGames;
+copy();

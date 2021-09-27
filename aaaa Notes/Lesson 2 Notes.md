@@ -2033,7 +2033,7 @@ let obj = {
   b: 'world',
   foo: function() {
     [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // this is inside `console.log`, which is a method in the global object, so the context is the global object? Or is it because forEach invokes the callback function, and `forEach` is in the global object?
+      console.log(String(number) + ' ' + this.a + ' ' + this.b); // forEach invokes the callback function, and `forEach` is in the global object?
     });
   },
 };
@@ -2407,7 +2407,49 @@ array.forEach(logData);
 
 ------
 
+### Quiz 1
+
+Question 1 
+
+Examine the following code:
+
+```js
+let foo = {
+  bar: 42,
+  qux() {
+    console.log("Pudding");
+  },
+};
+
+let baz = Object.create(foo);
+baz.qux()
+```
+
+Which of the following statements about the invocation on line 9 are true? Choose all that apply:
+
+Correct : C. The `baz` object delegates the invocation of `qux` to the `foo` object.
+
+What does delegate mean? Does it just mean "access property"? 
+
+Downstream objects can delegate properties or behaviors to upstream objects.
+
+------
+
 ### Quiz 2 
+
+Question 2
+
+```js
+console.log(global.hasOwnProperty('global'));   // A: true
+console.log(global.hasOwnProperty('foo'));      // B: true
+console.log(global.hasOwnProperty('isFinite')); // C: true
+console.log(global.hasOwnProperty('bar'));      // D: false
+console.log(global.hasOwnProperty('xyz'));      // E: true
+console.log(global.hasOwnProperty('console'));  // F: true
+console.log(global.hasOwnProperty('log'));      // G: false
+```
+
+
 
 Question 7 
 
@@ -2481,34 +2523,18 @@ You're correct in that there is some truth to answer choice D, but there's a bit
 
 - **Arrow functions** are permanently bound to the execution context of the **enclosing function invocation**.
 
-  - Arrow functions always have the same execution context as its surrounding scope. 
-  - An Arrow function defined inside another function always has the same context as the outer function. 
-  - Questions: What exactly is "surrounding scope"? What is "outer function"? 
-  - My understanding: The  surrounding scope/ outer function is the enclosing function invocation, which refers to the most outer scope that contains the arrow function, within the current environment/ function invocation( if that's the right terminology?)
+  - **enclosing function invocation**: the most outer scope that contains the arrow function, within the current function invocation, "execution environment". 
+  - They are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
 
   ```js
-  let obj = {
-    a: 'hello',
-    b: 'world',
-    foo: function() {
-      let bar = () => {
-        console.log(this.a + ' ' + this.b);
-      }
-      bar(); // Bar is invoked as a standalone function, which should normally have the execution context of the global object, but here it references an arrow function. The context of the arrrow function is same as the outer function `foo`, which curerntly has context of `obj` because of the method call format on line 12. 
-    }
-  };
-  
-  obj.foo();
-  // => hello world
-  ```
-
-  ```js
+  // Question 7 of Practice Problems: Dealing with Context Loss
+  // solution
   const TESgames = {
     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
     seriesTitle: 'The Elder Scrolls',
     listGames: function() {
-      this.titles.forEach(title => { // `this` is not passed to forEach.
-        console.log(this.seriesTitle + ': ' + title);
+      this.titles.forEach(title => {
+        console.log(this.seriesTitle + ': ' + title); // this refers to TESgames
       });
     }
   };
@@ -2516,12 +2542,28 @@ You're correct in that there is some truth to answer choice D, but there's a bit
   TESgames.listGames();
   ```
 
-  - `this` is not passed to `forEach`: what does that mean? Why is the execution context not passed to `forEach`, but passed to the arrow function? 
-  - My understanding: at execution time, on line 11, `this`, which is the execution object `TESgames`, is not passed to `forEach`. 
+  ```js
+  const TESgames = {
+    titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+    seriesTitle: 'The Elder Scrolls',
+    listGames: function () {
+      TESgames.titles.forEach(title => {
+        console.log(this.seriesTitle + ': ' + title); // `this` now refers to undefined
+      });
+    }
+  };
+  
+  // TESgames.listGames();
+  
+  let copy = TESgames.listGames;
+  copy();
+  ```
 
 - This results in 2 exceptions. 
 
-- Arrow function exception 1: ignores rule that context is determined entirely by how a function or method is invoked. 
+- Arrow function exception 1: ignores rule that context is determined entirely by how a function or method is invoked
+
+  - Just ignores the rule terms of how the arrow function ITSELF is invoked. However, this rule still applies to its *enclosing function invocation*. 
 
   ```js
   let obj = {
@@ -2653,48 +2695,63 @@ baz.qux() // baz delegates the invocation of qux to its prototype foo object.
 
 - Confusing but makes sense if you think about the definition of "delegate": a person sent or authorized to represent others. 
 
-  
+
+------
 
 ### Questions
 
-##### Practice Problems: Dealing with Context Loss
+##### Execution Context
 
-1. The code below should output `"Christopher Turk is a Surgeon"`. Without running the code, what will it output? If there is a difference between the actual and desired output, explain the difference.
+Hi, I am quite confused about execution context, if someone could correct my understanding. Here some  examples and the questions I have for them in bullet points. 
 
-   ```js
-   let turk = {
-     firstName: 'Christopher',
-     lastName: 'Turk',
-     occupation: 'Surgeon',
-     getDescription() {
-         return this.firstName + ' ' + this.lastName + ' is a '
-                                     + this.occupation + '.';
-     }
-   };
-   
-   function logReturnVal(func) {
-     let returnVal = func();
-     console.log(returnVal);
-   }
-   
-   logReturnVal(turk.getDescription); method is passed to logReturnVal. 
-   ```
-
-   This code outputs: 
-
-   ```terminal
-   undefined undefined is a undefined.
-   ```
-   
-   On line 16, function `logReturnVal` is invoked, with function referenced by `turk.getDescription` passed to it. The execution context for `logReturnVal` is the global object, so when `func` (which references `turk.getDescription`) is invoked on line 12, `this` refers to the global object. `this.FirstName` , `this.lastName` and `this.occupation` therefore all evaluate to `undefined`.
-   
-   Solution: 
-   
-   When we pass `turk.getDescription` to `logReturnVal` as an argument, we remove the method from its context. As a result, when we execute it as `func`, `this` points to the global object rather than `turk`. Since `global` doesn't have properties defined for `firstName`, `lastName`, or `occupation`, the output isn't what we expect.
-   
-2. Consider the following code:
+Example 1 
 
 ```js
+// Question 7 of Practice Problems: Dealing with Context Loss
+// solution
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function() {
+    this.titles.forEach(title => {
+      console.log(this.seriesTitle + ': ' + title);
+    });
+  }
+};
+
+TESgames.listGames();
+```
+
+This example regards arrow functions. So arrow functions are permanently bound to the execution context of its **enclosing function invocation** / outer function/ surrounding context. 
+
+- What exactly is the "enclosing function"? 
+  - In the example above, is the enclosing function `listGames` ? The execution context of `listGames` would be `Tesgames` because it was invoked as a method call on line 13. 
+  - If an arrow function is defined in a `forEach` method, why is `forEach` not considered the enclosing function? 
+- Based on how the enclosing function is invoked, does the context of the arrow function change? 
+
+------
+
+Example 2
+
+```js
+function foo() {
+  console.log("this refers to: " + this);
+}
+
+foo();
+// this refers to: [object global]
+```
+
+In this example, `this` on line 2 refers to the global object, because `foo` was invoked as a standalone function on line 5. But `this` is also inside `console.log()` which is another function invocation. `console` is a property of the global object. 
+
+- Why does `console.log()`, a method call, have nothing to do with the execution context of `this`? 
+
+------
+
+Example 3
+
+```js
+// Question 4 of Practice Problems: Dealing with Context Loss
 const TESgames = {
   titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
   seriesTitle: 'The Elder Scrolls',
@@ -2708,104 +2765,14 @@ const TESgames = {
 TESgames.listGames();
 ```
 
-Will this code produce the following output? Why or why not?
+The execution context on line 6 is the global object. 
 
-```plaintext
-The Elder Scrolls: Arena
-The Elder Scrolls: Daggerfall
-The Elder Scrolls: Morrowind
-The Elder Scrolls: Oblivion
-The Elder Scrolls: Skyrim
-```
+-  Is the execution context the global object because `forEach` invokes the callback function, and `forEach` is a method in the global object? 
+- A: Yes. the call back function is executed with the global object as context. 
 
-No because on line 5, forEach invokes the callback function, this method invocation sets the execution context to `forEach` and `forEach` is a method in the global object. 
+------
 
-Show Solution
-
-Since functions lose their surrounding context when used as arguments to another function, the context of line 6 is not the `TESgames` object. Instead, it is the global object. Thus, `this.seriesTitle` resolves to `undefined` rather than `"The Elder Scrolls"`.
-
-##### Dealing with Context Loss III
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // ForEach invokes the callback function, and this method invocation sets the execution context to global object, since that`forEach` is in that object. 
-    });
-  },
-};
-
-obj.foo();
-
-// => 1 undefined undefined
-// => 2 undefined undefined
-// => 3 undefined undefined
-```
-
-- Problem here is that `forEach` executes the function expression passed to it, so it gets executed with the global object as context. 
-
-##### Practice Problems Dealing with context loss
-
-problem 7 )
-
-```js
-const TESgames = {
-  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-  seriesTitle: 'The Elder Scrolls',
-  listGames: function() {
-    this.titles.forEach(title => { // `this` is not passed to forEach. 
-      console.log(this.seriesTitle + ': ' + title);
-    });
-  }
-};
-
-TESgames.listGames();
-```
-
-##### A property of arrow functions is that <u>they inherit their execution context from the surrounding scope</u>. 
-
-**Arrow functions** are permanently bound to the execution context of the **enclosing function invocation**.
-
-- Arrow functions always have the same execution context as its surrounding scope. 
-- An Arrow function defined inside another function always has the same context as the outer function. 
-- Questions: What exactly is "surrounding scope"? What is "outer function"? 
-- My understanding: The  surrounding scope/ outer function is the enclosing function invocation, which refers to the most outer scope that contains the arrow function, within the current environment/ function invocation( if that's the right terminology?)
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let bar = () => {
-      console.log(this.a + ' ' + this.b);
-    }
-    bar(); // Bar is invoked as a standalone function, which should normally have the execution context of the global object, but here it references an arrow function. The context of the arrrow function is same as the outer function `foo`, which curerntly has context of `obj` because of the method call format on line 12. 
-  }
-};
-
-obj.foo();
-// => hello world
-```
-
-- `this` is not passed to `forEach`: what does that mean? MY thinking: at **execution time**, on line 11 when listGames() is invoked,  the context object is not passed to `forEach`, but is passed to the callback function. 
-
-```js
-const TESgames = {
-  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-  seriesTitle: 'The Elder Scrolls',
-  listGames: function() {
-    this.titles.forEach(title => { // `this` is not passed to forEach.
-      console.log(this.seriesTitle + ': ' + title);
-    });
-  }
-};
-
-TESgames.listGames();
-```
-
-##### Downstream objects can delegate properties or behaviors to upstream objects. ??
+##### Quiz 1 question 1 Downstream objects can delegate properties or behaviors to upstream objects. ?? 
 
 - What does "delegate" mean? What does "delegate properties and behaviors" mean? 
 

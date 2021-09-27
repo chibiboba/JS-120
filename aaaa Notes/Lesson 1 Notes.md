@@ -4,9 +4,26 @@
 
 **OOP** (object oriented programming) is thinking about a problem in terms of objects, using objects to organize program. 
 
-- A programming paradigm in which we think about a problem in terms of objects.
+- A programming paradigm in which we think about a problem in terms of objects
+- Problem that procedural programming has: as a program grows, so does its complexity, and you end up functions throughout the code split up from the data they operate on. 
+- OOP solves this problem. Objects provide a means to group related data and functions into one unit. 
 
-**Encapsulation**: bundle state(data) and behavior(operations realted to data) into a single entity (an object).  
+##### Advantage and Disadvantage of OOP
+
+- Advantages
+  - lets programmers think about a problem at a higher-level of abstraction, which helps them break down and solve the problem.
+  - OOP helps programmers write programs that reduce dependencies in a program, which makes maintenance easier. 
+  - If done right, OOP makes code flexible, easy to understand, and easy to change. 
+  - Large complex procedural programs end up with functions all throughout the code split up from the data they operate on. 
+- Disadvantages
+  - OOP programs are often much larger than the equivalent procedural program. 
+  - OOP may lead to less efficient code; OO programs may require more memory, disk space, and computing power.
+
+------
+
+##### Encapsulation
+
+- bundle state(data) and behavior(operations realted to data) into a single entity (an object).  
 
 - In OOP, encapsulation also refers to the idea of restricting access to state and some behavior, but JavaScript objects don't support that type of encapsulation. 
 - **interface of an object**: the state and behaviors exposed by the object for other objects to use. 
@@ -16,7 +33,41 @@
 
 ------
 
-- **Methods**  are object properties that have function values. 
+##### Compact Method Syntax
+
+- Using functions as object values (methods) is so common that there's s hrothand syntax called compact syntax for it. 
+
+```js
+let raceCar = {
+  make: 'BMW',
+  fuelLevel: 0.5,
+  engineOn: false,
+
+  startEngine() {
+    raceCar.engineOn = true;
+  },
+
+  drive() {
+    raceCar.fuelLevel -= 0.1;
+  },
+
+  stopEngine() {
+    raceCar.engineOn = false;
+  },
+
+  refuel(percent) {
+    if ((raceCar.fuelLevel + (percent / 100)) <= 1) {
+      raceCar.fuelLevel += (percent / 100);
+    } else {
+      raceCar.fuelLevel = 1;
+    }
+  },
+};
+```
+
+- ------
+
+  **Methods**  are object properties that have function values. 
 
 
 ```js
@@ -154,10 +205,14 @@ let raceCar = {
   };
   ```
   
-- One way to automate the creation of objects is to use the **factory function** (aka object factory) pattern. A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
+- One way to automate the creation of objects is to use the **factory function** (aka object factory) pattern. 
 
+
+  - A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
+  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to create related objects based on a predefined template
   - Returns objects that represent data of a specific type.
   - It reuses code 
+
 - One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`
 
 ------
@@ -200,5 +255,17 @@ let raceCar = {
 - Encapsulation has a broader purpose in most OOP languages. It also refers to restricting access to the state and certain behaviors. An object only exposes the data and behaviors that other parts of the application need to work. 
   - Objects expose a **public interface** for interacting with other objects and keep their implementation details hidden. Thus, other objects can't change the data of an object without going through the proper interface. Unfortunately, JS doesn't support access restrictions. 
 
+------
 
+##### Summary
 
+In this lesson, we learned about some foundational concepts of Object Oriented programming and how we can apply those in JavaScript.
+
+Here's a summary of what we learned in this lesson. Make sure you're fully comfortable with these concepts before moving forward.
+
+- **Encapsulation** is the idea of bundling data and operations related to that data in a cohesive unit called an object. In OOP, encapsulation also refers to the idea of restricting access to state and some behavior, but JavaScript objects don't support that type of encapsulation.
+- The simplest way to create a JavaScript object is to use the object literal syntax: a pair of opening and closing curly braces. Adding methods to an objects is as simple as adding a function as the value of a property.
+- You can access the properties and methods of an object from within a method using the `this` keyword.
+- Objects **collaborate** with other objects by using them as part of their state. We say that two objects have a collaborator relationship if one of them is part of the state of the other.
+- One way to automate the creation of objects is to use the **factory function** pattern. A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments.
+- One object factory can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
