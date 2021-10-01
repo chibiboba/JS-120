@@ -219,6 +219,11 @@ console.log(b.baz); // => 12
 
 ##### The Default Prototype
 
+- The default prototype is the prototype object of the `Object` constructor (We'll see what this means later) 
+  - For now, know that `Object.prototype`  provides the default prototype object. 
+  - That means the default prototype is the object referenced by `.prototype` property of the `Object` constructor. 
+  - This object is the "highest" in the prototypal chain of an object. 
+  
 - All JavaScript objects have access to the `hasOwnProperty` method. But where does JS get that method? Because when we create a new object, we don't have to add our own `hasOwnProperty` method. 
 - JavaScript obtains the method from the object's prototype.
 - All JavaScript objects inherit from a prototype. 
@@ -314,9 +319,11 @@ console.log(c.foo); // => 1
 
 ##### The `__proto__` Property 
 
+- The `__proto__` property is a *deprecated*, non-hidden version of the `[[Prototype]]` property.
+
 - Older JS programs use a property called  `__proto__`: **dunder proto** instead of `Object.setPrototypeOf` and `Object.getPrototypeOf`. 
   - "dunder" is shortented version of "double underscore".
-  -  The `__proto__` property is a *deprecated*, non-hidden version of the `[[Prototype]]` property.
+  - The `__proto__` property is a *deprecated*, non-hidden version of the `[[Prototype]]` property.
 - As a rule, you should only use `__proto__` if you need to support very old browsers or old versions of Node, or as a convenient shortcut with temporary code or debugging operations. 
 
 ##### Property Look-Up int the Prototype Chain
@@ -2467,6 +2474,9 @@ You're correct in that there is some truth to answer choice D, but there's a bit
 
 ### Lesson 2 Summary
 
+- **Default prototype**: The default prototype is the prototype object of the `Object` constructor, referenced by `Object.prototype`
+  - `Object.prototype` is the `prototype`property of the Object constructor. 
+
 - Every object has an internal `[[Prototype]]` property that points to a special object, the object's prototype. It is used to look up properties that don't exist on the object itself. 
   - `Object.create` returns a new object with the passed-in argument as its prototype.
   - You can use `Object.getPrototypeOf` and `obj.isPrototypeOf` to check for prototype relationships between objects.
@@ -2710,6 +2720,8 @@ let a  = function () { // this is an anonymous function expression because it do
 
 - Every single javascript call has its own **execution context**! 
 
+  -  (Bind is not an invocation but also sets execution context)
+  
   ```js
   // That's why bar() has execution context of the global object, rather than `obj`. 
   let obj = {

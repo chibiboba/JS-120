@@ -1,20 +1,21 @@
-function Dog(name, breed, weight) {
-  Dog.myPrototype = { // what's going on here?? Setting a property inside Dog, but Dog isn't an object, it's a function! 
-    bark() {
-      console.log(this.weight > 20 ? 'Woof!' : 'Yip!');
-    }
-  };
+class A {
+  constructor() {
 
-  Object.setPrototypeOf(this, Dog.myPrototype); // this is really interesting! We are creating the property after "invoking" it?
-  this.name = name;
-  this.breed = breed;
-  this.weight = weight;
+  }
 }
 
+class B extends A {
+  constructor () {
+    super();
+  }
+}
 
-let maxi = new Dog('Maxi', 'German Shepherd', 32);
-maxi.bark();
+let yes = new A();
+let no = new B();
 
-console.log(maxi.hasOwnProperty('bark')); // false
-
-
+// console.log(B.__proto__);
+// console.log(B.__proto__ === A);
+// console.log(B.constructor);
+console.log(A.__proto__);
+console.log(A.constructor);
+console.log(Object.prototype);
