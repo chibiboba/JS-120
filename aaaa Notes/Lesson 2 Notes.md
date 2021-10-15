@@ -278,6 +278,8 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### The Prototype Chain
 
+- https://dev.to/aman_singh/an-easy-explanation-to-prototypal-delegation-in-javascript-3ok2
+
 - All JavaScript objects could inherit from another object using the prototype model. 
 - Since the prototype of an object is itself an object, the prototype can also have a prototype from which it inherits. 
 

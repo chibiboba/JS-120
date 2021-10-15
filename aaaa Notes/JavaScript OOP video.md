@@ -31,22 +31,38 @@ console.log(obj.constructor === Object) // true;
 
 <u>Properties that all objects have</u>
 
+- Every object has a dunder proto property and a constructor property. 
+  
+- **constructor property**
+  
+  - the constructor property is not actually an own property of the object.
+  - It exists in the default object: object that the parent function's prototype property (`Object.prototype`) points to. 
+  - Inside the object referenced by `Object.prototype`, there is a `constructor` property that points back to the `[Function: Object]`
+  
+  ```js
+  let a = {};
+  a.constructor // [Function: Object]
+  a.__proto__ === Object.prototype // true
+  a.constructor === Object.prototype.constructor // true
+  ```
+  
 - **dunder proto property** `__proto___`/ hidden `[[Prototype]]` 
+  
+  - This property is also not an own property of an object. It exists inside `Object.prototype`, the default object. 
   - This property references the object that instances inherit from. 
   - Dunder proto will usually equal `consturctor.prototype` (aka the **prototype property**) given that the constructor is the constructor function that created that object. 
   - Dunder proto.  is what JavaScript uses to keep looking up the prototypal chain for properties it doesn't find on the current object. 
   - Dunder proto is deprecated, non-hidden version of the `[[Prototype]]` property. 
   - `Object.prototype` also provides the default prototype, the one highest in the prototypal chain. 
-- **Constructor property**: refers to the constructor Object of an object. 
-  - refers to the default Object constructor. 
-  - This is NOT the prototype property.
 
 <u>Function Object</u>
 
-- Object is a function. 
-  - All functions are objects, so think of them as a function but having an object form as well. 
+- Every function has a **prototype property**
+
 - All object forms of functions have their own hidden property called "prototype property"
   - **prototype property**: refers to an object that stores all the info including prototype methods for other objects down the chain to inherit from. 
+- Object is a function. 
+  - All functions are objects, so think of them as a function but having an object form as well. 
 
 ------
 
@@ -274,9 +290,10 @@ class UserCreator {
   }
 }
 
+// extends also sets PaidUserCreator's dunder proto automatically to UserCreator
 class PaidUserCreator extends UserCreator {
   constructor(paidName, balance) {
-    super(paidName);
+    super(paidName); // super allows us to call parent constructor 
     this.balance = balance;
   }
   
@@ -301,9 +318,12 @@ console.log(UserCreator.prototype.__proto__ === Object.prototype); // true
 
 ```
 
-**extends: **class extends class
+**extends: **
 
-- making a class inherit from another class? 
+- The **`extends`** keyword is used in [class declarations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/class) or [class expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/class) to create a class that is a child of another class
+- The **super** keyword is used to access and call functions on an object's parent.
+
+------
 
 ### Importants
 

@@ -204,7 +204,29 @@ let raceCar = {
     },
   };
   ```
-  
+
+------
+
+##### Factory Functions
+
+```js
+function createPet(animal, name) {
+  return {
+    animal: animal,
+    name: name,
+
+    sleep: function() {
+      console.log("I am sleeping");
+    },
+
+    wake: function() {
+      console.log("I am awake");
+    },
+  };
+}
+```
+
+
 - One way to automate the creation of objects is to use the **factory function** (aka object factory) pattern. 
 
 

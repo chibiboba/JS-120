@@ -1402,7 +1402,30 @@ Dog.weight; // undefined
 
 **Instance methods**: any method defined in any prototype in the prototype chain of an object is considered to be an instance method of an object. 
 
-- Methods usually aren't stored directly in instances. Instead, they are usually defined in the object's prototype object (because methods are shared between objects?)
+- Methods usually aren't stored directly in instances. Instead, they are usually defined in the object's prototype object (the object referenced by **prototype** property)
+
+```js
+function yes () {
+  this.method = function () {}; // usually this doesn't occur
+  
+}
+
+yes.prototype.method = function () {} // this is what occurs usually, but normally we use class syntax
+```
+
+```js
+// class syntax
+
+class yes () {
+  constructor () {
+    this.property = ''; // instance property
+  }
+  
+  method = function () {} // instance method, omits .prototype
+}
+```
+
+
 
 - While methods defined in the prototype object aren't stored in the instance object, they still operate on individual instances. Therefore, we usually refer to them as instance methods. In our `Dog` example, `bark` is an instance method since it's defined on the `Dog.prototype` object.
 - As with weight, we must use an object created by the Dog constructor to invoke bark
@@ -1600,6 +1623,11 @@ false
 ```
 
 - You already know that all arrays are objects. That doesn't make it any less useless, however, so we need `Array.isArray` to distinguish between arrays and other objects.
+
+#### Array like object
+
+- All objects with a `length` property is an array-like object. 
+  - Does it need properties with keys that are non-negative integers?
 
 ##### Array.from
 
@@ -1916,6 +1944,15 @@ Array.prototype.first = function() {
 
 #### Borrowing Array Methods for Strings
 
+- Use non-mutating array methods on strings. 
+
+```JS
+let anyArray = [];
+let string = 'yes';
+
+string = anyArray.map.call(string, callbackFn).join('');
+```
+
 - First-class functions in a programming language provide several benefits. One significant benefit is that methods aren't tied to a particular object type. 
 - Using explicit context-binding techniques, we can apply a method to a different object type than the one that defines the method. 
 - This "method borrowing," however, doesn't make sense for every object and every method. For example, it doesn't make sense to use the `getDay` date method on an array.
@@ -2091,7 +2128,7 @@ let Rectangle = class {
 ```
 
 - Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
-  - This means class expressions are hoisted. 
+  - This means <u>class expressions are hoisted.</u> 
 
 #### Classes as First-Class Citizens
 
@@ -2166,7 +2203,7 @@ class Rectangle {
   }
 
   getArea() {
-    return this.length * this.width;
+    return this.length * this.width; // instance method
   }
 }
 
@@ -2208,13 +2245,175 @@ ES6 classes provide a cleaner, more compact alternative to constructors and prot
 
 ### Practice Problems - Classes
 
+1. What do we mean when we say that classes are first-class values?
+
+   Solution
+
+   We can treat JavaScript classes like any other JavaScript value. They can be passed around to functions, returned from functions, assigned to variables, and used anywhere a value is expected. 
+
+2. Consider the following class declaration:
+
+   ```js
+   class Television {
+     static manufacturer() {
+       // omitted code
+     }
+   
+     model() {
+       // method logic
+     }
+   }
+   ```
+
+   `static` modifier creates a `manufacturer` method on the `Television` costructor. 
+
+   Call it by `Television.manufacturer`. 
+
+   Solution
+
+   The `static` modifier, when used with a method declaration, marks the method as static. That is, the method is defined directly on the class, not on the objects the class creates. We use it like this:
+
+   ```js
+   Television.manufacturer();
+   ```
+
+   The `model` method, on the other hand, is an instance method and must be called by an instance object:
+
+   ```js
+   let tv = new Television();
+   tv.model();
+   ```
+
 ------
 
 ### Summary
 
+- Factory functions instantiate and return a new object in the function body. They let us create new objects based on a predefined template. However they have 2 downsides.
+  - There is no way to tell whether a factory function created a given object. 
+  - All objects created by a facoty function have separate copies of the methods, which can be redundant and wasteful and memory intensive.
+- Constructor functions are meant to be invoked with the `new` operator. They instantiate a new object behind the scenes and let the developer manipulate it through the `this` keyword. A typical constructor uses the following pattern: 
+  - The constructor is invoked with `new`.
+  - The JS runtime creates a new object that inherits from the constructor's prototype object.
+  - The new object is assigned to `this` within the function body.
+  - The code in the function body is executed.
+  - The function returns the object referenced by `this` unless the function returns an explicit object. 
+- Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
+  - If the function is used as a constructor, the returned object's `[[Prototype]]` will reference the constructor's prototype property
+  - This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. We call this the *pseudo-classical* pattern of object creation. 
+- Every function also has a `constructor` property that points to `Function`. 
+- The **pseudo-classical** **object creation pattern** generates objects using a constructor function that defines state and a prototype object that defines shared behaviors.
+- The **pseudo-classical inheritance pattern** has types (e.g., classes) inherit from other types. This way, all objects of a given type can share behaviors from the same source.
+- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
+
 ------
 
 ### Lesson 3 Quiz 1
+
+Question 3) 
+
+```js
+function Dog() {
+}
+
+function Pet(type) {
+  if (type === 'dog') {
+    return new Dog();
+  } else if (type === 'lion') {
+    return 'not a pet!';
+  }
+}
+
+let dog = new Pet('dog'); // returns a `Pet` object
+let lion = new Pet('lion'); // lion returns a `Dog` object
+let cat = new Pet('cat'); // returns a `Pet` object
+```
+
+Question 5) wrong
+
+```js
+let arr1 = new Array(1, 2, 3);
+let arr2 = Array(1, 2, 3);
+
+console.log(arr1 === arr2); // => false
+```
+
+Both arrays are identical: they are both objects of type Array, and they both have the same values in their elements. JavaScript does not require the `new` keyword when creating arrays; the `Array` constructor works the same regardless of whether `new` is used.
+
+Question 7 ) wrong
+
+Why is the `Array.isArray` static method useful? Choose all answers that apply.
+
+- The `typeof` operator returns `object` when used with an array, so cannot be used to detect an array.
+
+- It helps improve readability and show intent.
+
+- `Array.isArray` helps distinguish between arrays and other objects.
+
+Question  8) wrong
+
+Which of the following are Array-like objects? Choose all answers that apply.
+
+- All objects that have a `length` property. 
+
+Anwers that are wrong
+
+- All objects that let you use computed member access notation, e.g., `obj["3"]`, to access properties of the object.
+  - The ability to use **computed member access notation** is native to all JavaScript objects, not just array-like objects. 
+  - So all objects have computed member access notation. 
+- All objects that have one or more properties whose key is a non-negative integer.
+
+Question 9) wrong
+
+```js
+str = [1, 2, 3].map.call(str, convertCase).join("");
+// this syntax uses an array(any array would work) to invoke call, which invokes map to execute convertCase with str as the context. 
+
+str = Array.from(str).map(convertCase).join(""); 
+// This code uses the Array.from static method to convert str to an array of characters.
+// That lets us use Array.prototype.map and Array.prototype.join to translate the characters and recombined them as a string.
+```
+
+
+
+Question 12) 
+
+```js
+function Foo(parm) {
+  this.parm = parm;
+}
+
+Foo.bar = function() { // static method called bar
+  // omitted code
+};
+
+Foo.prototype.qux = function() { // instance method calle qux
+  // omitted code
+};
+
+let foo = new Foo(10);
+```
+
+```js
+class Foo {
+  constructor(parm) {
+    this.parm = parm;
+  }
+
+  static bar() {
+    // omitted code
+  }
+
+  prototype: {  // here you are assigning a property called prototype in the Foo.prototype objec, rather than qu Foo.prototype object is initially an empty object / undefined. 
+    qux() {
+      // omitted code
+    }
+  }
+}
+
+let foo = new Foo(10);
+```
+
+
 
 ------
 
@@ -2335,10 +2534,16 @@ Disadvantages
 - **Array like object**:  is any object that has a `length` property and provides indexed access to some of its properties with the `[index]` notation. 
   - Such objects have properties whose keys are non-negative integers. 
   - In many cases, the `length` property won't self-update if you add or remove properties to or from the object.
+  
+- **The Prototype Chain**: is how JavaScript inherits properties from other objects. If we try to look for a property that is not owned by an object, JavaScript will traverse up the prototype chain until it finds it. 
+
+  - For example if we try to access a property on an object (`obj`) and it's not a property owned directly by that object then JavaScript then looks for the property in the object that `obj`'s  `__proto__` or `[[Prorotype]]` property points to. 
 
 ------
 
 ### Question
+
+Explain what prototype chain is. 
 
 Why does this code work? Line 4. Recursion. 
 
@@ -2374,7 +2579,10 @@ function Circle(radius) {
 
 ##### Is it better to set properties outside the constructor function or inside it? 
 
+- better outside. I think they both work the same way, but style is to not confuse constructor methods & constructor's prototype methods. 
+
 ```js
+// not like this
 function Circle(radius) {
   this.radius = radius; // remember to set the new object's properties! 
   Circle.prototype.area = function () { // Circle.prototype is the function prototype/ prototype property that instance inherits from. We are not defining a method on the Circle constructor -> remember this!! 
@@ -2384,6 +2592,7 @@ function Circle(radius) {
 ```
 
 ```js
+// like this. 
 function Circle(radius) {
   this.radius = radius; // remember to set the new object's properties! 
 }
