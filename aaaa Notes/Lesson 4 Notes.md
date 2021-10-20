@@ -16,6 +16,8 @@ The advantages of using an object-oriented approach really start to become appar
 
 ### Object Creation with Prototypes (OLOO)
 
+- The *Objects Linking to Other Objects* (OLOO) pattern of object creation uses a prototype object, an initializer method, and the `Object.create` method to create objects with shared behavior. The initializer customizes the state for each object, and is usually named `init`.
+
 - probably the simplest design pattern for prototypal inheritance. 
 
 In a prior lesson, we showed an example of an object creation pattern called the factory function. We'll revisit that example and use it to illustrate another object creation pattern that uses prototypes. Here's the code that we saw earlier:
@@ -50,7 +52,7 @@ let car2 = createCar('Honda', 'Civic', 2017);
 
 - **OLOO** pattern: **Objects Linking to Other Objects**.
   - Another pattern to create objects in bulk
-  - does not use a function. Uses an object as prototype, then `Object.create` to create new objects that inherit from the prototype. Uses `init` method to store properties, `init` returns `this`, a reference to the calling object. 
+  - does not use a function. Uses an object as prototype, then `Object.create` to create new objects that inherit from the prototype. Uses `init` method to customize state of each object, `init` returns `this`, a reference to the calling object. 
   -  It uses prototypes and involves extracting properties common to all objects of the same type (e.g., car objects) to a prototype object. All objects of the same type then inherit from that prototype.
 
 Let's do that with car objects. What properties are common to all car objects? Here, those properties are the `start` and `stop` methods. All cars have `make`, `model`, `year`, and `started` properties as well, but each object has different values for those properties. Thus, we don't count them as being common to all cars.
@@ -110,7 +112,7 @@ let carPrototype = { // is an object, not a function.
     this.started = false;
   },
 
-  init(make, model, year) {
+  init(make, model, year) { // customzies state of object
     this.make = make;
     this.model = model;
     this.year = year;
@@ -379,7 +381,7 @@ Square.prototype.toString = function() {
 
 #### Prototypal Inheritance vs. Pseudo-Classical Inheritance
 
-As used in JavaScript, the term *inheritance* is an overloaded word. It describes two related but distinct forms of inheritance: *prototypal* and *pseudo-classical*.
+As used in JavaScript, the term *inheritance* is an overloaded word. It describes two related but distinct forms of inheritance: *prototypal* and *pseudo-classical* (constructor inheritance)
 
 - Both pseudo-classical and prototypal inheritance use prototypal delegation under the hood. If the requested property isn't found, the object delegates the request to the object's prototype object. If the requested property isn't there either, the prototype object delegates the request to its own prototype object. 
 - This process follows the prototype chain until the property or method is found or the end of the prototype chain is found.
@@ -1240,6 +1242,895 @@ Show Solution
 
 ------
 
+### Code Reuse with Mixins
+
+- There's a limitation with the inheritance pattern, which is that objects can only directly 'inherit' from one super-type object. In other words, an object can have only one prototype object. Mixins provide a way of addressing this limitation. The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
+
+- **Single Inheritance**: 
+  - Objects can only have one prototype object.
+  - And classes can extend only one other class. 
+  - Objects/class can inherit from chain of prototypes, but it's not considered direct, so therefore it's single inheritance where each object directly inherits only from one other object. 
+- This restriction can be limiting and sometimes makes modeling some problem domains challenging. For instance, suppose we have a `Pet` class from which several other specific classes inherit. The inheritance relationship might look like this:
+
+![module class hierarchy](https://dbdwvr6p7sskw.cloudfront.net/images/js120/object_hierarchy_with_mixins.png)
+
+- Note that the `swim` method is in two classes: `Dog` and `Fish`. Assuming that they have the same implementation, we would like to provide that method in one place, perhaps in a class. However, where can we move it? 
+- Some programming languages allow classes to inherit from multiple classes, a functionality known as **multiple inheritance**. JavaScript doesn't support multiple inheritance, so a class can only inherit from one class.
+
+> To be clear, when we say that an object can only have one prototype or that a class can only inherit from one class, we don't mean that the object or class can't inherit from an entire chain of prototypes or classes. It's perfectly acceptable for a `Whale` class to inherit from a `Mammal` class, which in turn inherits from an `Animal` class, which again inherits from the built-in `Object` type. Some students see this as multiple inheritance, but it is not: each object or class inherits directly from a single thing, so it is single inheritance. The chain of prototypes or superclasses merely comes along for the ride.
+
+#### Mix-ins
+
+- **Mix-ins**:  pattern that adds methods and properties from one object to another. It's not  (inheritance) delegation with prototpes; the mix-in pattern copies the properties of one object to another with `Object.assign` or some similar technique. 
+  - A mix-in is an object that defines one or more methods that can be "mixed in" to a class. This grants that class access to all of the methods in the object.
+  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
+    - Aka: Move code shared by 2 (or more) classes into a mix-in object then `Object.assign` the `.prototype` object of all the classes which share the code, with the mix-in Object
+  - Addresses the limitation that objects can only have one prototype object. 
+  - Inheritance works best when there is an "is a" relationship between two classes. The inheriting class is a type of the superclass. The mix-in pattern works best when an object has a capability that another object needs.
+- we saw mix-in in our first implmentation of Rock Paper Scissors where we mixed in objects returned by `createPlayer` with `createHuman` and `createComputer`. 
+
+- For now, we're concerned with objects that can, in principle, belong to multiple and distinct types. For instance, in the bird world, there are birds that can swim and birds that can fly, but there are also birds that can't swim and birds that can't fly. Some birds can even do both.
+
+| Bird    | Swim? | Fly? |
+| :------ | :---: | :--: |
+| Stork   |  no   | yes  |
+| Parrot  |  no   | yes  |
+| Penguin |  yes  |  no  |
+| Ostrich |  yes  |  no  |
+| Duck    |  yes  | yes  |
+| Goose   |  yes  | yes  |
+
+How would we model this in JavaScript with inheritance? We start like this:
+
+```js
+class Bird {}
+
+class Stork extends Bird {
+  fly() {}
+}
+
+class Parrot extends Bird {
+  fly() {}
+}
+
+class Penguin extends Bird {
+  swim() {}
+}
+
+class Ostrich extends Bird {
+  swim() {}
+}
+
+class Duck extends Bird {
+  swim() {}
+  fly() {}
+}
+
+class Goose extends Bird {
+  swim() {}
+  fly() {}
+}
+```
+
+That was easy enough. However, there's a lot of duplication going on here: 4 of the various bird classes each have their own copy of the `swim` method, while 4 have their own copy of the `fly` method. In all likelihood, those 4 `fly` methods are identical, as are the 4 `swim` methods.
+
+One way we can try to reduce the duplication is by using inheritance and a new class. Let's start with the `fly` method. We can define a `FlyingBird` type to handle this:
+
+```js
+class Bird {}
+
+class FlyingBird extends Bird {
+  fly() {}
+}
+
+class Stork extends FlyingBird {}
+
+class Parrot extends FlyingBird {}
+
+class Penguin extends Bird {
+  swim() {}
+}
+
+class Ostrich extends Bird {
+  swim() {}
+}
+
+class Duck extends FlyingBird {
+  swim() {}
+}
+
+class Goose extends FlyingBird {
+  swim() {}
+}
+```
+
+Great! Let's see what happens when we try to refactor the `swim` method:
+
+```js
+class Bird {}
+
+class FlyingBird extends Bird {
+  fly() {}
+}
+
+class SwimmingBird extends Bird {
+  swim() {}
+}
+
+class Stork extends FlyingBird {}
+
+class Parrot extends FlyingBird {}
+
+class Penguin extends SwimmingBird {}
+
+class Ostrich extends SwimmingBird {}
+
+// Hmmm.... we have a problem.
+// What to do with ducks and geese???
+
+class Duck extends FlyingBird {
+  swim() {}
+}
+
+class Goose extends FlyingBird {
+  swim() {}
+}
+```
+
+We've hit a roadblock. The `Duck` and `Goose` classes represent both flying birds and swimming birds, but JavaScript only allows single inheritance. The lack of support for multiple inheritance means we can't just add a new class in and inherit from it.
+
+Instead of using inheritance, we can use a **mix-in** instead. A mix-in is an object that defines one or more methods that can be "mixed in" to a class. This grants that class access to all of the methods in the object. It's the only real workaround for the lack of multiple inheritance short of duplication. Let's see what mix-ins look like:
+
+```js
+const Swimmable = {
+  swim() {};
+}
+
+class Bird {}
+
+class FlyingBird extends Bird {
+  fly() {}
+}
+
+class Stork extends FlyingBird {}
+
+class Parrot extends FlyingBird {}
+
+class Penguin extends Bird {}
+Object.assign(Penguin.prototype, Swimmable);
+
+class Ostrich extends Bird {}
+Object.assign(Ostrich.prototype, Swimmable);
+
+class Duck extends FlyingBird {}
+Object.assign(Duck.prototype, Swimmable);
+
+class Goose extends FlyingBird {}
+Object.assign(Goose.prototype, Swimmable);
+```
+
+In this code, we've created a `Swimmable` object that has a `swim` method. To mix it into our various swimming birds, we've used `Object.assign` to add the methods from `Swimmable` to the prototype objects of those classes. It's a bit tedious, but not too difficult, and it works well.
+
+For consistency, we could even eliminate the inheritance aspect entirely:
+
+```js
+const Swimmable = {
+  swim() {}
+}
+
+const Flyable = {
+  fly() {}
+}
+
+class Stork {}
+Object.assign(Stork.prototype, Flyable);
+
+class Parrot {}
+Object.assign(Parrot.prototype, Flyable);
+
+class Penguin {}
+Object.assign(Penguin.prototype, Swimmable);
+
+class Ostrich {}
+Object.assign(Ostrich.prototype, Swimmable);
+
+class Duck {}
+Object.assign(Duck.prototype, Swimmable, Flyable); // both traits 
+
+class Goose {}
+Object.assign(Goose.prototype, Swimmable, Flyable);
+```
+
+#### Mix-ins vs. Inheritance
+
+Some JavaScript developers argue that you should use factory functions with mix-ins exclusively. They suggest that inheritance fails at modeling some scenarios, but a combination of factory functions and mix-ins can model any object relationship. 
+
+- Why bother with class/constructor inheritance at all? 
+- Why not just use factory functions that mix in other objects instead? If we did that, we could rewrite our example like this:
+
+```js
+// factory functions, not constructors
+const Swimmable = {
+  swim() {}
+}
+
+const Flyable = {
+  fly() {}
+}
+
+function createFlyingBird() {
+  return Object.assign({}, Flyable);
+}
+
+function createSwimmingBird() {
+  return Object.assign({}, Swimmable);
+}
+
+function createTalentedBird() {
+  return Object.assign({}, Swimmable, Flyable);
+}
+
+function createStork() {
+  return createFlyingBird();
+}
+
+function createParrot() {
+  return createFlyingBird();
+}
+
+function createPenguin() {
+  return createSwimmingBird();
+}
+
+function createOstrich() {
+  return createSwimmingBird();
+}
+
+function createDuck() {
+  return createTalentedBird();
+}
+
+function createGoose() {
+  return createTalentedBird();
+}
+```
+
+This approach is valid, but it suffers the downsides of all factory functions:
+
+1. Every new object receives a new copy of all of its methods, including new copies of both mix-in methods and the methods that belong more directly to the object. That can be taxing on memory resources, even more so than the memory requirements of mix-ins.
+2. You can't determine the type of an object created with a factory function: the `instanceof` operator only recognizes these objects as instances of the `Object` type. As far as JavaScript is concerned, a penguin and a fish and an automobile are indistinguishable. That's not as troubling as it might sound in terms of being able to solve programming problems, but it has a more significant impact on debugging.
+
+We suggest a balance of mix-in and classical inheritance pattern instead:
+
+1. Inheritance works well when one object type is positively a sub-type of another object. In our example, it's natural for a penguin to also be a swimming bird. These types have an **is a** relationship: a penguin *is a* swimming bird. 
+   - Whenever two object types have an "**is a**" relationship, constructor or class inheritance makes sense.
+2. On the other hand, the ability to swim doesn't have that kind of relationship with storks. Swimming is a capability that penguins have. Similarly, flying is a capability that storks have. 
+   - When you want to endow your objects with some capability, a mix-in may be the correct choice.
+
+------
+
+#### Summary
+
+JavaScript objects can only inherit from one other object. This limitation makes it difficult to model certain domains using class or constructor-based inheritance. You can use mix-ins to share behavior between otherwise unrelated classes.
+
+------
+
+### Practice Problems
+
+1. If we have a `Car` class and a `Truck` class, how can you use the `Speed` object as a mix-in to make them `goFast`? How can you check whether your `Car` or `Truck` can now go fast?
+
+   ```js
+   const Speed = {
+     goFast() {
+       // need .name because .constructor returns reference to the object 
+       console.log(`I'm a ${this.constructor.name} and going super fast!`);
+     }
+   };
+   
+   class Car {
+     goSlow() {
+       console.log(`I'm safe and driving slow.`);
+     }
+   }
+   
+   class Truck {
+     goVerySlow() {
+       console.log(`I'm a heavy truck and like going very slow.`);
+     }
+   }
+   ```
+
+   Solution
+
+   ```js
+   Object.assign(Car.prototype, Speed);
+   Object.assign(Truck.prototype, Speed);
+    
+   let blueTruck = new Truck();
+   blueTruck.goFast(); // need an instance object to invoke method
+   
+   let smallCar = new Car();
+   smallCar.goFast();
+   ```
+
+   ```js
+   // Check whether an object responds to a specific method, can use the 'in' operator
+   'goFast' in smallCar; // true
+   'goFast' in bluTruck; // true
+   ```
+
+   
+
+2. In the last question, we used a mix-in named `Speed` that contained a `goFast` method. We included the mix-in in the `Car` class and then called the `goFast` method from an instance of the `Car` class. You may have noticed that the string printed when we call `goFast` includes the name of the type of vehicle we are using. How is that done?
+
+   Hint
+
+   Since the `constructor` property references a function object, `constructor.name` references the `name` property on that object. Use MDN to lookup the definition of `Function.name`.
+
+   Solution
+
+   We used `this.constructor.name` to determine the name. It works like this:
+
+   1. Within `goFast`, `this` refers to the object that invoked the method. In this case, we used `Car` and `Truck` objects.
+   2. The `constructor` property of an object references the class that the object belongs to, i.e., `Car` or `Truck`.
+   3. Constructors have a `name` property that merely contains the name of the class as a string, and that's what we output in `goFast`.
+
+3. Ben and Alyssa are working on a vehicle management system. Thus far, they have created classes named `Auto` and `Motorcycle` to represent automobiles and motorcycles. After they noticed that the information and calculations performed was common to both vehicle types, they decided to break out the commonality into a separate class named `WheeledVehicle`. Their code, thus far, looks like this:
+
+   ```js
+   class WheeledVehicle {
+     constructor(tirePressure, kmTravelledPerLiter, fuelCapInLiter) {
+       this.tires = tirePressure;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   
+     tirePressure(tireIdx) {
+       return this.tires[tireIdx];
+     }
+   
+     inflateTire(tireIdx, pressure) {
+       this.tires[tireIdx] = pressure;
+     }
+   
+     range() {
+       return this.fuelCap *  this.fuelEfficiency;
+     }
+   }
+   
+   class Auto extends WheeledVehicle {
+     constructor() {
+       // the array represents tire pressure for four tires
+       super([30,30,32,32], 50, 25.0);
+     }
+   }
+   
+   class Motorcycle extends WheeledVehicle {
+     constructor() {
+       // array represents tire pressure for two tires
+       super([20,20], 80, 8.0);
+     }
+   }
+   ```
+
+   Their boss now wants them to incorporate a new type of vehicle: a `Catamaran`.
+
+   ```js
+   class Catamaran {
+     constructor(propellerCount, hullCount, kmTravelledPerLiter, fuelCapInLiter) {
+       // catamaran specific logic
+   
+       this.propellerCount = propellerCount;
+       this.hullCount = hullCount;
+     }
+   }
+   ```
+
+   This new class doesn't fit well with our existing class hierarchy: Catamarans don't have tires, and aren't wheeled vehicles. However, we still want to share the code for tracking fuel efficiency and range. Modify the class definitions and move code into a mix-in, as needed, to share code between the `Catamaran` and the wheeled vehicle classes.
+
+   Solution
+   
+   ```js
+   let mixInObject = {
+     range () {
+       return this.fuelCap * this.fuelEfficiency;
+     }
+   }
+   
+   
+   class WheeledVehicle {
+     constructor(tirePressure, kmTravelledPerLiter, fuelCapInLiter) {
+       this.tires = tirePressure;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   
+     tirePressure(tireIdx) {
+       return this.tires[tireIdx];
+     }
+   
+     inflateTire(tireIdx, pressure) {
+       this.tires[tireIdx] = pressure;
+     }
+   }
+   
+   Object.assign(WheeledVehicle.prototype, mixInObject);
+   
+   class Auto extends WheeledVehicle {
+     constructor() {
+       // the array represents tire pressure for four tires
+       super([30,30,32,32], 50, 25.0);
+     }
+   }
+   
+   class Motorcycle extends WheeledVehicle {
+     constructor() {
+       // array represents tire pressure for two tires
+       super([20,20], 80, 8.0);
+     }
+   }
+   
+   class Catamaran {
+     constructor(propellerCount, hullCount, kmTravelledPerLiter, fuelCapInLiter) {
+       // catamaran specific logic
+   
+       this.propellerCount = propellerCount;
+       this.hullCount = hullCount;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   }
+   
+   Object.assign(Catamaran.prototype, Moveable);
+   ```
+   
+   We've moved the code shared by `Catamaran` and `WheeledVehicles` to the `Moveable` mix-in. The definitions of `Auto` and `Motorcycle` remain unchanged since they both inherit from `WheeledVehicle`.
+
+------
+
+### Polymorphism
+
+- Polymorphism refers to the ability of objects with different types to respond to the same method invocation. It can be implemented through inheritance by *method overriding*. It can also be implemented through **duck typing**; by ensuring that objects of different *types* use the same method *name* to perform different but related functions, those objects can be interacted with in a uniform way.
+
+**Polymorphism** refers to the ability of objects with different types to respond in different ways to the same message (or method invocation). 
+
+- That is, data of different types can respond to a common interface. 
+- It's a crucial concept in OO programming that can lead to more maintainable code.
+
+- When two or more object types have a method with the same name, we can invoke that method with any of those objects.
+- **When we don't care what type of object is calling the method, we're using polymorphism**. 
+- Often, polymorphism involves inheritance from a common superclass. However, inheritance isn't necessary as we'll see in this assignment.
+
+For example, assume we have a method that expects an argument that has a `move` method. We can pass it any type of argument, provided it has a compatible `move` method. The object might represent a human, a cat, a jellyfish, or, conceivably, even a car or train. That is, it lets objects of different types respond to the same method invocation.
+
+There are two chief ways to implement polymorphism.
+
+1. Polymorphism through inheritance: 
+
+   - Two different object types can respond to the same method call simply by **overriding** a method inherited from a superclass.
+
+2. **Duck-typing**: Objects of different *types* use the same method *name* to perform different but related functions
+
+   - when objects of different unrelated types both respond to the same method name. 
+
+   - An informal way to classify or ascribe a type to objects- whereas Classes and constructors provide a formal way to do that. 
+
+   - *If an object quacks like a duck, we can treat it as a duck*. 
+   - We aren't concerned with the class or type of an object, but whether the object has a particular behavior. 
+   - As long as the objects involved use the same method name and take the same number of arguments, we can treat the object as belonging to a specific category of objects. 
+
+#### Polymorphism Through Inheritance
+
+Examine the following code:
+
+```js
+class Animal {
+  move() {}
+}
+
+class Fish extends Animal {
+  move() {
+    console.log("swimming");
+  }
+}
+
+class Cat extends Animal {
+  move() {
+    console.log("walking");
+  }
+}
+
+// Sponges and Corals don't have a separate move method - they don't move
+class Sponge extends Animal {}
+class Coral extends Animal {}
+
+let animals = [new Fish(), new Cat(), new Sponge(), new Coral()];
+animals.forEach(animal => animal.move());
+```
+
+- Every object in the array is a different animal, but the client code -- the code that uses those objects -- doesn't care what each object is. The only thing it cares about here is that each object in the array has a `move` method that requires no arguments. That is, every generic animal object implements some form of locomotion, though some animals don't move. The interface for this class hierarchy lets us work with all of those types in the same way even though the implementations may be dramatically different. That is polymorphism.
+  - If we run the above code, we call the `move` method for each of 4 different kinds of animal. Let's look at them in pairs.
+  - The `Sponge` and `Coral` classes don't have a `move` method -- at least not one of their own. Instead, they both inherit it from the `Animal` class via the prototype chain. Thus, when we call `move` on a `Sponge` or `Coral` object, the `move` method in the `Animal` class gets called. That method does nothing here, so the `Sponge` or `Coral` doesn't move. This is polymorphism through inheritance -- instead of providing our own behavior for the `move` method, we're using inheritance to acquire the behavior of a supertype. In this case, that behavior does nothing, but it could do something else.
+  - For `Fish` objects, we call the `move` method from the `Fish` class, which enables a fish to swim. Likewise, a `Cat` object walks when we tell it to `move`. This is a simple example of polymorphism in which two different object types can respond to the same method call simply by **overriding** a method inherited from a superclass. In a sense, overriding methods like this is similar to duck-typing, a concept that we'll meet shortly. However, overriding is generally treated as an aspect of inheritance, so this is polymorphism through inheritance.
+
+- An example of inheritance-based polymorphism in action is the JavaScript `toString` method. The `Object` type provides a default implementation of `toString()` that other types inherit. Other types can also override the method to return a customized string representation of the object. Without customization, `toString` returns the string `'[object Object]'` when called on an object. With customization, it can return something more meaningful and useful. For instance, arrays and dates are objects that have customized `toString` methods:
+
+```terminal
+> [1, 2, 3].toString()
+'1,2,3'
+
+> (new Date()).toString()
+'Fri Jun 28 2019 20:50:13 GMT-0700 (Pacific Daylight Time)'
+```
+
+#### Polymorphism Through Duck Typing
+
+**Duck typing** occurs when objects of different *unrelated* types both respond to the same method name. With duck typing, we aren't concerned with the class or type of an object, but we do care whether an object has a particular behavior. *If an object quacks like a duck, then we can treat it as a duck.* Specifically, duck typing is a form of polymorphism. As long as the objects involved use the same method name and take the same number of arguments, we can treat the object as belonging to a specific category of objects.
+
+- For example, an application may have a variety of elements that can respond to a mouse click by calling a method named something like `handleClick`. Those elements may be completely different -- for instance, a checkbox vs. a text input field -- but they're all *clickable* objects. Duck typing is an informal way to classify or ascribe a type to objects. Classes and constructors provide a more formal way to do that.
+
+- In the next example, we define a `Wedding` class and several preparer classes. The example attempts to implement polymorphic behavior without using duck typing; it shows you how you **shouldn't** do it!
+
+```js
+class Chef {
+  prepareFood(guests) {
+    // implementation
+  }
+}
+
+class Decorator {
+  decoratePlace(flowers) {
+    // implementation
+  }
+}
+
+class Musician {
+  preparePerformance(songs) {
+    // implementation
+  }
+}
+
+class Wedding {
+  constructor(guests, flowers, songs) {
+    this.guests = guests;
+    this.flowers = flowers;
+    this.songs = songs;
+  }
+
+  prepare(preparers) {
+    preparers.forEach(preparer => {
+      if (preparer instanceof Chef) {
+        preparer.prepareFood(this.guests);
+      } else if (preparer instanceof Decorator) {
+        preparer.decoratePlace(this.flowers);
+      } else if (preparer instanceof Musician) {
+        preparer.preparePerformance(this.songs);
+      }
+    });
+  }
+}
+
+let preparers = [new Chef(), new Decorator(), new Musician()];
+```
+
+The problem with this code is that the `prepare` method has too many dependencies; it relies on specific classes and their names. It also needs to know which method it should call on each type of object, as well as the arguments that each method requires. If you change the way any of those methods are used or add a new type of preparer, you must also change `Wedding.prototype.prepare`. For instance, if we need to add a dressmaker, we must add another `else` clause. With only 4 preparers, `prepare` is already becoming long and messy.
+
+The right way to implement this program is to use duck typing to implement polymorphism:
+
+```js
+class Chef {
+  prepare(wedding) {
+    this.prepareFood(wedding.guests);
+  }
+
+  prepareFood(guests) {
+    // implementation
+  }
+}
+
+class Decorator {
+  prepare(wedding) {
+    this.decoratePlace(wedding.flowers);
+  }
+
+  decoratePlace(flowers) {
+    // implementation
+  }
+}
+
+class Musician {
+  prepare(wedding) {
+    this.preparePerformance(wedding.songs);
+  }
+
+  preparePerformance(songs) {
+    // implementation
+  }
+}
+
+class Wedding {
+  constructor(guests, flowers, songs) {
+    this.guests = guests;
+    this.flowers = flowers;
+    this.songs = songs;
+  }
+
+  prepare(preparers) {
+    preparers.forEach(preparer => {
+      preparer.prepare(this);
+    });
+  }
+}
+
+let preparers = [new Chef(), new Decorator(), new Musician()];
+```
+
+Though there is no inheritance in this example, each of the preparer-type classes provides a `prepare` method. We still have polymorphism since all of the objects respond to the `prepare` method call. If we later need to add another preparer type, we can create another class and implement the `prepare` method to perform the appropriate actions.
+
+Note that merely having two different objects that have a method with the same name and compatible arguments doesn't mean that you have polymorphism. In theory, those methods might be used polymorphically, but that doesn't always make sense. Consider the following two classes:
+
+```js
+class Circle {
+  draw() {}
+}
+
+class Blinds {
+  draw() {}
+}
+```
+
+These classes each have a method named `draw`, and the methods take no arguments. In the `Circle` class, `draw` presumably draws a circle on the screen. In the `Blinds` class, `draw` may cause the window blinds in an office building to be drawn (as in close or open). In theory, you could write some code that uses these methods polymorphically:
+
+```js
+[new Circle(), new Blinds()].forEach(obj => obj.draw());
+```
+
+However, it's unlikely that this would ever make sense in real code. Unless you're actually calling the method in a polymorphic manner, you don't have polymorphism. In practice, polymorphic methods are intentionally designed to be polymorphic; if there's no intention, you probably shouldn't use them polymorphically.
+
+------
+
+### Summary
+
+- The *Objects Linking to Other Objects* (OLOO) pattern of object creation uses a prototype object, an initializer method, and the `Object.create` method to create objects with shared behavior. The initializer customizes the state for each object, and is usually named `init`.
+- The combination of constructors and prototypes provides a way of mimicking classical inheritance with JavaScript. This lets us create **sub-type** objects, which can 'inherit' methods from a **super-type** object. This is one way of facilitating code re-use.
+- There's a limitation with the inheritance pattern, which is that objects can only directly 'inherit' from one super-type object. In other words, an object can have only one prototype object. Mixins provide a way of addressing this limitation. The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
+- Polymorphism refers to the ability of objects with different types to respond to the same method invocation. It can be implemented through inheritance by *method overriding*. It can also be implemented through **duck typing**; by ensuring that objects of different *types* use the same method *name* to perform different but related functions, those objects can be interacted with in a uniform way.
+
+------
+
 ### Vocabulary
 
 - **Method overriding**: when a class redefines a method that a superclass defines. 
+- Object creation patterns
+  - Constructor and Prototype
+  - Pseudo-Classical
+  - Factory Function
+  - Objects Linking to Other Objects
+
+------
+
+### Quiz
+
+[Question 1](https://launchschool.com/quizzes/5bd3d1f6/edit)
+
+Without running the code, which of the following snippets will log `true`? Choose all that apply.
+
+### Your Answer
+
+```js
+let Animal = {};
+let Cat = Object.create(Animal);
+let fluffy = Object.create(Cat);
+console.log(fluffy instanceof Animal); // not an instance because there is no constructor
+```
+
+```js
+function Animal() {}
+function Cat() {}
+Cat.prototype = new Animal();
+let fluffy = new Cat();
+console.log(fluffy instanceof Animal); // constructor property not restored, should log true
+```
+
+- Fluffy is an instance of Animal because  we assigned `Cat.prototype` to a new object that inherits from `Animal.prototype`, and the constructor property for `Animal.prototype` points to Animal. The constructor property wasn't restored here. 
+
+- Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
+
+```js
+class Animal {}
+class Cat extends Animal {}
+let fluffy = new Cat();
+console.log(fluffy instanceof Animal);
+```
+
+- we use class syntax to establish the prototype chain. Since `fluffy` is a `Cat`, and since `Cat` extends `Animal`, `fluffy` is an instance of `Animal`. 
+
+```js
+function Animal() {}
+function Cat() {}
+Cat.prototype = new Animal();
+function makeCat() {
+  return {};
+}
+
+let fluffy = makeCat();
+console.log(fluffy instanceof Animal); // false
+```
+
+```js
+class Animal {}
+class Cat extends Animal {}
+let fluffy = new Cat();
+console.log(fluffy instanceof Animal); // false, fluffy is an instance of Cat
+```
+
+Q2 Select all of the following statements about prototypal inheritance that are true:
+
+The object that you inherit from is the prototype of another object.
+
+Question 5
+
+- `Critter` is a super-type of `Snake` and `Rattler`.
+
+```js
+class Critter {}
+class Snake extends Critter {}
+class Rattler extends Snake {}
+```
+
+Question 6
+
+- Inheritance works best when there is an "is a" relationship between two classes. The inheriting class is a type of the superclass. The mix-in pattern works best when an object has a capability that another object needs.
+
+- The mix-in pattern does not use delegation.
+
+Question  8 
+
+```js
+function Child(name, school) {
+  Person.call(this, name);
+  this.school = school;
+}
+
+function Person(name) {
+  this.name = name;
+  this.school = undefined;
+}
+
+Person.prototype.speak = function() { // inside constructor prototype object
+  return `Hello, my name is ${this.name}.`;
+};
+
+// missing code
+
+Child.prototype.learn = function() {
+  return "I'm going to school!";
+};
+
+let child = new Child("Suzy", "PS 33");
+console.log(child instanceof Child);                               // true
+console.log(child instanceof Person === false);                    // true
+console.log(Object.getPrototypeOf(child) === Child.prototype);     // true
+console.log(Object.getPrototypeOf(child).constructor === Child);   // true
+console.log(child.school === "PS 33");                             // true
+console.log(child.learn() === "I'm going to school!");             // true
+console.log();
+
+let person = new Person("Pete");
+console.log(person instanceof Child === false);                    // true
+console.log(person instanceof Person);                             // true
+console.log(Object.getPrototypeOf(person) === Person.prototype);   // true
+console.log(Object.getPrototypeOf(person).constructor === Person); // true
+console.log(person.school === undefined);                          // true
+console.log(person.speak() === "Hello, my name is Pete.");         // true
+```
+
+Question 9 
+
+```js
+function Person(name) {
+  this.name = name;
+  this.school = undefined;
+}
+
+Person.prototype.speak = function() {
+  return `Hello, my name is ${this.name}.`;
+};
+
+// your code from the previous question.
+
+// more missing code
+
+Child.prototype.learn = function() {
+  return "I'm going to school!";
+};
+
+let child = new Child("Suzy", "PS 33");
+console.log(child instanceof Child);                               // true
+console.log(child instanceof Person);                              // true
+console.log(Object.getPrototypeOf(child) === Child.prototype);     // true
+console.log(Object.getPrototypeOf(child).constructor === Child);   // true
+console.log(child.school === "PS 33");                             // true
+console.log(child.learn() === "I'm going to school!");             // true
+console.log(child.speak() === "Hello, my name is Suzy.");          // true
+console.log();
+
+let person = new Person("Pete");
+console.log(person instanceof Child === false);                    // true
+console.log(person instanceof Person);                             // true
+console.log(Object.getPrototypeOf(person) === Person.prototype);   // true
+console.log(Object.getPrototypeOf(person).constructor === Person); // true
+console.log(person.school === undefined);                          // true
+console.log(person.speak() === "Hello, my name is Pete.");         // true
+console.log(person.learn === undefined);                           // true
+```
+
+```js
+// test.js
+class a {
+  constructor() {
+    console.log('hello');
+  }
+}
+
+class b extends a {
+  constructor() {
+    super();
+  }
+}
+
+let c = new b();
+console.log(c instanceof a); // true
+```
+
+```terminal
+# output
+hello
+true
+```
+
+### Your Answer
+
+**B**
+
+Copy Code
+
+```js
+Child.prototype = Object.create(Person.prototype);
+Child.prototype["constructor"] = Child;
+```
+
+### Discussion
+
+**Incorrect:**
+
+**A**: `Object.assign` with a single argument merely returns a reference to that argument. Thus, this code sets the `Child` prototype to the same object used as the `Person` prototype. That causes `person instanceof Child` to return `true` since both the `Child` prototype is the same object as the `Person` prototype.
+
+```js
+Child.prototype = Object.assign(Person.prototype);
+Child.prototype.constructor = Child;
+```
+
+**C**: Prototypal inheritance requires the `Child` prototype to be a reference to the `Person` prototype, not the `Person` constructor.
+
+```js
+Child.prototype = Object.create(Person); // prototype object shouldn't be a function or constructor
+Child.prototype.constructor = Child;
+```
+
+**D**: This code almost works, but it fails to reset the constructor for the `Child` prototype. That causes `Object.getPrototypeOf(child).constructor` to return `Person` instead of `Child`
+
+```js
+Child.prototype = Object.create(Person.prototype);
+```
+
+------
+
+### Notes
+
+- `Object.assign` with a single argument merely returns a reference to that argument. 
+- Prototypal inheritance requires the `Child` prototype to be a reference to the `Person` prototype, not the `Person` constructor.
+-  The mix-in pattern does not use delegation, because it is not inheritance. 
+
+- **Inheritance** establishes a prototype chain that JavaScript can use to delegate method calls and property accesses
+- : Inheritance works best when there is an "is a" relationship between two classes. The inheriting class is a type of the superclass. The mix-in pattern works best when an object has a capability that another object needs.

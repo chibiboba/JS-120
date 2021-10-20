@@ -847,6 +847,8 @@ Object.getPrototypeOf(biggie).bark === Dog.myPrototype.bark; // true
 
 ##### The Constructor `prototype` Property
 
+- Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
+
 - All **function objects** have a `prototype` property. 
 - Dunder proto will usually equal `consturctor.prototype` (aka the **prototype property**) given that the constructor is the constructor function that created that object. 
 - References the default prototype objeect. 
