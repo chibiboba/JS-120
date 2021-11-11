@@ -16,10 +16,6 @@ The advantages of using an object-oriented approach really start to become appar
 
 ### Object Creation with Prototypes (OLOO)
 
-- The *Objects Linking to Other Objects* (OLOO) pattern of object creation uses a prototype object, an initializer method, and the `Object.create` method to create objects with shared behavior. The initializer customizes the state for each object, and is usually named `init`.
-
-- probably the simplest design pattern for prototypal inheritance. 
-
 In a prior lesson, we showed an example of an object creation pattern called the factory function. We'll revisit that example and use it to illustrate another object creation pattern that uses prototypes. Here's the code that we saw earlier:
 
 ```js
@@ -49,6 +45,45 @@ let car2 = createCar('Honda', 'Civic', 2017);
 ```
 
 #### The OLOO Pattern
+
+- Summary
+
+  - The *Objects Linking to Other Objects* (OLOO) pattern of object creation uses a prototype object, an initializer method, and the `Object.create` method to create objects that inherit from the prototype. 
+
+  - The initializer customizes the state for each object, and is usually named `init`.  `init` returns `this`, a reference to the calling object. 
+
+  - Create new objects using that object prototype with this code`let newObj = Object.create(obj).init(state)`
+
+  - Compare the two creation patterns
+
+    ```js
+    // pseudo-classical(constructor inheritance)
+    let newObj = new Obj(); // newObj is an instance of Obj
+    
+    // OLOO
+    let newObj = Object.create(obj).init();
+    ```
+
+- Subtyping with OLOO
+
+  - ```js
+    let superType = {
+      initializer(variable) {
+        
+      }
+    }
+    
+    let subType = Object.create(superType);
+    subType.init = function() {
+      return this.initialize(variable);
+    }
+    
+    // creating a subType object
+    // code essentially does what super() does in class syntax
+    let newobj = Object.create(subType).init();
+    ```
+
+  - 
 
 - **OLOO** pattern: **Objects Linking to Other Objects**.
   - Another pattern to create objects in bulk
@@ -98,9 +133,11 @@ However, we still have a small problem: we must set the `make`, `model`, and `ye
 
 #### Init 
 
+- The initializer method that customizes the state for each object. 
+
 - The most common technique uses an `init` method on the prototype object:
   - `init` is a function that initializes values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
-    - so we are able to method chain after calling `Object.create`. 
+    - so we are able to method chain after calling `Object.create`!! 
 
 ```js
 let carPrototype = { // is an object, not a function. 
@@ -386,7 +423,7 @@ As used in JavaScript, the term *inheritance* is an overloaded word. It describe
 - Both pseudo-classical and prototypal inheritance use prototypal delegation under the hood. If the requested property isn't found, the object delegates the request to the object's prototype object. If the requested property isn't there either, the prototype object delegates the request to its own prototype object. 
 - This process follows the prototype chain until the property or method is found or the end of the prototype chain is found.
 
-##### **prototypal inheritance** (**prototypal delegation**)
+##### prototypal inheritance (prototypal delegation)
 
 - simplier
 
@@ -1262,13 +1299,16 @@ Show Solution
 #### Mix-ins
 
 - **Mix-ins**:  pattern that adds methods and properties from one object to another. It's not  (inheritance) delegation with prototpes; the mix-in pattern copies the properties of one object to another with `Object.assign` or some similar technique. 
+  - More appropriate in a "has - a" relationship
+    - use mix-in over defining a parent class. 
+    - Use parent class if you want to extend the abilities of a parent class
+    - Extending the abilities of a class coincides with an is-a relationship, not has-a.
   - A mix-in is an object that defines one or more methods that can be "mixed in" to a class. This grants that class access to all of the methods in the object.
   - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
     - Aka: Move code shared by 2 (or more) classes into a mix-in object then `Object.assign` the `.prototype` object of all the classes which share the code, with the mix-in Object
   - Addresses the limitation that objects can only have one prototype object. 
   - Inheritance works best when there is an "is a" relationship between two classes. The inheriting class is a type of the superclass. The mix-in pattern works best when an object has a capability that another object needs.
 - we saw mix-in in our first implmentation of Rock Paper Scissors where we mixed in objects returned by `createPlayer` with `createHuman` and `createComputer`. 
-
 - For now, we're concerned with objects that can, in principle, belong to multiple and distinct types. For instance, in the bird world, there are birds that can swim and birds that can fly, but there are also birds that can't swim and birds that can't fly. Some birds can even do both.
 
 | Bird    | Swim? | Fly? |

@@ -232,6 +232,8 @@ class TTTGame {
 
 For now, we'll assume that all these methods belong to the `TTTGame` class, so we call them with `this` to provide context.
 
+### Spike / Stub
+
 - **Spike**: some exploratory code to help you begin sketching out your program's structure and design
   - The idea behind a spike is to provide a general outline of how the program flows
   -  Spikes take a high-level view, focusing on the general logic of the program; they don't concern ourselves with details like what it means for the game to be over.
@@ -294,8 +296,6 @@ Let's return to the `play` spike. Two of the easiest steps to implement are to d
 
 oo_ttt.js
 
-Copy Code
-
 ```js
 class TTTGame {
   displayWelcomeMessage() {
@@ -328,13 +328,9 @@ In the next assignment, we'll implement code to display the board and its curren
 
 Now that we've completed the easy parts, it's time to tackle the harder stuff. In this assignment, we'll implement the code needed to display the board and its current state (the player's positions). Here's the state of our code thus far:
 
-View Code
-
 ### Display the Board
 
 To begin, we must first decide how we want to depict the board. That's not hard: the Tic Tac Toe board is a 3x3 grid of squares, and players place their markers in the central part of each square. It's called *ASCII art*, but you don't have to be an artist to come up with something like this:
-
-Copy Code
 
 ```plaintext
      |     |
@@ -353,10 +349,6 @@ Copy Code
 We show the game board in an in-progress state after each player has made two moves.
 
 We can readily convert that diagram into a series of `console.log` invocations:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class TTTGame {
@@ -380,8 +372,6 @@ class TTTGame {
 
 Let's see what happens when we run this code:
 
-Copy Code
-
 ```terminal
 $ node ttt.js
 Welcome to Tic Tac Toe!
@@ -404,10 +394,6 @@ Thanks for playing Tic Tac Toe! Goodbye!
 That's what we expected to see.
 
 We have some extraneous spaces at the end of each line that we don't need; trailing spaces are rarely a problem, but they can be a nuisance in some circumstances. It's a common practice to remove trailing spaces when they aren't needed, so let's delete them:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class TTTGame {
@@ -437,10 +423,6 @@ Wait a minute. Why isn't `displayBoard` in the `Board` class? Indeed, it should 
 
 Before we move it, though, `TTTGame` needs a board object that it can use during the game. Let's create it in the `TTTGame` constructor.
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 class TTTGame {
   constructor() {
@@ -450,10 +432,6 @@ class TTTGame {
 ```
 
 Now we can move `displayBoard` to the `Board` class, and use the `board` property (`this.board`) of the `TTTGame` object to access it:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Board {
@@ -510,8 +488,6 @@ The primary responsibility of a board object is to maintain and represent the st
 
 Let's first assume that the squares on the board are numbered from 1 through 9, like so:
 
-Copy Code
-
 ```plaintext
  1 | 2 | 3
 ---+---+---
@@ -536,10 +512,6 @@ Another approach we might try would represent the board as an array of 9 square 
 
 Hmm. Neither a matrix nor an array seems like a great choice. What can we do instead? One solution that seems a bit strange at first is to create an object that has 9 properties with the names `"1"`, `"2"`, `"3"`, and so on:
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 class Board {
   constructor() {
@@ -561,10 +533,6 @@ class Board {
 The value for each property is the marker associated with that square: `"X"` for player 1, `"O"` for player 2, and `" "` (space) for unmarked squares. With this structure, we can access the marker for the square with key `"5"` as `this.squares["5"]`. The one significant tradeoff is that we must remember that we're using an ordinary object, not an array. It may still confuse other programmers a bit, but any errors that arise should be easier to debug.
 
 Turning our attention back to the `display` method, it looks like we can use `this.squares` directly to retrieve the marker for each square:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Board {
@@ -610,10 +578,6 @@ That's not a lot, and it should be possible to write our `Board` class without a
 
 It seems that we really could go either way, without much benefit or disadvantage to either approach. Since we're learning about OOP, though, let's go ahead and use a `Square` class:
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 class Square {
   constructor(marker) {
@@ -640,13 +604,11 @@ class Board {
 
 Note that we've moved the `Square` class from our scaffolding code to the top of the file to ensure that `Board`'s `constructor` method knows about the `Square` class. If we left the `Square` class where it was, the calls to `new Square` would raise an error. There are other ways to ensure that `Board` recognizes the `Square` class, but in most cases, this technique is easy to use and understand.
 
+- Are classes not hoised?? 
+
 For now, squares only need to keep track of the marker that they contain. We won't need it in our game, but for debugging purposes, we'll let the `Square` constructor set the marker's value explicitly when it creates a new square. That lets us set up and test custom board scenarios.
 
 We can take advantage of the fact that new squares are almost always unused squares. That lets us invokes the constructor without arguments to create unused squares:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Square {
@@ -674,8 +636,6 @@ class Board {
 
 Let's see what happens when we try to run this code:
 
-Copy Code
-
 ```terminal
 $ node ttt.js
 Welcome to Tic Tac Toe!
@@ -699,17 +659,58 @@ Oops! That's not what we want. Can you see where the problem lies? Try to determ
 
 Show Answer
 
+The problem here is that `new Square` returns a `Square` object instead of a string. Thus, `this.board` is a collection of `Square` objects, not a collection of strings. Moreover, `this.squares[key]` returns a square object, not a string.
+
 How can we fix this problem? If you want to try it on your own, take a look at the [Object.prototype.toString documentation at MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString). Whether or not you try it on your own, be sure to check our solution before you continue.
 
 Show Solution
 
+At first glance, you might think that the `display` method can use the square's `marker` property directly. That would work, and it's perfectly acceptable for small classes and classes that you have no control over. The `Board` class is relatively small, so we could reasonably take that approach.
+
+However, <u>you shouldn't generally access properties directly unless you have no choice</u>, as with the built-in types and classes from 3rd party libraries. Since we can modify the `Square` class in this application, let's try to use a more OO approach.
+
+Perhaps we can add a `getMarker` method to the `Square` class that returns the square's marker.
+
+```js
+// Don't add this to your code!
+
+class Square {
+  getMarker() {
+    return this.marker;
+  }
+}
+```
+
+That's simple enough, and it's safer than accessing the square's marker directly from the `Board` class. However, we'll need to call `getMarker` from the `display` method instead of just accessing the square:
+
+```js
+console.log(`  ${this.squares["1"].getMarker()}  |  ${this.squares["2"].getMarker()}  |  ${this.squares["3"]}.getMarker()`);
+```
+
+That's a bit tedious and ugly.
+
+#### Object.prototype.toString
+
+- Since JavaScript uses `toString` to implicitly convert something to string representation, we can override this method in our class (create a custom `toString`  method). So when the squares value objects are logged to console in the `display()` method, it will be a string instead of `[object object]`. 
+
+- A cleaner solution leverages the `Object.prototype.toString` method. 
+- Since every object normally inherits from `Object.prototype` either directly or indirectly, every object, by default, has access to this method. 
+- JavaScript uses `toString` when it must implicitly convert something to a string representation. However, it returns the unhelpful `[object Object]` when passed an object. 
+- Fortunately, you can **override** `toString` in your classes; that is, you can define a `toString` method in your class that JavaScript should call instead. In the case of a square object, we want to return the associated marker as a string: `"X"`, `"O"`, or `" "`. Here's our code:
+
+```js
+class Square {
+  toString() {
+    return this.marker;
+  }
+}
+```
+
+That's identical to the `getMarker` method shown above, but we don't need to call it explicitly. Though we haven't changed the `display` method, the board should now display correctly.
+
 ### Refactor: Eliminate Magic Constants
 
 For readability, let's create a symbolic constant for the "magic constant" we're using to represent unused squares (a space character in this case). We'll also add symbolic constants for the `X` and `O` markers that the human and computer players will use:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Square {
@@ -725,11 +726,7 @@ class Square {
 
 The `static` keyword defines a property that belongs to the class, not the individual objects created from the class. It's useful for defining **class constants** like those provided in other languages. Note that we must qualify the constant name with the class name, e.g., `Square.UNUSED_SQUARE`, even if we reference it from somewhere in the class.
 
-As of this writing, the `static` keyword for defining class-level non-method properties is still a work in progress: it hasn't been finalized in the ECMAScript standard. Most recent browsers and Node support it, but you may have some problems with older versions, and it is still subject to change. If you prefer to avoid it, you can rewrite the above code like this:
-
-oo_ttt.js
-
-Copy Code
+> As of this writing, the `static` keyword for defining class-level non-method properties is still a work in progress: it hasn't been finalized in the ECMAScript standard. Most recent browsers and Node support it, but you may have some problems with older versions, and it is still subject to change. If you prefer to avoid it, you can rewrite the above code like this:
 
 ```js
 class Square {
@@ -738,33 +735,29 @@ class Square {
   }
 }
 
-Square.UNUSED_SQUARE = " ";
+Square.UNUSED_SQUARE = " "; // outside of class brackets
 Square.HUMAN_MARKER = "X";
 Square.COMPUTER_MARKER = "O";
 ```
 
 We don't need the `HUMAN_MARKER` and `COMPUTER_MARKER` constants yet, but we're anticipating that we will. One significant advantage of setting up constants for these markers is that you can easily replace them with something else, such as ❌ and 🔵. You may need to install some Node packages to handle Unicode output with `npm` if you decide to do that, though.
 
-Note that the `Square` class probably isn't an ideal location for `HUMAN_MARKER` and `COMPUTER_MARKER`. First, these constants couple the `Square` class to the idea of a human and a computer marker. That could be useful in many games, but a more general `Square` class may not care about humans and computers, especially if there are more than 2 players in the game. Secondly, they're not used by the `Square` class at all; we won't use them in our future code either.
-
-Leaving the constants in place has benefits as well. For instance, it's easy to see what values are valid markers for the squares.
-
-Ideally, `HUMAN_MARKER` belongs in the `Human` class, and `COMPUTER_MARKER` belongs in the `Computer` class. Another approach would involve the `Marker` class, but the `Square` class, so far, seems too simple to bother with a separate `Marker` class. That may change, but for now, we'll avoid the extra complexity and leave them here.
+>  Note that the `Square` class probably isn't an ideal location for `HUMAN_MARKER` and `COMPUTER_MARKER`. First, these constants couple the `Square` class to the idea of a human and a computer marker. That could be useful in many games, but a more general `Square` class may not care about humans and computers, especially if there are more than 2 players in the game. Secondly, they're not used by the `Square` class at all; we won't use them in our future code either.
+>
+> Leaving the constants in place has benefits as well. For instance, it's easy to see what values are valid markers for the squares.
+>
+> Ideally, `HUMAN_MARKER` belongs in the `Human` class, and `COMPUTER_MARKER` belongs in the `Computer` class. Another approach would involve the `Marker` class, but the `Square` class, so far, seems too simple to bother with a separate `Marker` class. That may change, but for now, we'll avoid the extra complexity and leave them here.
 
 ### Refactor: DRY Board Initialization
 
 The initialization of `this.squares` in the board object is repetitive; let's DRY up that code (**D**on't **R**epeat **Y**ourself) with a loop:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Board {
   constructor() {
     this.squares = {};
     for (let counter = 1; counter <= 9; ++counter) {
-      this.squares[String(counter)] = new Square();
+      this.squares[String(counter)] = new Square(); // String() unecessary
     }
   }
 }
@@ -787,10 +780,6 @@ View Code
 ### Creating the Players
 
 For now, let's assume that the human player always plays first and that the computer plays second. We can update `TTTGame` to make this distinction clearer:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class TTTGame {
@@ -823,8 +812,6 @@ class TTTGame {
 }
 ```
 
-Copy Code
-
 ```terminal
 $ node ttt.js
 Welcome to Tic Tac Toe!
@@ -847,10 +834,6 @@ Thanks for playing Tic Tac Toe! Goodbye!
 ```
 
 Since the human and computer are both players in this game, we should create a couple of `Player` objects (a `Human` and a `Computer`) when we start the game:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Human extends Player {
@@ -880,10 +863,6 @@ Remember: the `Human` and `Computer` classes extend the `Player` class.
 
 Let's write some code that lets the human player pick a square, a value between 1 and 9, inclusive. The code displays a prompt, reads and validates the human's input, and then marks the selected square. If the human enters an invalid selection, we'll ask her to try again. We can use our old friend, `readline-sync`, to prompt her and read her choice:
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 let readline = require("readline-sync"); // first line in ttt.js
 
@@ -912,11 +891,9 @@ This code is relatively straightforward. It uses a loop to solicit the human's c
 
 By the way: if you think our validation is a bit too forgiving, it is. Since the code uses `parseInt` to validate input, it can accept invalid numbers such as `4.32`, `6b`, and `3 + 4`. We probably should reject those answers. We'll fix that later without even trying.
 
-The two argument form of `parseInt` lets you specify the **radix** or **base** that you want to use when parsing a numeric string. For instance, the decimal numbers that most people work with every day use base-10 or a radix of 10. Such numbers are comprised of one or more digits from the 10-digit range 0 through 9. In a similar vein, computers use binary numbers: base-2 or radix 2, and the digits used are 0 and 1. You can provide the base or radix as the 2nd argument to `parseInt`.
-
-Over the years, `parseInt` has seen several changes in its behavior depending on whether it receives a radix argument and the value of the string argument. Worse yet, the behavior is implementation-dependent, which means you might get different results in different engines:
-
-Copy Code
+>  The two argument form of `parseInt` lets you specify the **radix** or **base** that you want to use when parsing a numeric string. For instance, the decimal numbers that most people work with every day use base-10 or a radix of 10. Such numbers are comprised of one or more digits from the 10-digit range 0 through 9. In a similar vein, computers use binary numbers: base-2 or radix 2, and the digits used are 0 and 1. You can provide the base or radix as the 2nd argument to `parseInt`.
+>
+> Over the years, `parseInt` has seen several changes in its behavior depending on whether it receives a radix argument and the value of the string argument. Worse yet, the behavior is implementation-dependent, which means you might get different results in different engines:
 
 ```js
 // possible result from engine 1
@@ -926,17 +903,15 @@ parseInt('077');   // => 77
 parseInt('077');   // => 63
 ```
 
-Both results are correct! The difference is that engine 2 interprets a number that begins with `0` as an octal number (radix 8), while engine 1 interprets it as a decimal number (radix 10). The octal value `077` is equivalent to the decimal value `63`.
-
-Most contemporary JavaScript engines work like engine 1, but there may be some that work like engine 2. To avoid problems, always specify the radix argument.
-
-See [MDN's parseInt documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt) for more information on how `parseInt` works, especially with respect to the radix.
+> Both results are correct! The difference is that engine 2 interprets a number that begins with `0` as an octal number (radix 8), while engine 1 interprets it as a decimal number (radix 10). The octal value `077` is equivalent to the decimal value `63`.
+>
+> Most contemporary JavaScript engines work like engine 1, but there may be some that work like engine 2. To avoid problems, always specify the radix argument.
+>
+> See [MDN's parseInt documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt) for more information on how `parseInt` works, especially with respect to the radix.
 
 ### Placing the Player's Move on the Board
 
 The `humanMoves` method is unfinished; we need to somehow mark the selected square with the human's marker (`X`). There are two main approaches that we can use depending on how we want to divide class responsibilities. One approach has the human player accept that responsibility:
-
-Copy Code
 
 ```js
 this.human.mark(choice, Square.HUMAN_MARKER);
@@ -944,15 +919,11 @@ this.human.mark(choice, Square.HUMAN_MARKER);
 
 The other approach is to have the board accept the responsibility:
 
-Copy Code
-
 ```js
 this.board.markSquareAt(choice, Square.HUMAN_MARKER);
 ```
 
 How to choose? Either should work, but there's a minor problem with the first approach that makes it more difficult to implement -- `Player` objects don't have a board. That means that we would have to pass in a board object each time we need to mark a square:
-
-Copy Code
 
 ```js
 this.human.mark(choice, Square.HUMAN_MARKER, this.board);
@@ -961,10 +932,6 @@ this.human.mark(choice, Square.HUMAN_MARKER, this.board);
 That seems a bit awkward. Furthermore, we still need a `markSquareAt` method in `Board` that we can call from `mark`.
 
 The second approach is more direct since `TTTGame` already has a `Board` object that we can use to call the method. We'll take this approach:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Square {
@@ -991,10 +958,6 @@ class TTTGame {
 ### Defining a Player's Marker
 
 In the `humanMoves` method, we pass the human player's marker (`X`) to the board object. You probably realize that somewhere else in this program, we also need to pass the computer's marker (`O`) to `markSquareAt`. With that in mind, it might be wise to let each player object define its marker. Let's try it:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Player {
@@ -1037,10 +1000,6 @@ class TTTGame {
 
 Let's test the program and make sure the board updates as expected. We'll add an extra call to `this.board.display` so we can see the results of the human's move.
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 class TTTGame {
   play() {
@@ -1062,8 +1021,6 @@ class TTTGame {
   }
 }
 ```
-
-Copy Code
 
 ```terminal
 $ node ttt.js
@@ -1104,10 +1061,6 @@ Looks good! Try some other tests on your own. Be sure to choose each possible sq
 ### The Computer's Move
 
 We've got a pretty dumb computer, so we won't strain its processors by making it think about complicated stuff like strategy. Instead, it will pick squares at random; that should be an effective strategy. Here's our code:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class TTTGame {
@@ -1151,10 +1104,6 @@ If you're confused by that, you're not alone. Our initial attempt at this progra
 ### Refactor: Remove the Marker Class
 
 Our original design called for a `Marker` class: something that the `Player` class might use to represent the markers associated with each player. While our design isn't complete yet, our decision to use single-character strings to represent the markers seems like it will do the job. If we were to use something more complex as a marker -- say an image file of some kind -- then a `Marker` class might be worth the effort. For now, though, the built-in `String` class should do the trick. Go ahead and remove the `Marker` class from your code:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 // DELETE THIS CODE
@@ -1416,10 +1365,6 @@ Note that we don't care yet about who won; all we need to know right now is that
 
 It's tempting to do something like this:
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 // Don't add this to your code!
 
@@ -1435,10 +1380,6 @@ That method is relatively easy to understand, but it does two separate things: i
 
 Recall that `unusedSquares` in the `Board` class returns an array that contains the keys of all remaining unused squares. That provides a convenient way to determine whether the board is full -- all we have to do is check whether the return value is an empty array:
 
-oo_ttt.js
-
-Copy Code
-
 ```js
 class TTTGame {
   boardIsFull() {
@@ -1451,10 +1392,6 @@ class TTTGame {
 Run the program and confirm that it quits once the board is full.
 
 Notice that the board has all the information it needs to determine whether it is full. That suggests that `boardIsFull` should be in the `Board` class instead of `TTTGame`. For instance:
-
-oo_ttt.js
-
-Copy Code
 
 ```js
 class Board {
@@ -1479,8 +1416,6 @@ Now comes the fun part -- how to determine whether someone won the game. In the 
 However, the board is just a 3x3 grid of squares and markers. It doesn't know and doesn't care about the game we're playing. It happens to be Tic Tac Toe, but, in theory, we could use this board in another game that uses a grid of 3x3 squares and markers. That strongly suggests that we should determine whether someone won elsewhere. Since the rules of the game determine the winner, the best place to determine who won is in the `TTTGame`.
 
 The question now is how to determine whether someone won. One way to accomplish that is to search all of the possible 3-in-a-row combinations for 3 squares that share the same marker. Let's look at some pseudocode:
-
-Copy Code
 
 ```plaintext
 For every possible winning combination of squares (a row):
@@ -1681,6 +1616,15 @@ Congratulations! The game is now complete.
 
 # OO Tic Tac Toe Code Discussion
 
+### Summary
+
+- Mitigate ripples effects of change but not having all classes collaborate with each other, only some. 
+- Use specific, detailed names that are less likely to conflict since generic names are in the global namespace. 
+- When working with a class, focus on the behaviors and data in that class. Make each class a generic type. `Board` knows nothing about `Square` or `Player` or even `TTTGame`. 
+- in OOP, there are poor designs, but rarely one *right* design. It all comes down to tradeoffs between tighly coupled dependencies or loosely coupled dependencies. 
+  - Tightly coupled dependencies are easier to understand but offer less flexibility. 
+  - Loosely coupled dependencies are more challenging to understand but offer more long term flexibility. 
+
 Below are some ideas for you to ponder. You don't need to implement any solutions.
 
 1. Did you notice how tiresome it is to test for regression after every small change or refactoring? Besides being careful, what else can we do to ease this burden? If you said "tests," you are right. One of the most fundamental reasons for testing is to prevent regression. We'll talk about testing in detail in a later course.
@@ -1689,65 +1633,70 @@ Below are some ideas for you to ponder. You don't need to implement any solution
 
 2. While it's usually harder to write OO code from scratch, do you think it was easier or felt safer to modify the OO TTT program than the procedural version we wrote earlier? You should have! OOP forces you to use indirection, but that indirection helps isolate concerns so that they don't ripple across an entire codebase. Changes are encapsulated in a class or object. The interface used to interact with a class or object can remain the same while the specific implementation can change. That's one of the chief benefits of object-oriented programming.
 
-   **Indirection**, in the sense we're using it, refers to the ability to reference something indirectly. For instance, calling a function or a method is an example of indirection -- we're using the function name to invoke some action. If that function calls another function, then that's yet another level of indirection.
+### Indirection
 
-   Using variables to represent values is also an example of indirection. For instance:
+- Definition: the ability to reference something indirectly, you have to have to look elsewhere to determine what a name -- a variable or a function, for instance - refers to. 
+- Examples
+  - Calling a function or method 
+  - `obj.foo` is 2 levels of indirection
 
-   Copy Code
+**Indirection**, in the sense we're using it, refers to the ability to reference something indirectly. 
 
-   ```js
-   let foo = "bar";
-   console.log(foo);
-   ```
+- For instance, calling a function or a method is an example of indirection -- we're using the function name to invoke some action. If that function calls another function, then that's yet another level of indirection.
 
-   On line 2, we're using indirection to access the value of `foo`, which is `"bar"`.
+- Using variables to represent values is also an example of indirection. For instance:
 
-   If you want to determine the value of an object property, there are at least two levels of indirection involved: the variable name for the object, and the name of the property:
+```js
+let foo = "bar";
+console.log(foo);
+```
 
-   Copy Code
+On line 2, we're using indirection to access the value of `foo`, which is `"bar"`.
 
-   ```js
-   let obj = { foo: "bar" };
-   console.log(obj.foo); // 2 levels of indirection
-   ```
+- If you want to determine the value of an object property, there are at least two levels of indirection involved: the variable name for the object, and the name of the property:
 
-   Indirection effectively means that you have to have to look elsewhere to determine what a name -- a variable or a function, for instance - refers to. In one sense, it makes programs a little harder to read since the actual values or behaviors are somewhere else in the code base. In practice, though, indirection makes code easier to understand, particularly if you use good variable and function names. The names tell you what you're working with without actually revealing more information than you need.
+```js
+let obj = { foo: "bar" };
+console.log(obj.foo); // 2 levels of indirection
+```
+
+- Indirection effectively means that you have to have to look elsewhere to determine what a name -- a variable or a function, for instance - refers to. 
+- In one sense, it makes programs a little harder to read since the actual values or behaviors are somewhere else in the code base. In practice, though, indirection makes code easier to understand, particularly if you use good variable and function names. The names tell you what you're working with without actually revealing more information than you need.
 
 3. Most of our classes have generic names, like `Player` or `Board`. Suppose we want to put our game in a library and let other developers use it. Our generic class names are now in the global namespace where they may conflict with names those other developers are using. How do we fix that? Answer: use a module; we'll talk about modules in another course. In the short term, we can use names that are less likely to conflict, such as `TTTPlayer` and `TTTBoard`.
-
 4. As we write programs with more classes, we start to build a *dependency graph* of the classes. In OOP, we don't want the dependency graph to look like a spider web. Put another way: classes should collaborate with *some* other classes. If **all** classes collaborate with each other, though, you should reconsider your OO design. For example, our dependency graph looks like this:
 
-   - `TTTGame` collaborates with `Human`.
-   - `TTTGame` collaborates with `Computer`.
-   - `TTTGame` collaborates with `Board`.
-   - `Board` collaborates with `Square`.
+- `TTTGame` collaborates with `Human`.
+- `TTTGame` collaborates with `Computer`.
+- `TTTGame` collaborates with `Board`.
+- `Board` collaborates with `Square`.
 
-   Notice that the `Human`, `Computer`, and `Player` classes know nothing about the `Square` class, and `Board` knows nothing about `Human`, `Computer`, and `Player`. That's how we encapsulate and mitigate the ripple effects of change.
+Notice that the `Human`, `Computer`, and `Player` classes know nothing about the `Square` class, and `Board` knows nothing about `Human`, `Computer`, and `Player`. That's how we encapsulate and mitigate the ripple effects of change.
 
 5. Analyze the `Board` and `Square` classes. Look at methods (behaviors) in those classes:
 
-   | Board              | Square      |
-   | :----------------- | :---------- |
-   | `display`          | `getMarker` |
-   | `displayWithClear` | `setMarker` |
-   | `markSquareAt`     | `isUnused`  |
-   | `countMarkersFor`  | `toString`  |
-   | `unusedSquares`    |             |
-   | `isFull`           |             |
+| Board              | Square      |
+| :----------------- | :---------- |
+| `display`          | `getMarker` |
+| `displayWithClear` | `setMarker` |
+| `markSquareAt`     | `isUnused`  |
+| `countMarkersFor`  | `toString`  |
+| `unusedSquares`    |             |
+| `isFull`           |             |
 
-   Notice how the methods only deal with concerns related to the class.
+- Notice how the methods only deal with concerns related to the class.
 
-   While developing this program, we placed the `isWinner` method in `TTTGame`. It uses `Board.protoype.countMarkersFor` to determine whether a player has 3 markers in a row; we could easily create a `Board.prototype.threeInARow` method instead. The choice of where to put a particular behavior is often unclear. Sometimes, there is no advantage or disadvantage to putting it in one class instead of another.
+- While developing this program, we placed the `isWinner` method in `TTTGame`. It uses `Board.protoype.countMarkersFor` to determine whether a player has 3 markers in a row; we could easily create a `Board.prototype.threeInARow` method instead. The choice of where to put a particular behavior is often unclear. Sometimes, there is no advantage or disadvantage to putting it in one class instead of another.
 
-   When working with classes, you must focus on the behaviors and data in that class. It's tempting to inject additional collaborators into a class, but keep in mind that doing so introduces additional dependencies. The `Board` knows about `Square`, but it doesn't know anything about `Player` or even the `TTTGame`. In that way, it tries to be a generic type.
+- When working with classes, you must focus on the behaviors and data in that class. It's tempting to inject additional collaborators into a class, but keep in mind that doing so introduces additional dependencies. The `Board` knows about `Square`, but it doesn't know anything about `Player` or even the `TTTGame`. In that way, it tries to be a generic type.
 
 6. What we just talked about in the previous point is hard to understand without more experience. Consider our decision to put `humanMoves` and `computerMoves` in the `TTTGame` class. We could have instead put a `moves` method in the `Human` and `Computer` classes. However, if we did that, we would have to pass a `Board` object to those two methods, thus introducing dependencies between `Human` and the `Board` class, and between the `Computer` and `Board` classes.
 
-   Would those dependencies be wrong? The answer is unclear; it depends on the tradeoffs you're willing to make. We opted to keep the move behavior in `TTTGame` to avoid introducing the dependencies describe above.
+- Would those dependencies be wrong? The answer is unclear; it depends on the tradeoffs you're willing to make. We opted to keep the move behavior in `TTTGame` to avoid introducing the dependencies describe above.
 
-   In OOP, there are poor designs, but there is rarely one *right* design. It all comes down to tradeoffs between tightly coupled dependencies or loosely coupled dependencies. Tightly coupled dependencies are easier to understand but offer less flexibility. Loosely coupled dependencies are more challenging to understand but offer more long term flexibility. Which path is right depends on your application. Most of the time, beginners tend to over-apply design patterns. Don't prematurely optimize or build for large-scale architecture when you don't need it. On the other hand, recognize when you're introducing coupling and dependency, and eliminate unnecessary coupling when you can.
+- In OOP, there are poor designs, but there is rarely one *right* design. It all comes down to tradeoffs between tightly coupled dependencies or loosely coupled dependencies. Tightly coupled dependencies are easier to understand but offer less flexibility. Loosely coupled dependencies are more challenging to understand but offer more long term flexibility. Which path is right depends on your application. Most of the time, beginners tend to over-apply design patterns. Don't prematurely optimize or build for large-scale architecture when you don't need it. On the other hand, recognize when you're introducing coupling and dependency, and eliminate unnecessary coupling when you can.
 
-   That's the *art* component of programming. It's a small taste of software design, patterns, and architecture. Mastering this art is a lifelong journey, and your intuition will slowly improve as you gain experience.
+- That's the *art* component of programming. It's a small taste of software design, patterns, and architecture. Mastering this art is a lifelong journey, and your intuition will slowly improve as you gain experience.
 
 7. Given that the general lack of behaviors or state in the `Human` and `Computer` classes, you might consider deleting them. For now, though, you can leave them in place. You may find them useful in the next assignment.
 
@@ -1756,10 +1705,6 @@ Below are some ideas for you to ponder. You don't need to implement any solution
 # OO Tic Tac Toe with Constructors and Prototypes
 
 Of course, there's more than one way to create an OO program in JavaScript. For practice, try to rewrite the TTT program using constructors and prototypes and the pseudo-classical pattern instead of classes. To get you started, here's how you would rewrite the Square class.
-
-ttt_pseudo_classical.js
-
-Copy Code
 
 ```js
 function Square(marker) {
@@ -1796,10 +1741,6 @@ Solution
 # OO Tic Tac Toe with OLOO
 
 Now try to rewrite the TTT program using the OLOO pattern. To get you started, here's how you would rewrite the Square class.
-
-ttt_oloo.js
-
-Copy Code
 
 ```js
 let Square = {
@@ -2120,6 +2061,33 @@ We'll show our reference implementation in the next assignment. However, our sol
 Feel free to request a code review when you've completed the game. First, though, take some time to perform a self-review: compare your code with the reference solution and the code reviews for other students. Use that self-review to help improve your program on your own. Even good programmers look at other programmer's code to find better solutions to shared problems and to learn.
 
 Hint
+
+### $ npm install shuffle-array
+
+```node
+$ npm install shuffle-array
+```
+
+Usage 
+
+```js
+var shuffle = require('shuffle-array'),
+    collection = [1,2,3,4,5];
+ 
+shuffle(collection);
+ 
+console.log(collection); // returns [4, 3, 1, 5, 2]
+```
+
+```js
+const readline = require("readline-sync");
+// use as global constant 
+const shuffle = require("shuffle-array");
+```
+
+
+
+
 
 ------
 
@@ -2563,3 +2531,42 @@ That concludes the instructional part of this course. Next up, the assessment!
 
 - **Spike**: exploratory code
   - Spikes take a high-level view, focusing on the general logic of the program; they don't concern ourselves with details like what it means for the game to be over.
+  
+- Question: are classes not hoised?
+
+- you shouldn't generally access properties directly unless you have no choice
+
+- Object.prototype.toString
+  - Since Javascript returns `[object Object]` when passed an object, we can instead 
+  - **override** `toString` in classes, which means we can define a `toString` method in class that JavaScript should call on instead. 
+  -  Since every object normally inherits from `Object.prototype` either directly or indirectly, every object, by default, has access to this method.
+  
+- **Class constant**: a property that belongs to the class, defined by keyword `static`
+  - The `static` keyword defines a property that belongs to the class
+  - We must qualify the constant name with the class name, e.g., `Square.UNUSED_SQUARE`, even if we reference it from somewhere in the class.
+  
+- DRY up that code (**D**on't **R**epeat **Y**ourself) 
+
+- JavaScript always treats object keys as strings.
+
+- <u>you shouldn't generally access properties directly unless you have no choice</u>,
+
+- Be careful about whether you are passing a method or invoking the method! 
+
+- A method should do one thing
+
+  - ```js
+    // Don't add this to your code!
+    
+    gameOver() {
+      this.theWinner = this.whoWon();
+      return this.theWinner !== undefined || this.boardIsFull();
+    }
+    ```
+
+  - This method determines whether game is over, and as a side effect, determines who the winner is. 
+
+  - Methods that have both a side effect and a meaningful return value or that try to perform multiple actions are generally not recommended. 
+
+  - It should return a useful value or have a side-effect, not both. 
+

@@ -443,7 +443,7 @@ corolla.started; // => true
 - What's significant about using `new` keyword to invoke a function? 
 - JavaScript takes the following steps when you invoke a function with `new`. 
   1. It creates an entirely new object(the instance). 
-  2. It sets the prototype of the new object to the object that is referenced by the constructor's `prototype` property. We'll discuss this in a later assignment. We mention it now for completeness.
+  2. It sets the prototype of the new object to the object that is referenced by the constructor's `prototype` property. 
   3. It sets the value of `this` inside the function to point to the new object. 
   4. It invokes the consturctor function. Since `this` refers to the new object, we use it within the function to set the object's properties and methods.
   5. Finally, once the function finishes running, `new` returns the new object "automatically"; we don't explicitly return anything.
@@ -2019,6 +2019,8 @@ let ingredients = 'olives';
 
 ### ES6 Classes
 
+#### Gist
+
 S6 introduced a new `class` keyword to JavaScript. We take a brief look at the `class` keyword [this Gist](https://launchschool.com/gists/6ba85481).
 
 - The ECMAScript 6 (ES6) standard added the `class` keyword to JavaScript. 
@@ -2299,7 +2301,7 @@ ES6 classes provide a cleaner, more compact alternative to constructors and prot
   - The new object is assigned to `this` within the function body.
   - The code in the function body is executed.
   - The function returns the object referenced by `this` unless the function returns an explicit object. 
-- Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
+- Every <u>function</u> has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
   - If the function is used as a constructor, the returned object's `[[Prototype]]` will reference the constructor's prototype property
   - This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. We call this the *pseudo-classical* pattern of object creation. 
 - Every function also has a `constructor` property that points to `Function`. 

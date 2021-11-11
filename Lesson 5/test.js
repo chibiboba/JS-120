@@ -1,2 +1,3 @@
-let array = [1, 2];
-console.log(...array);
+let array = []
+array.push([1, 2]);
+console.log(array)
