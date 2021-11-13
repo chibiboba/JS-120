@@ -2033,7 +2033,7 @@ john.greetings(); // john.greetings would be the function, but john.greetings() 
 // => hello, undefined undefined
 ```
 
-- Problem here is that `forEach` executes the function expression passed to it, so it gets executed with the global object as context. 
+- Problem here is the function expression is passed as argument to `forEach` so its executed with the global object as context. 
   - Remember: array iteration methods like `forEach` invoke and executes the callback function on every element in the array. 
 
 ```js
@@ -2532,9 +2532,35 @@ foo();
   - It is bound based on how function is invoked. 
   - It is usually bound during function invocation /execution actually, there are exceptions such as `bind`, where the function is not immediately invoked and a copy of the function is returned with the execution context bound to the copy.
 
-- By default , if there is no function invocation, the execution context or value of `this` is the object that contains the method that `this` is in. 
+- Depends on where `this` is
 
-- But if `this` is inside a function,  then the execution context is dependent soley on how the function is invoked, not on how and where the function is defined. 
+  - If `this` is outside a function, it is bound to the global object. 
+
+  ```js
+  let person = {
+    firstName: 'Rick ',
+    lastName: 'Sanchez',
+    fullName: this.firstName + this.lastName, // execution context is global
+  };
+  
+  console.log(person.fullName); 
+  ```
+
+  - But if `this` is inside a function/method, then the execution context is dependent soley on how the function is invoked, not on how and where the function is defined. 
+
+    ```js
+    let person = {
+      firstName: 'Rick ',
+      lastName: 'Sanchez',
+      fullName() {
+        return this.firstName + this.lastName; // inside a method, so context is person which is what the method is in
+      },
+    };
+    
+    console.log(person.fullName); // Rick Sanchez
+    ```
+
+    
 
 - Every single javascript invocation/ call has its own **execution context**
 
@@ -2865,28 +2891,6 @@ Mia's answer
 
 ------
 
-#####  Downstream objects can delegate properties or behaviors to upstream objects. ?? 
-
-- What does "delegate" mean? What does "delegate properties and behaviors" mean? 
-
-```js
-// quiz 1 question 1
-let foo = {
-  bar: 42,
-  qux() {
-    console.log("Pudding");
-  },
-};
-
-let baz = Object.create(foo);
-baz.qux() // baz delegates the invocation of qux to its prototype foo object. 
-```
-
-- Here a downstream object is delegating a behavior to an upstream object.
-- My understanding: does "delegate" mean "access" a property? 
-
-------
-
 ##### Why is `forEach` executed with global object as context? Answer: it's not. 
 
 ```js
@@ -2907,31 +2911,86 @@ baz.qux() // baz delegates the invocation of qux to its prototype foo object.
   // => 3 undefined undefined
 ```
 
-> The explanation said: The problem is that `forEach` executes the function expression passed to it, so it gets executed with the global object as context.
+> The explanation said: The problem is that `forEach` executes the function expression passed to it, so it(the function expression) gets executed with the global object as context.
 
 - CLARIFICATION: It's the callback function that is being executed with global object as context, not `forEach`. 
-- `forEach` will invoke the callback within its own scope.
-- The implicit execution context of `forEach` is the calling object, the array `[1, 2, 3]`. 
-- In this case of callback function being a function expression, we know that the execution context is determined by how the function is invoked. The function expression will be invoked within the body of the `forEach` function, but because of context loss, the execution context will be implicitly set to the global object. 
 
-```js
-// what forEach looks like internally (simplified)
-// the context argument passed to context comes from the 2nd argument passed to forEach. If there is no second argument, then the global object is used.
-function forEach(callback, context) {
-  if (context === undefined) {
-    context = global;
-  }
+- EXPLANATION: On line 5, The implicit execution context of `forEach` is its calling object, the array `[1, 2, 3]`.   But a function expression is passed to `map` as argument, and when functions are passed as arguments, they lose surrounding context, so the execution context is then implicitly set to the global object.  If `map` took a `thisArg` argument, then the execution context would be `thisArg`. 
 
-  // this[index] refers to the array element
-  for (let index = 0; index < this.length; ++index) {
-    callback.call(context, this[index]);
+- OTHER EXPLANATION( my own reasoning):
+  - `forEach` will invoke the callback within its own scope? 
+  - In this case of callback function being a function expression, we know that the execution context is determined by how the function is invoked. 
+  - What's happening here is that a *function* is invoking / executing another function- so the function expression is almost like being invoked as a standalone function. Normally,  execution context(`this`) depends on the *object* that invoked the method that `this` is in. 
+  - That is why when functions are passed as arguments, they lose the original surrounding context of `this`. 
+
+  ```js
+  function repeatThreeTimes(func) {
+    func(); // this loses context here. Now the context is the global object. 
+    func();
+    func();
   }
-}
-```
+  
+  let john = {
+    firstName: 'John',
+    lastName: 'Doe',
+    greetings: function() {
+      repeatThreeTimes(function() {
+        console.log('hello, ' + this.firstName + ' ' + this.lastName); // this refers to john. 
+      });
+    },
+  };
+  
+  john.greetings(); // john.greetings would be the function, but john.greetings() invokes the function
+  
+  // => hello, undefined undefined
+  // => hello, undefined undefined
+  // => hello, undefined undefined
+  ```
 
 - if `forEach` does not take a `thisArg` argument, the context *for the callback function* set to `global`
 
+  ```js
+  // what forEach looks like internally (simplified)
+  // the context argument passed to context comes from the 2nd argument passed to forEach. If there is no second argument, then the global object is used.
+  function forEach(callback, context) {
+    if (context === undefined) {
+      context = global;
+    }
+  
+    // this[index] refers to the array element
+    for (let index = 0; index < this.length; ++index) {
+      callback.call(context, this[index]);
+    }
+  }
+  ```
 
+  
+
+##### Solution to above problem
+
+- use lexical scoping rules, such as solution 3: arrow function, or solution1: preserve context with variable in outer scope.
+
+------
+
+#####  Downstream objects can delegate properties or behaviors to upstream objects. ?? 
+
+- What does "delegate" mean? What does "delegate properties and behaviors" mean? 
+
+```js
+// quiz 1 question 1
+let foo = {
+  bar: 42,
+  qux() {
+    console.log("Pudding");
+  },
+};
+
+let baz = Object.create(foo);
+baz.qux() // baz delegates the invocation of qux to its prototype foo object. 
+```
+
+- Here a downstream object is delegating a behavior to an upstream object.
+- My understanding: does "delegate" mean "access" a property? 
 
 
 
