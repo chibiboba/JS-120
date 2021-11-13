@@ -193,4 +193,99 @@
    You can use the `walkMixin` with any class that defines properties `gait` and `name`. You can also define a parent class and make the other classes inherit from that class.
 
    Mixins are more appropriate in a has-a relationship. While it is sometimes tricky to choose one or the other, a great guideline is to decide if you want some additional functionality, or if you want to extend the abilities of the class. In this case, it is pretty clear that we need the functionality of walking; we don't need to extend the abilities of class `Person`(extending the abilities of a class coincides with an is-a relationship, not has-a).
+   
+10. ```js
+    class Pet {
+      constructor(petType, petName) {
+        this.type = petType;
+        this.name = petName;
+      }
+    }
+    
+    class Owner {
+      constructor(ownerName) {
+        this.name = ownerName;
+        this.petsOwned = [];
+      }
+    
+      numberOfPets() {
+        return this.petsOwned.length;
+      }
+    
+      addPet(pet) {
+        this.petsOwned.push(pet);
+      }
+    
+      printPets() {
+        this.petsOwned.forEach(pet => {
+          console.log(`a ${pet.type} named ${pet.name}`);
+        });
+      }
+    }
+    
+    let butterscotch = new Pet('cat', 'Butterscotch');
+    let pudding = new Pet('cat', 'Pudding');
+    let darwin = new Pet('bearded dragon', 'Darwin');
+    let kennedy = new Pet('dog', 'Kennedy');
+    let sweetie = new Pet('parakeet', 'Sweetie Pie');
+    let molly = new Pet('dog', 'Molly');
+    let chester = new Pet('fish', 'Chester');
+    
+    let phanson = new Owner('P Hanson');
+    let bholmes = new Owner('B Holmes');
+    
+    
+    class Shelter {
+      constructor() {
+        this.memberList = {};
+      }
+    
+      adopt(petOwner, pet) {
+        petOwner.addPet(pet);
+        if (!this.memberList[petOwner.name]) { // careful with object keys - it's a string, not an object
+          this.memberList[petOwner.name] = petOwner;
+        }
+      }
+    
+      printAdoptions() {
+        for (let owner in this.memberList) { // careful with object keys, its a string
+          console.log(`${owner} has adopted the following pets:`);
+          this.memberList[owner].printPets(); // get the property value using bracket notation
+          console.log();
+        }
+      }
+    }
+    
+    let shelter = new Shelter();
+    shelter.adopt(phanson, butterscotch);
+    shelter.adopt(phanson, pudding);
+    shelter.adopt(phanson, darwin);
+    shelter.adopt(bholmes, kennedy);
+    shelter.adopt(bholmes, sweetie);
+    shelter.adopt(bholmes, molly);
+    shelter.adopt(bholmes, chester);
+    shelter.printAdoptions();
+    console.log(`${phanson.name} has ${phanson.numberOfPets()} adopted pets.`);
+    console.log(`${bholmes.name} has ${bholmes.numberOfPets()} adopted pets.`);
+    
+    // P Hanson has adopted the following pets:
+    // a cat named Butterscotch
+    // a cat named Pudding
+    // a bearded dragon named Darwin
+    
+    // B Holmes has adopted the following pets:
+    // a dog named Molly
+    // a parakeet named Sweetie Pie
+    // a dog named Kennedy
+    // a fish named Chester
+    
+    // P Hanson has 3 adopted pets.
+    // B Holmes has 4 adopted pets.
+    ```
+
+- This exercise is about collaborator objects; instance variables don't have to be simple variables like numbers and strings, but can contain any object that might be needed. 
+- In our solution, the `Pet` class has two String collaborator objects, `Owner` has a String and an Array of `Pet` objects, and `Shelter` has an Object of `Owner` objects.
+- Vocab: Objects that help provide state within another object are called **collaborator objects**. Objects **collaborate** with other objects by using them as part of their state. 
+
+11. 
 

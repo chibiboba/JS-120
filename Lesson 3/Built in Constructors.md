@@ -230,8 +230,6 @@ true
 
 Another oft-used method is `Object.prototype.toString`. It returns a string representation of the object that it's called on. Since `toString` is a method on `Object.prototype`, all JavaScript objects -- including arrays, functions, and dates -- inherit this method. However, the default behavior of `Object.prototype.toString` is not very useful; it merely returns `[object Object]` for objects that don't override this method to provide smarter behavior:
 
-Copy Code
-
 ```node
 > let obj = { a: 1, b: 2 }
 > obj.toString()

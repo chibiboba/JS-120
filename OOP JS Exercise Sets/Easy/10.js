@@ -14,6 +14,16 @@ class Owner {
   numberOfPets() {
     return this.petsOwned.length;
   }
+
+  addPet(pet) {
+    this.petsOwned.push(pet);
+  }
+
+  printPets() {
+    this.petsOwned.forEach(pet => {
+      console.log(`a ${pet.type} named ${pet.name}`);
+    });
+  }
 }
 
 let butterscotch = new Pet('cat', 'Butterscotch');
@@ -30,24 +40,22 @@ let bholmes = new Owner('B Holmes');
 
 class Shelter {
   constructor() {
-    this.memberList = [];
+    this.memberList = {};
   }
 
   adopt(petOwner, pet) {
-    petOwner.petsOwned.push(pet);
-    if (!this.memberList.includes(petOwner)) {
-      this.memberList.push(petOwner);
+    petOwner.addPet(pet);
+    if (!this.memberList[petOwner.name]) { // careful with object keys - it's a string, not an object
+      this.memberList[petOwner.name] = petOwner;
     }
   }
 
   printAdoptions() {
-    this.memberList.forEach(owner => {
-      console.log(`${owner.name} has adopted the following pets:`);
-      owner.petsOwned.forEach(pet => {
-        console.log(`a ${pet.type} named ${pet.name}`);
-      });
+    for (let owner in this.memberList) { // careful with object keys, its a string
+      console.log(`${owner} has adopted the following pets:`);
+      this.memberList[owner].printPets(); // get the property value using bracket notation
       console.log();
-    });
+    }
   }
 }
 
