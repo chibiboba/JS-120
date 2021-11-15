@@ -676,6 +676,16 @@ if (civic instanceof Car) {
 
 - Now that we know about constructors, we can add a constructor call with `new` as a third way to provide an implicit execution context. When you call a function with `new`, its implicit context is the new object.
 
+##### Constructor.name
+
+- The `constructor` property returns a reference to the `Object` constructor function that created the instance object. This constructor function has access to `name` property which returns the function's name as specified when it was created.
+
+```js
+console.log("Hello".constructor.name); // String
+console.log([1, 2, 3].constructor.name); // Array
+console.log({ name: 'Srdjan' }.constructor.name); // Object
+```
+
 ##### Problems
 
 1. What naming convention separates constructor functions from other functions?

@@ -1,5 +1,21 @@
 ### Reminders
 
+- Parentheses () are always used to invoke methods or functions. Without parentheses, it simply references the function or method. 
+
+  - ```js
+    function myFilter(array, func, context) {
+      let result = [];
+      
+      array.forEach(function (value) {
+        if (func.bind(context)(value)) { // invokes the binded function with value passed to it as parameter
+          result.push(value);
+        }
+      });
+    
+      return result;
+    }
+    ```
+
 - Can use **default parameters** to set default values in case no value is passed to the function, instead  of using **arguments** object like `if arguments.length < 1`
 
 - Use **logical or** assignment in case values are undefined 

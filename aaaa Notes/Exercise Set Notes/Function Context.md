@@ -87,5 +87,83 @@
    }, filter); // returns [5, 6, 9]
    ```
 
-5. 
+4. ```js
+   // using call
+   function myFilter(array, func, context) {
+     let result = [];
+   
+     array.forEach(function (value) {
+       if (func.call(context, value)) {
+         result.push(value);
+       }
+     });
+   
+     return result;
+   }
+   
+   let filter = {
+     allowedValues: [5, 6, 9],
+   };
+   
+   let returned = myFilter([2, 1, 3, 4, 5, 6, 9, 12], function (val) {
+     return this.allowedValues.indexOf(val) >= 0;
+   }, filter); // returns [5, 6, 9]
+   
+   console.log(returned);
+   ```
+
+   - The solution is straightforward. Since there is always only one argument at a time passed to the callback function of `myFilter`, the solution uses `Function.prototype.call` on it and passes it the `thisArg` and `value` arguments.
+
+   ```js
+   // using bind
+   function myFilter(array, func, context) {
+     let result = [];
+     func = func.bind(context);
+   
+     array.forEach(function (value) {
+       if (func(value)) {
+         result.push(value);
+       }
+     });
+   
+     return result;
+   }
+   
+   let filter = {
+     allowedValues: [5, 6, 9],
+   };
+   
+   let returned = myFilter([2, 1, 3, 4, 5, 6, 9, 12], function (val) {
+     return this.allowedValues.indexOf(val) >= 0;
+   }, filter); // returns [5, 6, 9]
+   
+   console.log(returned);
+   ```
+
+   ```js
+   // also using bind 
+   function myFilter(array, func, context) {
+     let result = [];
+   
+     array.forEach(function (value) {
+       if (func.bind(context)(value)) {
+         result.push(value);
+       }
+     });
+   
+     return result;
+   }
+   
+   let filter = {
+     allowedValues: [5, 6, 9],
+   };
+   
+   let returned = myFilter([2, 1, 3, 4, 5, 6, 9, 12], function (val) {
+     return this.allowedValues.indexOf(val) >= 0;
+   }, filter); // returns [5, 6, 9]
+   
+   console.log(returned);
+   ```
+
+   
 
