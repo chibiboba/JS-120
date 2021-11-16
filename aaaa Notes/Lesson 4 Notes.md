@@ -818,6 +818,11 @@ let spot = new rex.constructor;
 
 ### Subtyping with Classes
 
+#### Reducing Complexity
+
+- When designing an Object Oriented program, it's common to have multiple classes that perform similar actions. To reduce complexity, classes with similar behaviors can inherit from a superclass. The superclass implements the common behaviors while the inheriting classes invoke them.
+- The `extends` keyword is used to denote inheritance between classes.
+
 #### Gist
 
 Of course, the new `class` keyword also supports subtyping. You'll learn how to do that in [this Gist](https://launchschool.com/gists/cdba6a8e).
@@ -885,7 +890,7 @@ The `extends` keyword signifies that the class named to the left of `extends` sh
 
 ##### `super`
 
-Note also that the `Square` constructor calls a function that is represented by the keyword `super`. When called inside the `constructor` method, the `super` keyword refers to the constructor method for the parent class (the class that we inherit from). Thus, `super(size, size)` performs the same role performed by this code from our constructor/prototype example:
+- When called inside the `constructor` method, the `super` keyword refers to the constructor method for the parent class (the class that we inherit from). Thus, `super(size, size)` performs the same role performed by this code from our constructor/prototype example:
 
 ```js
 function Square() {
@@ -893,9 +898,34 @@ function Square() {
 }
 ```
 
-You don't need to use `super` in every subclass, but in most cases you do. In particular, if the superclass's constructor creates any object properties, you must call `super` to ensure that those properties are set properly. For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
+- You don't need to use `super` in every subclass, but in most cases you do. In particular, if the superclass's constructor creates any object properties, you must call `super` to ensure that those properties are set properly. For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
 
-If you do call `super` in a subclass's constructor, you must call it before you use `this` in that constructor.
+- If you do call `super` in a subclass's constructor, you must call it before you use `this` in that constructor.  
+
+- However, `super` keyword can also be used to call functions on the parent object.
+
+  ```js
+  class Vehicle {
+    startEngine() {
+      return 'Ready to go!';
+    }
+  }
+  
+  class Truck extends Vehicle {
+    startEngine(speed) {
+      return super.startEngine() + ` Drive ${speed}, please!`
+      // calling function on parent object using super. This way we can use some functionality from parent class Vehicle in the Truck class. 
+    }
+  }
+  
+  let truck1 = new Truck();
+  console.log(truck1.startEngine('fast'));
+  
+  let truck2 = new Truck();
+  console.log(truck2.startEngine('slow'));
+  ```
+
+  
 
 ##### Inheritance With Class Expressions
 
