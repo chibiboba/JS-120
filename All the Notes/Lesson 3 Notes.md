@@ -2312,7 +2312,7 @@ ES6 classes provide a cleaner, more compact alternative to constructors and prot
   - The code in the function body is executed.
   - The function returns the object referenced by `this` unless the function returns an explicit object. 
 - Every <u>function</u> has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
-  - If the function is used as a constructor, the returned object's `[[Prototype]]` will reference the constructor's prototype property
+  - If the function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property
   - This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. We call this the *pseudo-classical* pattern of object creation. 
 - Every function also has a `constructor` property that points to `Function`. 
 - The **pseudo-classical** **object creation pattern** generates objects using a constructor function that defines state and a prototype object that defines shared behaviors.

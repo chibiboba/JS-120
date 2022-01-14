@@ -57,9 +57,9 @@ console.log(obj.constructor === Object) // true;
 
 <u>Function Object</u>
 
-- Every function has a **prototype property**
+- Every function has a hidde**prototype property**
 
-- All object forms of functions have their own hidden property called "prototype property"
+- All function objects have their own hidden property called "prototype property"
   - **prototype property**: refers to an object that stores all the info including prototype methods for other objects down the chain to inherit from. 
 - Object is a function. 
   - All functions are objects, so think of them as a function but having an object form as well. 

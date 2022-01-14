@@ -925,8 +925,6 @@ function Square() {
   console.log(truck2.startEngine('slow'));
   ```
 
-  
-
 ##### Inheritance With Class Expressions
 
 Let's look at another example of inheritance with classes:
@@ -1329,6 +1327,7 @@ Show Solution
 #### Mix-ins
 
 - **Mix-ins**:  pattern that adds methods and properties from one object to another. It's not  (inheritance) delegation with prototpes; the mix-in pattern copies the properties of one object to another with `Object.assign` or some similar technique. 
+  - Mixins are useful for organizing similar methods that may be relevant to multiple classes.
   - More appropriate in a "has - a" relationship
     - use mix-in over defining a parent class. 
     - Use parent class if you want to extend the abilities of a parent class

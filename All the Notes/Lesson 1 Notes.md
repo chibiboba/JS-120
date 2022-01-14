@@ -321,3 +321,4 @@ Here's a summary of what we learned in this lesson. Make sure you're fully comfo
 - Objects **collaborate** with other objects by using them as part of their state. We say that two objects have a collaborator relationship if one of them is part of the state of the other.
 - One way to automate the creation of objects is to use the **factory function** pattern. A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments.
 - One object factory can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
+

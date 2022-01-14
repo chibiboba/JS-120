@@ -2568,7 +2568,7 @@ foo();
     - Tricky: Why is `forEach` executed with global context? It's not. It's the callback function that is executed with global context. The implicit execution context of `forEach` is the calling object, the array `[1, 2, 3]`. In the case of the function expression, we know that the execution context is determined by how the function is invoked. The function expression will be invoked within the body of the `forEach` function, but because of context loss, the execution context will be implicitly set to the global object. 
   - When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object. 
   - You can override this behavior by setting the execution context explicitly with either `call` , `apply`, or `bind`
-  - Arrow functions are also exceptions to this rule. 
+  - Arrow functions are also exceptions to this rule.
 
 - **Arrow functions** are permanently bound to the execution context of the **enclosing function invocation**.
 
