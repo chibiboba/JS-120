@@ -489,14 +489,22 @@ obj['1, 2, 3'] // 'three'
   ```
 
 - Other ways to check for property existence is to enumerate(iterate over) the properties of an object.  
-  - `Object.keys`: Returns an array of object's <u>own</u> enumerable property names. 
-  - `Object.getOwnPropertyNames`: returns an array of all of object's <u>own</u> property names (including non-enumerable properties except for those which use Symbol) found directly on an object. 
-  - `for...in` iterates over <u>all</u> enumerable properties of an object, including those in prototype chain. 
+  - `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
+  - `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
+  - `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
 
 ```js
 Object.keys(obj)                    // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
 Object.getOwnPropertyNames(obj)     // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
 ```
+
+|                              | Enumerable | Includes Non-Enumerable | Own  | Prototype Chain |
+| ---------------------------- | ---------- | ----------------------- | ---- | --------------- |
+| For … in loop                | ✅          |                         |      | ✅               |
+| Object.keys(obj)             | ✅          |                         | ✅    |                 |
+| Object.getOwnPropertyNames() |            | ✅                       | ✅    |                 |
+
+
 
 ##### Enumerable Properties
 
@@ -724,12 +732,11 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### The Prototype Chain (what is it, what is it used for)
 
-- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototpe can also have a prototype from which it inherits. 
+- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits. 
 - The prototype chain is used to look up properties, and this is done through prototypal delegation. Objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
-- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above
-- When I try to look for a property that is not owned by an object, JavaScript traverses up the prototype chain until it finds the property. 
+- When I access a property that is not owned by an object, JavaScript traverses up the prototype chain until it finds the property. In other words, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
   - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-- This means that the prototype chain / prototypal inheritance saves memory because properties are shared through the prototype chain, rather than every object having their own copy of each property. 
+- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It also saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
 
 ------
 
@@ -773,6 +780,8 @@ console.log(c.foo); // => 1
   ```
   c --> b --> a --> Object.prototype --> null
   ```
+  
+  - `null` has no prototype and acts as the final link in the prototype chain. 
 
 ##### The `__proto__` Property 
 
@@ -789,12 +798,13 @@ Prototypal Delegation
 ##### Property Look-Up in the Prototype Chain 
 
 - Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-
 - When you access a property on an object, JavaScript first looks for an "own" property with that name on the object. 
   - If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it through the prototype chain. 
   - The process continues until it finds the property or it reaches `Object.prototype`. 
   - If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-- So when two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
+  - A downstream object overrides an inherited property if it has a property with the same name. 
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
 
 ```js
 let a = {
@@ -809,9 +819,22 @@ Object.setPrototypeOf(b, a);
 
 let c = Object.create(b);
 console.log(c.foo); // => 2;
+// Line 12 logs the value of property `foo` in object c. Object c is lowest in the prototype chain and inherits property `foo` from it's prototype object b. A property with same name `foo` also exists in object a, which is the prototype object of b. Since b is closer to the calling object than a, it takes precedence and the value of property `foo` in object b is logged to the console. 
+
+// A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
 ```
 
 What happens when you set a property to a different value? 
+
+- When assigning a property on a JavaScript object, the property is always treated as an "own" property. 
+  - It assumes that the property belongs to the object named to the left of the property name. 
+  - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
+
+```js
+console.log(c.hasOwnProperty('foo')); // => true, foo becomes an "own" property of c. 
+```
+
+- Inheriting properties from other objects also applies to methods. Methods in JS are merely properties that refer to functions. So when we discuss object properties, that also means methods. 
 
 ```js
 let a = {
@@ -828,23 +851,15 @@ let c = Object.create(b);
 console.log(c.foo); // => 2
 c.foo = 42;
 console.log(c.foo); // => 42 c.foo is now 42 
-console.log(b.foo); // => 2 Object b was not mutated, because with assignment, properties are always treated as "own" property of current object.
+console.log(b.foo);
+
+// Line 14 logs 42, value of property `foo` in object c. On line 13, a property with name `foo` is assigned to object c which means that the property is now treated as an 'own' property of object c. So even though object c inherits a property name `foo` from it's prototype object b, object c now overrides the inherited property since it has an own property with the name `foo`. 
 ```
-
-- When assigning a property on a JavaScript object, the property is always treated as an "own" property. 
-  - It assumes that the property belongs to the object named to the left of the property name. 
-  - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
-
-```js
-console.log(c.hasOwnProperty('foo')); // => true, foo becomes an "own" property of c. 
-```
-
-- Inherting properties from other objects also applies to methods. Methods in JS are merely properties that refer to functions. So when we discuss object properties, that also means methods. 
 
 ##### Implications
 
-- This means that inherited objects can never alter prototype properties. 
-- But altering a prototype object's property alters the property of an inherited object, because for inherited objects, are using prototype chain to look up the value of property. 
+- This means that inherited objects can never alter prototype properties ( downstream objects can't alter upstream properties)
+- But altering a prototype object's property alters the property of an inherited object, because inherited objects are using prototype chain to look up the value of property. 
 - Property assignment creates a new "own" property in the object. 
 - For property look up, it stops at `Object.prototype`, but the complete prototype chain is `null` at top? 
 
@@ -863,7 +878,7 @@ A: Yes. Objects hold a reference to their prototype objects. If the object's pro
   
   let dog = {};
   
-  Object.setPrototypeOf(dog, cat);
+  Object.setPrototypeOf(dog, cat); // Prototype of dog is set to object cat.
   
   cat.says = 'woof woof'; 
   
@@ -896,7 +911,7 @@ let cat = {
 };
 
 let dog = {
-  says:' woof'
+  says:' woof' // Object dog has an own property 'says' and overrides the inherited property from prototype cat. 
 };
 
 Object.setPrototypeOf(dog, cat);
@@ -905,9 +920,9 @@ console.log(cat.says); // meow
 console.log(dog.says); // woof
 ```
 
-**Q: What happens if you alter prototype property from inherited object?** 
+**Q: What happens if you alter prototype property from inherited object?** XX
 
-A: Inherited objects can never alter prototype properties, because you are unable to reassign the prototype object's property value, by using an inherited object identifier. When you access the prototype object value by the inherited object's identifier to "alter" something you instead assign a property to the inherited object, which becomes inherited object's "own" property. 
+A: Inherited objects can never alter prototype properties, because you are unable to reassign the prototype object's property value, by using an inherited object identifier. When you access the prototype object value by the inherited object's identifier to reassign something you instead assign a property to the inherited object, which becomes inherited object's "own" property. 
 
 ```js
 let cat = {
@@ -928,7 +943,7 @@ console.log(dog.says); // woof
 
 - The `Object.prototype` object is at the top of all JavaScript prototype chains. That means its methods are available from any JavaScript object, as long as you don't use `null` as the prototype object. 
 
-  3 useful methods
+  3 useful (instance) methods
 
   - `Object.prototype.toString()` returns a string representation of the object.
   - `Object.prototype.isPrototypeOf(obj)` determines whether the object is part of another object's prototype chain.
@@ -939,7 +954,7 @@ console.log(dog.says); // woof
 - Several times we've said that JavaScript objects all have a prototype object and that the prototype chain ends with `Object.prototype`
   -  In reality, there is a way to create objects that don't have a prototype and, hence, do not have a prototype chain that ends with `Object.prototype`.
 - Do this by setting the prototype to `null`.
-  -  It lets you create a "clean" or "bare" object for use as a general key/value data structure.
+  -  It lets you create a "clean" or "**bare**" object for use as a general key/value data structure.
   -  The bare object doesn't carry around a bunch of excess baggage in the form of unneeded properties and prototypes:
 
 ```js
@@ -950,10 +965,11 @@ undefined
 null
 ```
 
-- Hoever, note that 
+- However, note that 
 
-  - Objects created in this way do not have access to Object methods like `Object.prototype.hasOwnProperty` or `Object.prototype.toString`. 
+  - Objects created in this way do not have access to Object methods like (static & instance methods of Object) `Object.prototype.hasOwnProperty` or `Object.prototype.toString`. 
   - They also don't have a prototype chain that ends with `Object.prototype` -- it ends with `null`.
+  - Remember: `object.prototype` is a downstream object in the prototype chain, which itself has prototype object `null`. So creating an object with `null` as its prototype means it doesn't inherit from `Object.prototype`. 
 
 - For the most part, you can assume that all JavaScript objects have `Object.prototype` at the top of their inheritance chain
 
@@ -967,6 +983,9 @@ null
   }
   ```
 
+  - Side note
+    - `Object.getPrototypeOf(obj)` static method
+    - `obj.isPrototypeOf` instance method
   - If you don't first check whether `obj` has a non-`null` prototype, this code will raise an exception if `obj` has a `null` prototype. Even this code won't work properly if `obj` inherits from an object whose prototype is `null`.
 
 ##### Summary
@@ -981,6 +1000,68 @@ null
 ------
 
 ### Practice Problems 
+
+1. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
+
+   ```js
+   let qux = { foo: 1 };
+   let baz = Object.create(qux);
+   console.log(baz.foo + qux.foo);
+   ```
+
+   Solution
+
+   ```js
+    2
+   ```
+
+   `qux.foo` returns 1 because `qux` has a `foo` property with that value. `baz` doesn't have its "own" copy of the `foo` property, so JavaScript searches the prototype chain for a `foo` property and finds the property in `qux`. 
+
+   
+
+2. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
+
+   ```js
+   let qux = { foo: 1 };
+   let baz = Object.create(qux);
+   baz.foo = 2;
+   
+   console.log(baz.foo + qux.foo);
+   ```
+
+   Solution
+
+   ```js
+   3
+   ```
+
+   Their solution: We assign `baz.foo` to a value of 2. Property assignment doesn't use the prototype chain; instead, it creates a new property in the `baz` object named `foo`. When we add `baz.foo` and `qux.foo` together, `baz.foo` returns the value of its "own" `foo` property, while `qux.foo` returns the value of its "own" `foo` property. Thus, the result is 3. 
+
+3. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
+
+   ```js
+   let qux = { foo: 1 };
+   let baz = Object.create(qux);
+   qux.foo = 2;
+   
+   console.log(baz.foo + qux.foo);
+   ```
+
+   Solution
+
+   ```js
+   4
+   ```
+
+   On line 3, property `foo` is reassigned to value of 2 in object `qux`. On line 5, `baz.foo` returns 2 because it doesn't have an own property `foo` so JavaScript searches the prototype chain for `foo` and finds it on `qux`. `qux.foo` returns 2 because `qux` has an own `foo` property with value of 2. Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well. 
+
+4. As we saw in problem 2, the following code creates a new property in the `baz` object instead of assigning the property in the prototype object.
+
+   ```js
+   let qux = { foo: 1 };
+   let baz = Object.create(qux);
+   baz.foo = 2;
+   ```
 
 Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
 
@@ -1007,7 +1088,7 @@ function assignProperty(obj, property, value) {
   while (obj !== null) { // loops until obj reaches the null prototype
     if (obj.hasOwnProperty(property)) { 
       obj[property] = value;
-      break;
+      break; // need this to prevent infinite looping
     }
 
     obj = Object.getPrototypeOf(obj); // // if property is not "own property", then search next prototype. 
@@ -1029,7 +1110,7 @@ function assignProperty(obj, property, value) {
 }
 ```
 
-5. 
+5. Consider the following loops. 
 
 ```js
 for (let property in foo) {
@@ -1043,9 +1124,32 @@ Object.keys(foo).forEach(property => {
 });
 ```
 
-They don't always produce the same results since the second loop only iterates over `foo`'s "own" properties, but the first loop iterates over all of the object's enumerable properties, including those inside its prototype chain. 
+Q: If `foo` is an arbitrary object, will these loops always log the same results to the console? Explain why they do or do not. If they don't always log the same information, show an example of when the results differ.
 
-The two loops produce the same results only when the prototype chain doesn't contain enumerable properties. 
+- They don't always produce the same results since the second loop only iterates over `foo`'s "own" enumerable properties, but the first loop iterates over all of the object's enumerable properties, including those inside its prototype chain. 
+- An example of when the results differ is 
+
+```js
+let bar = {a: 1, b: 2};
+let foo = Object.create(bar);
+foo.a = 3; 
+foo.c = 4;
+```
+
+```js
+// first loop outputs
+a: 3 		// from foo
+c: 4 	  // from foo
+b: 2 		// from bar
+```
+
+```js
+// second loop outputs 
+a: 3 	// from foo
+c: 4 	// from foo
+```
+
+- The two loops only produce the same results if the prototype chain doesn't include enumerable properties.
 
 ##### Q: How do you create an object that doesn't have a prototype? 
 
@@ -1073,7 +1177,7 @@ if (Object.getPrototypeOf(obj)) {
 
    - Function definition that starts with word `function` at beginning of statement. 
 
-   - Function declaration binds a function to an identifier, declares the existence of the function. 
+   - Function declaration binds a function to an **identifier**(variable name), declares the existence of the function. 
 
    - Function declarations can't be anonymous.
    - Function declarations are **hoisted**: can be called before function is defined. 
@@ -1081,7 +1185,7 @@ if (Object.getPrototypeOf(obj)) {
    ```js
    functionName(); // can invoke function before function is defined.   
    
-   function functionName() {
+   function functionName() { // function defined here, functionName is a variable & identifier
      ...
    }
    ```
@@ -1099,7 +1203,7 @@ if (Object.getPrototypeOf(obj)) {
      ```
 
      ```js
-     let functionName = (parameter) => {
+     let functionName = (parameter) => { // arrow functions are always function expressions
        
      };
      ```
@@ -1154,7 +1258,7 @@ if (Object.getPrototypeOf(obj)) {
 
    - Advantage of naming a function expression
 
-     - The main advantage of naming a function expression occurs when the function throws an error (raises an exception). If the function has a name, the stack trace uses that name to help you determine where the error occurred. Without the name, JavaScript merely reports the location as "anonymous.
+     - The main advantage of naming a function expression occurs when the function throws an error (raises an exception). If the function has a name, the stack trace uses that name to help you determine where the error occurred. Without the name, JavaScript merely reports the location as anonymous.
 
    - We typically assign a function expression to a variable or object property, pass it to another function, or return it to a calling function. 
 
@@ -1177,8 +1281,12 @@ if (Object.getPrototypeOf(obj)) {
 
 3. **Arrow function**
 
-   - Arrow functions are always function expressions
-   - Are always anonymous. 
+   - Arrow functions are always function expressions.
+     - No declaration syntax for arrow functions.
+     - Which means they have to be invoked by the variable name. 
+     - Also means we often pass them around or assign them to variables or properties. 
+   - Arrow functions are always anonymous: there's no way to define a named arrow function.  
+   - Arrow functions are either immediately invoked, assigned to variables or properties, or passed around as arguments and return values. 
 
    ```js
    let greetPeople = () => console.log("Good Morning!"); // 0 parameters
@@ -1196,14 +1304,7 @@ if (Object.getPrototypeOf(obj)) {
 
 **Anonymous Function**: a function with no name. 
 
-- No declaration syntax for arrow functions. 
-- Arrow functions are always function expressions. 
-  - Which means they be invoked by the variable name. 
-  - Also means we often pass them around or assign them to variables or properties. 
-
-- Arrow functions are always anonymous: there's no way to define a named arrow function. 
-  - Arrow functions are <u>immediately invoked</u>(will discuss later) assigned to variables or properties, or passed around as arguments and return values. 
-- Call back functions for methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
+- Call back functions p methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
 
 ```js
 let name = function (x) { // function expression
@@ -1253,7 +1354,7 @@ let name = () => console.log('My name is'); // arrow function
     ReferenceError: Cannot access 'foo' before initialization
     ```
 
-##### First-Class Functions
+##### First Class Functions
 
 - **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
 
@@ -1271,7 +1372,7 @@ let name = () => console.log('My name is'); // arrow function
   speak('Howdy!');   // logs 'Howdy'
   ```
 
-  - In this case, we're passing the function `logNum` as an argument to the `forEach` method, which calls it three times. With each invocation of `logNum`, `forEach` passes it one of the array elements as an argument.
+  - In this case, we're passing the function `logNum` as an argument to the `forEach` method, which calls it three times. During each iteration, `logNum` is invoked and `forEach` passes it one of the array elements as an argument.
     - Notice that we don't use invocation syntax, `()`, when passing `logNum` as an argument to `forEach`. We pass the identifier that references the function. 
     - If we did, it would throw a `TypeError` exception since `forEach` expects a function.  Instead of passing a function, though, we would be passing `undefined`, the return value of `logNum()`.
 
@@ -1299,7 +1400,7 @@ let name = () => console.log('My name is'); // arrow function
 
   ```js
   // variable 
-  function logNum(num) {
+  function logNum(num) { // function declaration syntax, logNum is a variable
     console.log('Number: ' + num);
   }
   
@@ -1307,7 +1408,7 @@ let name = () => console.log('My name is'); // arrow function
   ```
 
   ```js
-  // funcion expression 
+  // function expression 
   [1, 2, 3].forEach(function logNum(num) {
     console.log('Number: ' + num);
   });
@@ -1333,6 +1434,7 @@ typeof myFunc; // => "function"
 ```
 
 - Functions are a kind of object: they are a compound type that has its own properties and methods. 
+- Definition of **function**: a kind of object with properties and methods.
 
 ##### Summary
 
@@ -1548,10 +1650,10 @@ foo; // 'bar'
 ##### Execution Context
 
 - Earlier, we said that `this` refers to the object that contains the method. That's true, but there's a bit more nuance to how JavaScript determines the value of `this` in a function or method call. 
-- **Execution context**:  the **environment** in which a function executes.
+- **Execution context**:  the **environment** in which a function executes. 
   - In JavaScript, it most commonly refers to the current value of the `this` keyword. 
-    - in other words, `this` refers to the **environment** in which a function executes. 
-  - Execution context of a function or method call is the value of `this` when that code executes. 
+    - In other words, `this` refers to the **environment** (an object) in which a function executes. 
+    - In other words, Execution context of a function or method call is the value of `this` when that code executes. 
   - The context depends on how the function or method was invoked, not on where the function was defined. 
     - In other words, <u>***how you invoke***</u> a function or method determines its execution context for that invocation. It doesn't matter how you define the function or method, nor does it matter where or when you called it. 
     - So two invocations of the same function or method can have very different execution contexts depending on how you make those calls. 
@@ -2960,6 +3062,18 @@ You're correct in that there is some truth to answer choice D, but there's a bit
 - Arrow functions are permanently bound to the execution context of the enclosing function invocation. When defined at the top level, the context of an arrow function is the global object.
 
 ### My Summary of Important Concepts
+
+##### This
+
+Definition
+
+- value of `this` is the **execution context**: the environment (an object) in which a function executes. 
+- Execution context is the value of `this` when that code executes. 
+
+Implications
+
+- Every time a function is called, JS binds some object to `this`. 
+- `this` keyword is available to every function in JS, because every JS function call has an execution context.
 
 ##### Context Loss & their solutions
 

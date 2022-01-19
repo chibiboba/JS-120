@@ -16,5 +16,5 @@ function createCar(make, model, year) {
 }
 
 let car = createCar(`um`, `ok`, 2021);
-console.log(car.make); //
-console.log(car.model); //
+console.log(car.make); // um
+console.log(car.model); // ok
