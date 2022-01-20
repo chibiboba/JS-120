@@ -1,4 +1,4 @@
-## My Own
+### My Own
 
 ```js
 // Create a function that returns the sum of obj.num and a number passed to the function as argument, and then use call() to log that sum as obj.num. 
@@ -22,7 +22,9 @@ console.log(obj.num);
 
 ## Lesson 2
 
-#### Object Prototypes
+#### Object Prototypes 
+
+[reference](https://launchschool.com/lessons/1eaf5e37/assignments/f7b8620b)
 
 1. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
 
@@ -33,6 +35,14 @@ console.log(obj.num);
    ```
 
    Solution
+
+   ```js
+    2
+   ```
+
+   `qux.foo` returns 1 because `qux` has a `foo` property with that value. `baz` doesn't have its "own" copy of the `foo` property, so JavaScript searches the prototype chain for a `foo` property and finds the property in `qux`. 
+
+   
 
 2. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
 
@@ -46,6 +56,12 @@ console.log(obj.num);
 
    Solution
 
+   ```js
+   3
+   ```
+
+   Their solution: We assign `baz.foo` to a value of 2. Property assignment doesn't use the prototype chain; instead, it creates a new property in the `baz` object named `foo`. When we add `baz.foo` and `qux.foo` together, `baz.foo` returns the value of its "own" `foo` property, while `qux.foo` returns the value of its "own" `foo` property. Thus, the result is 3. 
+
 3. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
 
    ```js
@@ -58,6 +74,12 @@ console.log(obj.num);
 
    Solution
 
+   ```js
+   4
+   ```
+
+   On line 3, property `foo` is reassigned to value of 2 in object `qux`. On line 5, `baz.foo` returns 2 because it doesn't have an own property `foo` so JavaScript searches the prototype chain for `foo` and finds it on `qux`. `qux.foo` returns 2 because `qux` has an own `foo` property with value of 2. Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well. 
+
 4. As we saw in problem 2, the following code creates a new property in the `baz` object instead of assigning the property in the prototype object.
 
    ```js
@@ -66,55 +88,115 @@ console.log(obj.num);
    baz.foo = 2;
    ```
 
-   Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
+Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
 
-   ```js
-   let fooA = { bar: 1 };
-   let fooB = Object.create(fooA);
-   let fooC = Object.create(fooB);
-   
-   assignProperty(fooC, "bar", 2);
-   console.log(fooA.bar); // 2
-   console.log(fooC.bar); // 2
-   
-   assignProperty(fooC, "qux", 3);
-   console.log(fooA.qux); // undefined
-   console.log(fooC.qux); // undefined
-   console.log(fooA.hasOwnProperty("qux")); // false
-   console.log(fooC.hasOwnProperty("qux")); // false
-   ```
+```js
+let fooA = { bar: 1 };
+let fooB = Object.create(fooA);
+let fooC = Object.create(fooB);
 
-   **Iterative Solution**
+assignProperty(fooC, "bar", 2);
+console.log(fooA.bar); // 2
+console.log(fooC.bar); // 2
 
-   
+assignProperty(fooC, "qux", 3);
+console.log(fooA.qux); // undefined
+console.log(fooC.qux); // undefined
+console.log(fooA.hasOwnProperty("qux")); // false
+console.log(fooC.hasOwnProperty("qux")); // false
+```
 
-5. Consider the following two loops:
+**Iterative Solution**
 
-   ```js
-   for (let property in foo) {
-     console.log(`${property}: ${foo[property]}`);
-   }
-   ```
+```js
+function assignProperty(obj, property, value) {
+  while (obj !== null) { // loops until obj reaches the null prototype
+    if (obj.hasOwnProperty(property)) { 
+      obj[property] = value;
+      break; // need this to prevent infinite looping
+    }
 
-   ```js
-   Object.keys(foo).forEach(property => {
-     console.log(`${property}: ${foo[property]}`);
-   });
-   ```
+    obj = Object.getPrototypeOf(obj); // // if property is not "own property", then search next prototype. 
+  }
+}
+```
 
-   If `foo` is an arbitrary object, will these loops always log the same results to the console? Explain why they do or do not. If they don't always log the same information, show an example of when the results differ.
+**Recursive Solution**
 
-   Solution
+```js
+function assignProperty(obj, property, value) {
+  if (obj === null) { // property not found
+    return;
+  } else if (obj.hasOwnProperty(property)) {
+    obj[property] = value;
+  } else {
+    assignProperty(Object.getPrototypeOf(obj), property, value); // calls on same funciton, passing prototype of obj as argument 
+  }
+}
+```
 
-   
+5. Consider the following loops. 
 
-6. How do you create an object that doesn't have a prototype? How can you determine whether an object has a prototype?
+```js
+for (let property in foo) {
+  console.log(`${property}: ${foo[property]}`);
+}
+```
 
-   Solution
+```js
+Object.keys(foo).forEach(property => {
+  console.log(`${property}: ${foo[property]}`);
+});
+```
+
+Q: If `foo` is an arbitrary object, will these loops always log the same results to the console? Explain why they do or do not. If they don't always log the same information, show an example of when the results differ.
+
+- They don't always produce the same results since the second loop only iterates over `foo`'s "own" enumerable properties, but the first loop iterates over all of the object's enumerable properties, including those inside its prototype chain. 
+- An example of when the results differ is 
+
+```js
+let bar = {a: 1, b: 2};
+let foo = Object.create(bar);
+foo.a = 3; 
+foo.c = 4;
+```
+
+```js
+// first loop outputs
+a: 3 		// from foo
+c: 4 	  // from foo
+b: 2 		// from bar
+```
+
+```js
+// second loop outputs 
+a: 3 	// from foo
+c: 4 	// from foo
+```
+
+- The two loops only produce the same results if the prototype chain doesn't include enumerable properties.
+
+##### Q: How do you create an object that doesn't have a prototype? 
+
+```js
+let bareObj = Object.create(null);
+```
+
+##### Q: How can you determine whether an object has a prototype?
+
+```js
+if (Object.getPrototypeOf(obj)) {
+  // obj has a prototype
+} else {
+  // obj does not have a prototype
+}
+```
 
 ------
 
 #### Implicit and Explicit Execution Contexts
+
+[reference](https://launchschool.com/lessons/1eaf5e37/assignments/a6c48cbb)
 
 1. What will the following code output? Try to determine the results without running the code.
 
@@ -129,6 +211,8 @@ console.log(obj.num);
    ```
 
    Show Solution
+
+   The global object. In Node it's `global`; in a browser, it's `window`. Line 5 calls `func` as a function. Regular function calls implicitely use the global object as their execution context, so the implicit context for `func` is the global object, and it returns the global object. 
 
 2. What will the following code output? Explain the difference, if any, between this output and that of problem 1.
 
@@ -145,6 +229,8 @@ console.log(obj.num);
    ```
 
    Show Solution
+
+   The output is `obj`. That is because on line 7, there is a method invocation. `Func` is invoked as a method and uses the calling object `obj` as its implicit execution context. 
 
 3. What will the following code output?
 
@@ -168,9 +254,18 @@ console.log(obj.num);
 
    Show Solution
 
+   ```terminal
+   Hello from the global scope
+   Hello from the function scope!
+   ```
+
+   The first log operation is generated by the function call `deliverMessage()` on line 7. Since this is a regular function call, which means that `deliverMessage` is invoked as a standalone function, the implicit execution context is the global object. `this.message` refers to the global property `message` . The second log operation occurs on line 15 where `deliverMessage()` is invoked as a method. The implicit execution context for method calls is the calling object `foo`, so `this.message` resolves to `foo.message`.  
+
 4. What built-in methods have we learned about that we can use to specify a function's execution context explicitly?
 
    Show Solution
+
+   `call` `apply` `bind`
 
 5. Take a look at the following code snippet. Use `call` to invoke the `add` method but with `foo` as execution context. What will this return?
 
@@ -190,6 +285,12 @@ console.log(obj.num);
    ```
 
    Show Solution
+
+   ```js
+   bar.add.call(foo); // 3
+   ```
+
+   Since we invoke `call` on `bar.add` with `foo` as the explicit context, the `add` method uses `foo.a` and `foo.b` to determine the results, not `bar.a` and `bar.b`. Thus, the return value is 3. 
 
 ------
 
@@ -284,6 +385,8 @@ console.log(obj.num);
 ------
 
 #### Dealing with Context Loss
+
+[reference](https://launchschool.com/lessons/1eaf5e37/assignments/408c20c3)
 
 1. The code below should output `"Christopher Turk is a Surgeon"`. Without running the code, what will it output? If there is a difference between the actual and desired output, explain the difference.
 

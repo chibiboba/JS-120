@@ -520,7 +520,7 @@ null
 
 ------
 
-### Practice Problems 
+### Practice Problems : Object Prototypes
 
 Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
 
@@ -2915,9 +2915,9 @@ Mia's answer
 
 - CLARIFICATION: It's the callback function that is being executed with global object as context, not `forEach`. 
 
-- EXPLANATION: On line 5, The implicit execution context of `forEach` is its calling object, the array `[1, 2, 3]`.   But a function expression is passed to `map` as argument, and when functions are passed as arguments, they lose surrounding context, so the execution context is then implicitly set to the global object.  If `map` took a `thisArg` argument, then the execution context would be `thisArg`. 
+- EXPLANATION:  It's the callback function that is executed with global context. On line 5, The implicit execution context of `forEach` is its calling object, the array `[1, 2, 3]`.  In the case of the function expression, we know that the execution context is determined by how the function is invoked. But the function expression is passed to `map` as argument, and when functions are passed as arguments, they lose surrounding context, so the execution context is then implicitly set to the global object.  If `map` took a `thisArg` argument instead, then the execution context would be `thisArg`. 
 
-- OTHER EXPLANATION( my own reasoning):
+- OTHER DETAILS ( my own reasoning):
   - `forEach` will invoke the callback within its own scope? 
   - In this case of callback function being a function expression, we know that the execution context is determined by how the function is invoked. 
   - What's happening here is that a *function* is invoking / executing another function- so the function expression is almost like being invoked as a standalone function. Normally,  execution context(`this`) depends on the *object* that invoked the method that `this` is in. 

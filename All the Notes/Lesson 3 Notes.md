@@ -2300,11 +2300,11 @@ ES6 classes provide a cleaner, more compact alternative to constructors and prot
 
 ------
 
-### Summary
+### Lesson Summary
 
 - Factory functions instantiate and return a new object in the function body. They let us create new objects based on a predefined template. However they have 2 downsides.
   - There is no way to tell whether a factory function created a given object. 
-  - All objects created by a facoty function have separate copies of the methods, which can be redundant and wasteful and memory intensive.
+  - All objects created by a factory function have separate copies of the methods, which can be redundant and wasteful and memory intensive.
 - Constructor functions are meant to be invoked with the `new` operator. They instantiate a new object behind the scenes and let the developer manipulate it through the `this` keyword. A typical constructor uses the following pattern: 
   - The constructor is invoked with `new`.
   - The JS runtime creates a new object that inherits from the constructor's prototype object.

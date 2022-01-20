@@ -334,7 +334,7 @@ raceCar1.drive();
 
 ------
 
-##### Summary
+##### Lesson 1 Summary
 
 In this lesson, we learned about some foundational concepts of Object Oriented programming and how we can apply those in JavaScript.
 
@@ -489,6 +489,7 @@ obj['1, 2, 3'] // 'three'
   ```
 
 - Other ways to check for property existence is to enumerate(iterate over) the properties of an object.  
+  
   - `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
   - `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
   - `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
@@ -503,8 +504,6 @@ Object.getOwnPropertyNames(obj)     // [ '7', 'false', '1,2,3', 'a-key', 'undefi
 | For … in loop                | ✅          |                         |      | ✅               |
 | Object.keys(obj)             | ✅          |                         | ✅    |                 |
 | Object.getOwnPropertyNames() |            | ✅                       | ✅    |                 |
-
-
 
 ##### Enumerable Properties
 
@@ -732,11 +731,20 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### The Prototype Chain (what is it, what is it used for)
 
-- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits. 
+What is it
+
+- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
+
+What it's used for. 
+
 - The prototype chain is used to look up properties, and this is done through prototypal delegation. Objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
 - When I access a property that is not owned by an object, JavaScript traverses up the prototype chain until it finds the property. In other words, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
   - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It also saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+
+Usefulness
+
+- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+- Looking up a property in the prototype chain is the basis for prototypal inheritance. 
 
 ------
 
@@ -1356,6 +1364,14 @@ let name = () => console.log('My name is'); // arrow function
 
 ##### First Class Functions
 
+Have these charactersitics ( from summary)
+
+- You can add them to objects and execute them in the respective object's context.
+- You can remove them from their objects, pass them around, and execute them in entirely different contexts.
+- **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 - **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
 
 - Functions of all kinds, including declared functions, can be treated as values:
@@ -1651,12 +1667,12 @@ foo; // 'bar'
 
 - Earlier, we said that `this` refers to the object that contains the method. That's true, but there's a bit more nuance to how JavaScript determines the value of `this` in a function or method call. 
 - **Execution context**:  the **environment** in which a function executes. 
-  - In JavaScript, it most commonly refers to the current value of the `this` keyword. 
-    - In other words, `this` refers to the **environment** (an object) in which a function executes. 
-    - In other words, Execution context of a function or method call is the value of `this` when that code executes. 
-  - The context depends on how the function or method was invoked, not on where the function was defined. 
-    - In other words, <u>***how you invoke***</u> a function or method determines its execution context for that invocation. It doesn't matter how you define the function or method, nor does it matter where or when you called it. 
-    - So two invocations of the same function or method can have very different execution contexts depending on how you make those calls. 
+  - The current value of the `this` keyword. 
+  - `this` refers to the **environment** (an object) in which a function executes. 
+  - Execution context of a function or method call is the value of `this` when that code executes.
+- The context depends on how the function or method was invoked, not on where the function was defined. 
+  - In other words, <u>***how you invoke***</u> a function or method determines its execution context for that invocation. It doesn't matter how you define the function or method, nor does it matter where or when you called it. 
+  - So two invocations of the same function or method can have very different execution contexts depending on how you make those calls. 
 - There are two basic ways to set the context when calling a function or method
   1. **Explicit**: The execution context that you set explicitly.
   2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
@@ -1694,7 +1710,7 @@ global.bar; // 'bar'
 ```
 
 - Regular function calls do not provide explicit context, JavaScript supplies an implicit context: the global object. 
-  - We say the execution context is implicit because function invocation doesn't supply an explicit alternative. 
+  - We say the execution context is implicit because the function invocation doesn't supply an explicit alternative. 
 
 ##### Strict Mode and Implicit Context
 
@@ -1712,6 +1728,8 @@ foo(); // this refers to: undefined
 ```
 
 ##### Method Execution Context (Implicit)
+
+- Method calls implicitly use the calling object as its execution context. 
 
 - Method calls / method execution syntax provide an implicit execution context. 
   - We are using an explicit object to call the method, but JavaScript interprets the object as the implicit context. 
@@ -1747,13 +1765,12 @@ baz(); // Object [global] {...}
 - Question: so if we instead did this
 
   ```js
-  let baz = foo();
-  baz.bar; // Then the implicit execution context would be baz object, or foo object? Because when invoking a method, it uses the object used to call the method as the implicit context. 
+  foo.bar(); // Then the implicit execution context would be foo object, because we use foo object to invoke the bar method. 
   ```
 
 ##### Explicit Function and Method Execution Context
 
-- Using parenthesis after a function or method name is not the only way to invoke it.
+- Using parenthesis after a function or method name is not the only way to invoke it. As we've seen, 
   - When you invoke a function with parentheses, JavaScript uses the global object as the implicit context. 
   - When you invoke a method, it uses the object that you used to call the method as the implicit context. 
 - You can provide an explicit context to any function or method, and it doesn't have to be the global object or the object that contains the method. 
@@ -1763,11 +1780,16 @@ baz(); // Object [global] {...}
 ##### Explicit Execution Context with `Call`
 
 - Remember that all JavaScript functions are objects: they have properties and methods just like any other object. 
+- The general syntax for `call` is 
+
+```js
+someObject.someMethod.call(context, arg1, arg2, arg3, ...)
+```
 
 - One method that all JavaScript functions have is the `call` method. 
 
   - The **`call`** method calls a function with an explicit execution context. 
-  - The first argument to `call` provides the explicit context for the function invocation. 
+  - The first argument to `call` provides the <u>explicit context</u> for the function invocation. 
   - `Call` does not mutate the object passed as argument to `call`
 
   ```js
@@ -1805,7 +1827,7 @@ baz(); // Object [global] {...}
   ```
 
   ```js
-  // code becomes like this 
+  // above code becomes like to this 
   function logNum() {
     console.log(this.num);
   }
@@ -1826,7 +1848,7 @@ baz(); // Object [global] {...}
 ```js
 // Calls the method logNum and sets explicit execution context to obj2. 
 let obj1 = {
-  logNum() {
+  logNum() { // logNum is a method
     console.log(this.num);
   }
 };
@@ -1860,7 +1882,7 @@ obj2.logNum(); // logs 42
 ```
 
 ```js
-// code becomes like this
+// above code becomes like this
 let obj1 = {
   logNum() {
     console.log(this.num);
@@ -1869,7 +1891,7 @@ let obj1 = {
 
 let obj2 = {
   num: 42, 
-  logNum = obj1.logNum, // Note: no parentheses, we are setting it to the function, not return value of the function. 
+  logNum : obj1.logNum, // Note: no parentheses, we are setting it to the function, not return value of the function. 
 };
 
 obj2.logNum(); // logs 42
@@ -1891,7 +1913,7 @@ let obj = {
 
 ```js
 obj.num = sumNum.call(obj, 5);
-console.log(obj.num); // => 47
+console.log(obj.num); // => 42 + 5 = 47
 ```
 
 - We want to call `sumNum` in a way that it updates `obj.num`. 
@@ -1912,13 +1934,9 @@ obj.num = obj.sumNum(5);
 console.log(obj.num); // => 47
 ```
 
-- The general syntax for `call` is 
-
-```js
-someObject.someMethod.call(context, arg1, arg2, arg3, ...)
-```
-
 ##### Explicit Execution Context with `apply`
+
+- `apply`: calls a function or method with an explicit execution context (the first argument passed to it), and also (optionally) passes an array of arguments to the called function or method. 
 
 - Only difference between `apply` and `call` is that `apply` uses an array to pass any arguments to the function. 
 - General syntax of `apply`: 
@@ -1934,6 +1952,8 @@ someObject.someMethod.apply(context, [arg1, arg2, arg3, ...])
 let args = [arg1, arg2, arg3];
 someObject.someMethod.call(context, ...args);
 ```
+
+> Reminder definition of **spread operator**: allows an iterable such as an array expression or string to be expanded in places where zero or more arguments (for function calls) or elements (for array literals) are expected, or an object expression to be expanded in places where zero or more key-value pairs(for object literals) are expected. 
 
 ##### Summary
 
@@ -1951,6 +1971,8 @@ someObject.someMethod.call(context, ...args);
 
 ### Practice Problems: Implicit and Explicit Function Execution Contexts
 
+[reference](https://launchschool.com/lessons/1eaf5e37/assignments/a6c48cbb)
+
 1. What will the following code output? Try to determine the results without running the code.
 
    ```js
@@ -1963,7 +1985,9 @@ someObject.someMethod.call(context, ...args);
    console.log(context);
    ```
 
-   
+   Show Solution
+
+   The global object. In Node it's `global`; in a browser, it's `window`. Line 5 calls `func` as a function. Regular function calls implicitely use the global object as their execution context, so the implicit context for `func` is the global object, and it returns the global object. 
 
 2. What will the following code output? Explain the difference, if any, between this output and that of problem 1.
 
@@ -1978,6 +2002,10 @@ someObject.someMethod.call(context, ...args);
    
    console.log(context);
    ```
+
+   Show Solution
+
+   The output is `obj`. That is because on line 7, there is a method invocation. `Func` is invoked as a method and uses the calling object `obj` as its implicit execution context. 
 
 3. What will the following code output?
 
@@ -1999,9 +2027,20 @@ someObject.someMethod.call(context, ...args);
    foo.deliverMessage();
    ```
 
+   Show Solution
+
+   ```terminal
+   Hello from the global scope
+   Hello from the function scope!
+   ```
+
+   The first log operation is generated by the function call `deliverMessage()` on line 7. Since this is a regular function call, which means that `deliverMessage` is invoked as a standalone function, the implicit execution context is the global object. `this.message` refers to the global property `message` . The second log operation occurs on line 15 where `deliverMessage()` is invoked as a method. The implicit execution context for method calls is the calling object `foo`, so `this.message` resolves to `foo.message`.  
+
 4. What built-in methods have we learned about that we can use to specify a function's execution context explicitly?
 
-   
+   Show Solution
+
+   `call` `apply` `bind`
 
 5. Take a look at the following code snippet. Use `call` to invoke the `add` method but with `foo` as execution context. What will this return?
 
@@ -2020,9 +2059,19 @@ someObject.someMethod.call(context, ...args);
    };
    ```
 
+   Show Solution
+
+   ```js
+   bar.add.call(foo); // 3
+   ```
+
+   Since we invoke `call` on `bar.add` with `foo` as the explicit context, the `add` method uses `foo.a` and `foo.b` to determine the results, not `bar.a` and `bar.b`. Thus, the return value is 3. 
+
 ------
 
 ### Hard Binding Functions with Contexts
+
+##### `bind`
 
 - JavaScript has a third way to specify the execution context: the `bind` method on function objects.
 - Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
@@ -2977,63 +3026,7 @@ array.forEach(logData);
    };
    ```
 
-------
 
-### Quiz 1
-
-Question 1 
-
-Examine the following code:
-
-```js
-let foo = {
-  bar: 42,
-  qux() {
-    console.log("Pudding");
-  },
-};
-
-let baz = Object.create(foo);
-baz.qux()
-```
-
-Which of the following statements about the invocation on line 9 are true? Choose all that apply:
-
-Correct : C. The `baz` object delegates the invocation of `qux` to the `foo` object.
-
-What does delegate mean? Does it just mean "access property"? 
-
-Downstream objects can delegate properties or behaviors to upstream objects.
-
-------
-
-### Quiz 2 
-
-Question 2
-
-```js
-console.log(global.hasOwnProperty('global'));   // A: true
-console.log(global.hasOwnProperty('foo'));      // B: true
-console.log(global.hasOwnProperty('isFinite')); // C: true
-console.log(global.hasOwnProperty('bar'));      // D: false
-console.log(global.hasOwnProperty('xyz'));      // E: true
-console.log(global.hasOwnProperty('console'));  // F: true
-console.log(global.hasOwnProperty('log'));      // G: false
-```
-
-
-
-Question 7 
-
-Question 7: When does JavaScript bind an object to `this` ? Select all answers that apply.
-
-> D: It binds the execution context based on when the function gets invoked.
->
-> **Incorrect:**
->
-> **B**, **D**: The execution context is determined by how a function is called, not by where it is defined or when it gets invoked.
-
-You're correct in that there is some truth to answer choice D, but there's a bit more nuance to it. The point that this question tries to underscore is the importance of *how* a function is called when determining the execution context. The exception I can think of to answer choice D is when `bind` is used to provide an execution context. Recall that `bind` differs from `call` and `apply` in that the function is *not* immediately invoked and a copy of the function is returned with the supplied execution context bound to said copy.
 
 ------
 
@@ -3046,7 +3039,7 @@ You're correct in that there is some truth to answer choice D, but there's a bit
   - `Object.create` returns a new object with the passed-in argument as its prototype.
   - You can use `Object.getPrototypeOf` and `obj.isPrototypeOf` to check for prototype relationships between objects.
 - Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-  - In other words, **downstream** objects can delegate properties or behaviors to **upstream** objects. ??
+  - In other words, **downstream** objects can delegate properties or behaviors to **upstream** objects. 
   - A downstream object overrides an inherited property if it has a property with the same name. (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
   - `Object.getOwnPropertyNames` and `obj.hasOwnProperty` can be used to test whether an object owns a given property.
 - Function invocations (e.g., `parseInt(numberString)`) rely upon implicit execution context that resolves to the global object. Method invocations (e.g., `array.forEach(processElement)`) rely upon implicit context that resolves to the object that holds the method.
@@ -3067,41 +3060,17 @@ You're correct in that there is some truth to answer choice D, but there's a bit
 
 Definition
 
-- value of `this` is the **execution context**: the environment (an object) in which a function executes. 
-- Execution context is the value of `this` when that code executes. 
+- The value of `this` is the current execution context of a function or method.
+- The value of `this` changes based on how you invoke a function, not how you define it.
+- When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object.
 
 Implications
 
-- Every time a function is called, JS binds some object to `this`. 
+- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
 - `this` keyword is available to every function in JS, because every JS function call has an execution context.
+  - All JS functions and methods execute within an execution context , aka the `this` binding. 
 
-##### Context Loss & their solutions
-
-- Method is copied out of an object and used elsewhere. 
-  - Accept context object as second parameter (not ideal approach since you can't always change methods, and not good to pass a lot of arguments to functions)
-  - Hard-bind the method's context by using `bind`. 
-- Nested Functions
-  - Variable in outer scope
-  - Call Inner function with explicit context
-  - use `bind`
-  - Use arrow function
-- Passing functions as arguments: Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
-  - Variable
-  - `bind`
-  - arrow function
-  - `thisArg` 
-
-##### Execution context rules
-
-```js
-function foo() {
-  console.log("this refers to: " + this);
-}
-
-foo();
-// this refers to: [object global]
-// Foo is passed to console.log, and foo is invoked as a standalone object.  
-```
+Clarifications about `this`
 
 - When is the execution context / `this`/ bound? 
 
@@ -3136,104 +3105,135 @@ foo();
     console.log(person.fullName); // Rick Sanchez
     ```
 
-    
+##### Execution Context Rules
+
+- **Execution context**: the environment (an object) in which a function executes. 
 
 - Every single javascript invocation/ call has its own **execution context**
 
-  - Regular function calls (functions called as **standalone** function) **implicitly** use the global object as their execution context, while method calls **implicitly** use the calling object as their context. 
-    - Tricky: Why is `forEach` executed with global context? It's not. It's the callback function that is executed with global context. The implicit execution context of `forEach` is the calling object, the array `[1, 2, 3]`. In the case of the function expression, we know that the execution context is determined by how the function is invoked. The function expression will be invoked within the body of the `forEach` function, but because of context loss, the execution context will be implicitly set to the global object. 
-  - When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object. 
-  - You can override this behavior by setting the execution context explicitly with either `call` , `apply`, or `bind`
+  - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
+  - You can override this behavior by setting the execution context explicitly with either `call`,  `apply`, or `bind`.   
+  - While a variable's scope is determined by lexical scoping, meaning where you write the code, `this` depends on how you invoke it. 
   - Arrow functions are also exceptions to this rule. 
-
 - **Arrow functions** are permanently bound to the execution context of the **enclosing function invocation**.
-
   - **enclosing function invocation**: the most <u>immediate</u> function scope in which the arrow function is defined. This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
     - The execution context of this enclosing function is determined by  how it is invoked. 
     - Tricky: `forEach` is not considered enclosing function for arrow functions, why? Because arrow functions are passed to `forEach` - it's not defined inside `forEach`. 
   - They are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
   - Exception: don't use arrow functions as object methods. 
 
-   ##### Enclosing function invocation demonstration
+```js
+function foo() {
+  console.log("this refers to: " + this);
+}
 
-  ```js
-  // Question 7 of Practice Problems: Dealing with Context Loss
-  // solution
-  const TESgames = {
-    titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-    seriesTitle: 'The Elder Scrolls',
-    listGames: function() {
+foo();
+// this refers to: [object global]
+// Foo is passed to console.log, and foo is invoked as a standalone object.  
+```
+
+##### Tricky
+
+- Why is `forEach` executed with global context? 
+  - It's not. 
+  - It's the callback function that is executed with global context. The implicit execution context of `forEach` is the calling object, the array `[1, 2, 3]`. In the case of the function expression, we know that the execution context is determined by how the function is invoked. The function expression will be invoked within the body of the `forEach` function, but because of context loss, the execution context will be implicitly set to the global object. 
+
+##### Context Loss & their solutions
+
+- Method is copied out of an object and used elsewhere. 
+  - Accept context object as second parameter (not ideal approach since you can't always change methods, and not good to pass a lot of arguments to functions)
+  - Hard-bind the method's context by using `bind`. 
+- Nested Functions
+  - Variable in outer scope
+  - Call Inner function with explicit context
+  - use `bind`
+  - Use arrow function
+- Passing functions as arguments: Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
+  - Variable
+  - `bind`
+  - arrow function
+  - `thisArg`
+
+ ##### Enclosing function invocation demonstration
+
+```js
+// Question 7 of Practice Problems: Dealing with Context Loss
+// solution
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function() {
+    this.titles.forEach(title => {
+      console.log(this.seriesTitle + ': ' + title); // this refers to TESgames
+    });
+  }
+};
+
+TESgames.listGames();
+```
+
+```js
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function () {
+    TESgames.titles.forEach(title => {
+      console.log(this.seriesTitle + ': ' + title); // `this` now refers to undefined
+    });
+  }
+};
+
+// TESgames.listGames();
+
+let copy = TESgames.listGames;
+copy();
+```
+
+```js
+// shows that the enclosing function is the context of the immediate function, not the most outer function invocation
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function() {
+    return (function innerFunc() { // new inner function ( not innerFunc) is the arrow function's enclosing function
       this.titles.forEach(title => {
-        console.log(this.seriesTitle + ': ' + title); // this refers to TESgames
+        console.log(this.seriesTitle + ': ' + title);
       });
-    }
-  };
-  
-  TESgames.listGames();
-  ```
+    }).bind(TESgames2); // returns a function that is permanently bound to Tesgames2, so arrow funciton context becomes Tesgames2. Bind 
+  }
+};
 
-  ```js
-  const TESgames = {
-    titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-    seriesTitle: 'The Elder Scrolls',
-    listGames: function () {
-      TESgames.titles.forEach(title => {
-        console.log(this.seriesTitle + ': ' + title); // `this` now refers to undefined
+// new object
+const TESgames2 = { 
+  titles: ['TestArena', 'TestDaggerfall', 'TestMorrowind', 'TestOblivion', 'TestSkyrim'],
+  seriesTitle: 'The Elder Scrolls 2',
+};
+
+TESgames.listGames()(); // Tes.games.listGames() returns a function that has context of Tesgames2, and is then invoked
+```
+
+```js
+// NOW compare it to this code, without arrow function
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function () {
+    return (function innerFunc() { 
+      this.titles.forEach(function (title) {
+        console.log(this.seriesTitle + ': ' + title); // this would refer to context of `forEach`, whith is global. 
       });
-    }
-  };
-  
-  // TESgames.listGames();
-  
-  let copy = TESgames.listGames;
-  copy();
-  ```
+    }).bind(TESgames2);
+  }
+};
 
-  ```js
-  // shows that the enclosing function is the context of the immediate function, not the most outer function invocation
-  const TESgames = {
-    titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-    seriesTitle: 'The Elder Scrolls',
-    listGames: function() {
-      return (function innerFunc() { // new inner function ( not innerFunc) is the arrow function's enclosing function
-        this.titles.forEach(title => {
-          console.log(this.seriesTitle + ': ' + title);
-        });
-      }).bind(TESgames2); // returns a function that is permanently bound to Tesgames2, so arrow funciton context becomes Tesgames2. Bind 
-    }
-  };
-  
-  // new object
-  const TESgames2 = { 
-    titles: ['TestArena', 'TestDaggerfall', 'TestMorrowind', 'TestOblivion', 'TestSkyrim'],
-    seriesTitle: 'The Elder Scrolls 2',
-  };
-  
-  TESgames.listGames()(); // Tes.games.listGames() returns a function that has context of Tesgames2, and is then invoked
-  ```
+// new object
+const TESgames2 = {
+  titles: ['TestArena', 'TestDaggerfall', 'TestMorrowind', 'TestOblivion', 'TestSkyrim'],
+  seriesTitle: 'The Elder Scrolls 2',
+};
 
-  ```js
-  // NOW compare it to this code, without arrow function
-  const TESgames = {
-    titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-    seriesTitle: 'The Elder Scrolls',
-    listGames: function () {
-      return (function innerFunc() { 
-        this.titles.forEach(function (title) {
-          console.log(this.seriesTitle + ': ' + title); // this would refer to context of `forEach`, whith is global. 
-        });
-      }).bind(TESgames2);
-    }
-  };
-  
-  // new object
-  const TESgames2 = {
-    titles: ['TestArena', 'TestDaggerfall', 'TestMorrowind', 'TestOblivion', 'TestSkyrim'],
-    seriesTitle: 'The Elder Scrolls 2',
-  };
-  
-  TESgames.listGames()(); // outputs undefined... etc
-  ```
+TESgames.listGames()(); // outputs undefined... etc
+```
 
 - Arrow Function exception: 
 
@@ -3573,5 +3573,59 @@ baz.qux() // baz delegates the invocation of qux to its prototype foo object.
 
 ------
 
-##### 
+### Quiz 1
+
+Question 1 
+
+Examine the following code:
+
+```js
+let foo = {
+  bar: 42,
+  qux() {
+    console.log("Pudding");
+  },
+};
+
+let baz = Object.create(foo);
+baz.qux()
+```
+
+Which of the following statements about the invocation on line 9 are true? Choose all that apply:
+
+Correct : C. The `baz` object delegates the invocation of `qux` to the `foo` object.
+
+What does delegate mean? Does it just mean "access property"? 
+
+Downstream objects can delegate properties or behaviors to upstream objects.
+
+------
+
+### Quiz 2 
+
+Question 2
+
+```js
+console.log(global.hasOwnProperty('global'));   // A: true
+console.log(global.hasOwnProperty('foo'));      // B: true
+console.log(global.hasOwnProperty('isFinite')); // C: true
+console.log(global.hasOwnProperty('bar'));      // D: false
+console.log(global.hasOwnProperty('xyz'));      // E: true
+console.log(global.hasOwnProperty('console'));  // F: true
+console.log(global.hasOwnProperty('log'));      // G: false
+```
+
+
+
+Question 7 
+
+Question 7: When does JavaScript bind an object to `this` ? Select all answers that apply.
+
+> D: It binds the execution context based on when the function gets invoked.
+>
+> **Incorrect:**
+>
+> **B**, **D**: The execution context is determined by how a function is called, not by where it is defined or when it gets invoked.
+
+You're correct in that there is some truth to answer choice D, but there's a bit more nuance to it. The point that this question tries to underscore is the importance of *how* a function is called when determining the execution context. The exception I can think of to answer choice D is when `bind` is used to provide an execution context. Recall that `bind` differs from `call` and `apply` in that the function is *not* immediately invoked and a copy of the function is returned with the supplied execution context bound to said copy.
 

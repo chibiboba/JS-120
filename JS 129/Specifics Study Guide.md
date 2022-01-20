@@ -1,0 +1,39 @@
+## Specific Topics of Interest
+
+Objects, object factories, constructors and prototypes, OLOO, and ES6 classes 1, 3,4 
+
+Methods and properties; instance and static methods and properties 1, 3
+
+Prototypal and pseudo-classical inheritance 4
+
+Encapsulation - 1
+
+Polymorphism- 4
+
+Collaborator objects - 1
+
+Single vs multiple inheritance
+
+Mix-ins; mix-ins vs. inheritance 4
+
+Methods and functions; method invocation vs. function invocation 1,2 
+
+Higher-order functions 1
+
+The global object 2
+
+Method and property lookup sequence 2
+
+Function execution context and `this` 2
+
+Implicit and explicit execution context 2
+
+Dealing with context loss 2
+
+`call`, `apply`, and `bind` 2
+
+`Object.assign` and `Object.create`
+
+Built-in constructors like `Array`, `Object`, `String` and `Number` 3
+
+Reading OO code
