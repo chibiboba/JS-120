@@ -302,6 +302,12 @@ if (Object.getPrototypeOf(obj)) {
 
    Show Solution
 
+   ```markdown
+   Function.prototype.bind()
+   ```
+
+   We can use the `bind` method on function objects to permanently bind a function to an execution context. 
+
 2. What will the following code log to the console?
 
    ```js
@@ -317,6 +323,12 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Show Solution
+
+   ```terminal
+   
+   ```
+
+   Nothing is logged to the console because unlike `call` or `apply`, `bind` doesn't invoke the function used to call it. Instead, it returns a new function that is permanently bound to the context argument. 
 
 3. What will the following code output?
 
@@ -337,6 +349,14 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Show Solution
+
+   ```terminal
+   NaN
+   
+   5
+   ```
+
+   On line 12 `foo` is invoked as a standalone function so its implicit execution context is the global object. `foo` looks for properties on the global object. Both `this.a` and `this.b` evaluate to `undefined`, resulting in a `NaN` value. `bar` refers to a function that is permanently bound to object `obj` as its explicit execution context, so when `bar` is called on line 13, it references `obj`'s properties. `this.a` and `this.b` evaluate to 2 and 3, resulting in the 5 value. 
 
 4. What will the code below log to the console?
 
@@ -359,7 +379,17 @@ if (Object.getPrototypeOf(obj)) {
    negativity.logMessage();
    ```
 
-   Show Solution
+   My Solution 
+
+   ```terminal
+   Javascript makes sense!
+   ```
+
+   On line 15, property `logMessage` is added to the `negativity` object and assigned to `bar`. `logMessage` is invoked on line 16. `logMessage` references `bar`, which references a function that is explicitly bound to the object `positivity` as its execution context. That function invokes `foo` with `this` referring to `positivity`, and `this.message` resolves to 'JavaScript makes sense'. So even though a method is invoked on the `negativity` object, it references a property from the `positivity` object. 
+
+   Their Solution
+
+   Since `bar` is bound to `positivity` as the return value of the `bind` invocation on line 13, `positivity`'s property `message` is logged by the function call on the last line, despite the fact that the function is invoked as a method on the `negativity` object
 
 5. What will the code below output?
 
@@ -381,6 +411,14 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Show Solution
+
+   ```terminal
+   Amazebulous
+   ```
+
+   `bind` returns a function that is permanently bound to the execution context passed to it as argument. So `bar` references a function that is permanently bound to `obj`. Even when `bar` is invoked by `call` on line 14, `bar`'s execution context is still `obj`.
+
+   Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`. In keeping with this, the last line of our code outputs "Amazebulous!", because the function `bar`'s context has been permanently bound to `obj`.
 
 ------
 
@@ -411,13 +449,67 @@ if (Object.getPrototypeOf(obj)) {
 
    Show Solution
 
+   ```terminal
+   undefined undefined is a undefined.
+   ```
+
+   Functions as arguments lose surrounding context. When we pass `turk.getDescription` to `logReturnVal` as an argument, we remove the method from its context.  When it is executed as `func`, the context is set to the global object instead of `turk`. Since the global object doesn't have properties defined for `firstName`, `lastName`, or `occupation`, the output isn't what we expect.
+
 2. Modify the program from the previous problem so that `logReturnVal` accepts an additional `context` argument. If you then run the program with `turk` as the context argument, it should produce the desired output.
 
    Show Solution
 
+   ```js
+   let turk = {
+     firstName: 'Christopher',
+     lastName: 'Turk',
+     occupation: 'Surgeon',
+     getDescription() {
+         return this.firstName + ' ' + this.lastName + ' is a '
+                                     + this.occupation + '.';
+     }
+   };
+   
+   function logReturnVal(func, context) {
+     let returnVal = func.call(context);
+     console.log(returnVal);
+   }
+   
+   logReturnVal(turk.getDescription, turk);
+   ```
+
+   By using `call` to invoke `func` and passing it the `context` argument, we can provide the desired context for the function. On line 16, we invoke `logReturnVal` with `turk` as the `context` argument, then pass that value to `call`; the result is our desired output. 
+
+   We can use `bind` but given the condition that `logReturnVal` must accept a context argument, the solution would lead to odd code. 
+
+   ```js
+   let returnVal = func.bind(context)();
+   ```
+
 3. Suppose that we want to extract `getDescription` from `turk`, but we always want it to execute with `turk` as its execution context. How would you modify your code to do that?
 
    Show Solution
+
+   ```js
+   let turk = {
+     firstName: 'Christopher',
+     lastName: 'Turk',
+     occupation: 'Surgeon',
+     getDescription() {
+         return this.firstName + ' ' + this.lastName + ' is a '
+                                     + this.occupation + '.';
+     }
+   };
+   
+   function logReturnVal(func) {
+     let returnVal = func();
+     console.log(returnVal);
+   }
+   
+   logReturnVal(turk.getDescription.bind(turk));
+   ```
+
+   
 
 4. Consider the following code:
 
@@ -447,17 +539,72 @@ if (Object.getPrototypeOf(obj)) {
 
    Show Solution
 
+   ```terminal
+   undefined: Arena
+   undefined: Daggerfall
+   undefined: Morrowind
+   undefined: Oblivion
+   undefined: Skyrim
+   ```
+
+   No because on line 5, a callback function is passed to `forEach` as argument. When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. So on line 6, the execution context is not `TESgames` object, but the global object. `this.seriesTitle` resolves to `undefined` as there is no `seriesTitle` property on the global object. 
+
 5. Use `let self = this;` to ensure that `TESgames.listGames` uses `TESGames` as its context and logs the proper output.
 
    Show Solution
+
+   ```js
+   const TESgames = {
+     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+     seriesTitle: 'The Elder Scrolls',
+     listGames: function() {
+       let self = this;
+       this.titles.forEach(function(title) {
+         console.log(self.seriesTitle + ': ' + title);
+       });
+     }
+   };
+   
+   TESgames.listGames();
+   ```
 
 6. The `forEach` method provides an alternative way to supply the execution context for the callback function. Modify the program from the previous problem to use that technique to produce the proper output:
 
    Show Solution
 
+   ```js
+   const TESgames = {
+     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+     seriesTitle: 'The Elder Scrolls',
+     listGames: function() {
+       this.titles.forEach(function(title) {
+         console.log(this.seriesTitle + ': ' + title);
+       }, this);
+     }
+   };
+   
+   TESgames.listGames();
+   ```
+
 7. Use an arrow function to achieve the same result:
 
    Show Solution
+
+   ```js
+   const TESgames = {
+     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+     seriesTitle: 'The Elder Scrolls',
+     listGames: function() {
+       this.titles.forEach(title => {
+         console.log(this.seriesTitle + ': ' + title);
+     	});
+     }
+   };
+   
+   TESgames.listGames();
+   ```
+
+   
 
 8. Consider the following code:
 
@@ -482,6 +629,52 @@ if (Object.getPrototypeOf(obj)) {
 
    Show Solution
 
+   ```terminal
+   0
+   ```
+
+   When the code on line 5 runs, the value of `this` is the global object. That is because the function `increment` is invoked as a standalone function on line 8. `this.a` on line 5 references a property of the global object rather than a property of `foo`. Thus, property `foo.a` is never modified in the code, its value remains 0. 
+
+   The value of `foo.a` will be `0`. Since `increment` gets invoked as a function, `this.a` on line 5 references a property of the global object rather than a property of `foo`. Thus, the property `foo.a` isn't modified by the `increment`; its value remains 0.
+
 9. Use one of the methods we learned in this lesson to invoke `increment` with an explicit context such that `foo.a` gets incremented with each invocation of `incrementA`.
 
    Show Solution
+
+   ```js
+   let foo = {
+     a: 0,
+     incrementA: function() {
+       function increment() {
+         this.a += 1;
+       }
+   
+       increment.call(this);
+     }
+   };
+   
+   foo.incrementA();
+   foo.incrementA();
+   foo.incrementA();
+   ```
+
+   We can use `apply` or `call` to invoke `increment` on line 8 with explicit context. We pass `this` as the context argument since inside `incrementA` but outside of `increment`, `this` references the containing object, namely `foo`.
+
+   ```js
+   let foo = {
+     a: 0,
+     incrementA: function() {
+       function increment() {
+         this.a += 1;
+       }
+   
+       increment.bind(this)(); // bind also works but code is strange
+     }
+   };
+   
+   foo.incrementA();
+   foo.incrementA();
+   foo.incrementA();
+   ```
+
+   

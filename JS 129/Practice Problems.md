@@ -112,6 +112,18 @@ console.log(obj.num);
 
    Solution
 
+##### Q: How do you create an object that doesn't have a prototype? 
+
+```js
+
+```
+
+##### Q: How can you determine whether an object has a prototype?
+
+```js
+
+```
+
 ------
 
 #### Implicit and Explicit Execution Contexts

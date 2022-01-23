@@ -1,5 +1,9 @@
-function a () {
-  console.log(2);
-}
+let person = {
+  firstName: 'Rick ',
+  lastName: 'Sanchez',
+  fullName() {
+    return this.firstName + this.lastName; // inside a method, so context is person which is what the method is in
+  },
+};
 
-a(3);
+console.log(person.fullName); // Rick Sanchez

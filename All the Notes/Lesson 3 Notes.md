@@ -2321,116 +2321,6 @@ ES6 classes provide a cleaner, more compact alternative to constructors and prot
 
 ------
 
-### Lesson 3 Quiz 1
-
-Question 3) 
-
-```js
-function Dog() {
-}
-
-function Pet(type) {
-  if (type === 'dog') {
-    return new Dog();
-  } else if (type === 'lion') {
-    return 'not a pet!';
-  }
-}
-
-let dog = new Pet('dog'); // returns a `Pet` object
-let lion = new Pet('lion'); // lion returns a `Dog` object
-let cat = new Pet('cat'); // returns a `Pet` object
-```
-
-Question 5) wrong
-
-```js
-let arr1 = new Array(1, 2, 3);
-let arr2 = Array(1, 2, 3);
-
-console.log(arr1 === arr2); // => false
-```
-
-Both arrays are identical: they are both objects of type Array, and they both have the same values in their elements. JavaScript does not require the `new` keyword when creating arrays; the `Array` constructor works the same regardless of whether `new` is used.
-
-Question 7 ) wrong
-
-Why is the `Array.isArray` static method useful? Choose all answers that apply.
-
-- The `typeof` operator returns `object` when used with an array, so cannot be used to detect an array.
-
-- It helps improve readability and show intent.
-
-- `Array.isArray` helps distinguish between arrays and other objects.
-
-Question  8) wrong
-
-Which of the following are Array-like objects? Choose all answers that apply.
-
-- All objects that have a `length` property. 
-
-Anwers that are wrong
-
-- All objects that let you use computed member access notation, e.g., `obj["3"]`, to access properties of the object.
-  - The ability to use **computed member access notation** is native to all JavaScript objects, not just array-like objects. 
-  - So all objects have computed member access notation. 
-- All objects that have one or more properties whose key is a non-negative integer.
-
-Question 9) wrong
-
-```js
-str = [1, 2, 3].map.call(str, convertCase).join("");
-// this syntax uses an array(any array would work) to invoke call, which invokes map to execute convertCase with str as the context. 
-
-str = Array.from(str).map(convertCase).join(""); 
-// This code uses the Array.from static method to convert str to an array of characters.
-// That lets us use Array.prototype.map and Array.prototype.join to translate the characters and recombined them as a string.
-```
-
-
-
-Question 12) 
-
-```js
-function Foo(parm) {
-  this.parm = parm;
-}
-
-Foo.bar = function() { // static method called bar
-  // omitted code
-};
-
-Foo.prototype.qux = function() { // instance method calle qux
-  // omitted code
-};
-
-let foo = new Foo(10);
-```
-
-```js
-class Foo {
-  constructor(parm) {
-    this.parm = parm;
-  }
-
-  static bar() {
-    // omitted code
-  }
-
-  prototype: {  // here you are assigning a property called prototype in the Foo.prototype objec, rather than qu Foo.prototype object is initially an empty object / undefined. 
-    qux() {
-      // omitted code
-    }
-  }
-}
-
-let foo = new Foo(10);
-```
-
-
-
-------
-
 ### Concepts Summarized
 
 ##### Factory Functions
@@ -2614,5 +2504,113 @@ function Circle(radius) {
 Circle.prototype.area = function () {
   return Math.PI * Math.pow(this.radius, 2);
 }
+```
+
+------
+
+### Lesson 3 Quiz 1
+
+Question 3) 
+
+```js
+function Dog() {
+}
+
+function Pet(type) {
+  if (type === 'dog') {
+    return new Dog();
+  } else if (type === 'lion') {
+    return 'not a pet!';
+  }
+}
+
+let dog = new Pet('dog'); // returns a `Pet` object
+let lion = new Pet('lion'); // lion returns a `Dog` object
+let cat = new Pet('cat'); // returns a `Pet` object
+```
+
+Question 5) wrong
+
+```js
+let arr1 = new Array(1, 2, 3);
+let arr2 = Array(1, 2, 3);
+
+console.log(arr1 === arr2); // => false
+```
+
+Both arrays are identical: they are both objects of type Array, and they both have the same values in their elements. JavaScript does not require the `new` keyword when creating arrays; the `Array` constructor works the same regardless of whether `new` is used.
+
+Question 7 ) wrong
+
+Why is the `Array.isArray` static method useful? Choose all answers that apply.
+
+- The `typeof` operator returns `object` when used with an array, so cannot be used to detect an array.
+
+- It helps improve readability and show intent.
+
+- `Array.isArray` helps distinguish between arrays and other objects.
+
+Question  8) wrong
+
+Which of the following are Array-like objects? Choose all answers that apply.
+
+- All objects that have a `length` property. 
+
+Anwers that are wrong
+
+- All objects that let you use computed member access notation, e.g., `obj["3"]`, to access properties of the object.
+  - The ability to use **computed member access notation** is native to all JavaScript objects, not just array-like objects. 
+  - So all objects have computed member access notation. 
+- All objects that have one or more properties whose key is a non-negative integer.
+
+Question 9) wrong
+
+```js
+str = [1, 2, 3].map.call(str, convertCase).join("");
+// this syntax uses an array(any array would work) to invoke call, which invokes map to execute convertCase with str as the context. 
+
+str = Array.from(str).map(convertCase).join(""); 
+// This code uses the Array.from static method to convert str to an array of characters.
+// That lets us use Array.prototype.map and Array.prototype.join to translate the characters and recombined them as a string.
+```
+
+
+
+Question 12) 
+
+```js
+function Foo(parm) {
+  this.parm = parm;
+}
+
+Foo.bar = function() { // static method called bar
+  // omitted code
+};
+
+Foo.prototype.qux = function() { // instance method calle qux
+  // omitted code
+};
+
+let foo = new Foo(10);
+```
+
+```js
+class Foo {
+  constructor(parm) {
+    this.parm = parm;
+  }
+
+  static bar() {
+    // omitted code
+  }
+
+  prototype: {  // here you are assigning a property called prototype in the Foo.prototype objec, rather than qu Foo.prototype object is initially an empty object / undefined. 
+    qux() {
+      // omitted code
+    }
+  }
+}
+
+let foo = new Foo(10);
 ```
 
