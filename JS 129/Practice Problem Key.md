@@ -677,4 +677,532 @@ if (Object.getPrototypeOf(obj)) {
    foo.incrementA();
    ```
 
+## Lesson 3
+
+#### Factory Functions 
+
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/bf77a962)
+
+1. What are two disadvantages of working with factory functions?
+
+   Show Solution
+
+   - Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
+   - There is no way to tell which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
+
+2. Rewrite the following code to use object-literal syntax to generate the returned object:
+
+   ```js
+   function makeObj() {
+     let obj = {};
+     obj.propA = 10;
+     obj.propB = 20;
+     return obj;
+   }
+   ```
+
+   Show
+
+   ```js
+   function makeObj() {
+     return {
+       propA: 10,
+       propB: 20,
+     };  
+   }
+   ```
+
+3. In this problem and the remaining problems, we'll build a simple invoice processing program. To get you started, here's the code to process a single invoice:
+
+   ```js
+   let invoice = {
+     phone: 3000,
+     internet: 6500
+   };
    
+   let payment = {
+     phone: 1300,
+     internet: 5500
+   };
+   
+   let invoiceTotal = invoice.phone + invoice.internet;
+   let paymentTotal = payment.phone + payment.internet;
+   let remainingDue = invoiceTotal - paymentTotal;
+   
+   console.log(paymentTotal);         // => 6800
+   console.log(remainingDue);         // => 2700
+   ```
+
+   To process multiple invoices, we need a factory method that we can use to create invoices. The requirements for the factory function are as follows:
+
+   1. It returns an invoice object, with `phone` and `internet` properties, and a `total` method.
+   2. The default value for the phone service is 3000, and the internet service is 5500 (in cents, of course!).
+   3. The function takes an object argument whose attributes override the default values.
+
+   Your function should work with the following code:
+
+   ```js
+   function createInvoice(services) {
+     // implement the factory function here
+   }
+   
+   function invoiceTotal(invoices) {
+     let total = 0;
+   
+     for (let index = 0; index < invoices.length; index += 1) {
+       total += invoices[index].total();
+     }
+   
+     return total;
+   }
+   
+   let invoices = [];
+   invoices.push(createInvoice());
+   invoices.push(createInvoice({ internet: 6500 }));
+   invoices.push(createInvoice({ phone: 2000 }));
+   invoices.push(createInvoice({
+     phone: 1000,
+     internet: 4500,
+   }));
+   
+   console.log(invoiceTotal(invoices)); // 31000
+   ```
+
+   Show Solution
+
+   ```js
+   function createInvoice(services = {}) { // default parameter in case no object is passed to the function. 
+     let phoneCharge = services.phone || 3000;
+     let internetCharge = services.internet || 5500;
+   
+     return {
+       phone: phoneCharge,
+       internet: internetCharge,
+   
+       total: function() {
+         return this.phone + this.internet;
+       }
+     };
+   }
+   ```
+
+4. Now we can build a factory function to create payments. The function can take an object argument in one of 3 forms:
+
+   - Payment for one service, e.g., `{ internet: 1000 }` or `{ phone: 1000 }`.
+   - Payment for both services, e.g., `{ internet: 2000, phone: 1000 }`.
+   - Payment with just an amount property, e.g., `{ amount: 2000 }`.
+
+   The function should return an object that has the amount paid for each service and a `total` method that returns the payment total. If the `amount` property is not present in the argument, it should return the sum of the phone and internet service charges; if the `amount` property is present, return the value of that property.
+
+   Your function should work with the following code:
+
+   ```js
+   function createPayment(services) {
+     // implement the factory function here
+   }
+   
+   function paymentTotal(payments) {
+     return payments.reduce((sum, payment)  => sum + payment.total(), 0);
+   }
+   
+   let payments = [];
+   payments.push(createPayment());
+   payments.push(createPayment({
+     internet: 6500,
+   }));
+   
+   payments.push(createPayment({
+     phone: 2000,
+   }));
+   
+   payments.push(createPayment({
+     phone: 1000,
+     internet: 4500,
+   }));
+   
+   payments.push(createPayment({
+     amount: 10000,
+   }));
+   
+   console.log(paymentTotal(payments));      // => 24000
+   ```
+
+   Show Solution
+
+   ```js
+   function createPayment(services = {}) { 
+     return {
+       phone: services.phone || 0,
+       internet: services.internet || 0,
+       amount: services.amount,
+       total: function () {
+         return services.amount || this.phone + this.internet;
+       }   
+     };
+   }
+   ```
+
+5. Update the `createInvoice` function so that it can add payment(s) to invoices. Use the following code as a guideline:
+
+   ```js
+   let invoice = createInvoice({
+     phone: 1200,
+     internet: 4000,
+   });
+   
+   let payment1 = createPayment({ amount: 2000 });
+   let payment2 = createPayment({
+     phone: 1000,
+     internet: 1200
+   });
+   
+   let payment3 = createPayment({ phone: 1000 });
+   
+   invoice.addPayment(payment1);
+   invoice.addPayments([payment2, payment3]);
+   invoice.amountDue();       // this should return 0
+   ```
+
+   Show Solution
+
+   ```js
+   function createInvoice(services = {}) { // default parameter in case no object is passed to the function.
+     let phoneCharge = services.phone || 3000;
+     let internetCharge = services.internet || 5500;
+   
+     return {
+       phone: phoneCharge,
+       internet: internetCharge,
+       paymentTotal: 0,
+   
+       invoiceTotal: function () {
+         return this.phone + this.internet;
+       },
+   
+       addPayment: function (payment) {
+         this.paymentTotal += payment.total();
+       },
+   
+       addPayments: function (arr) {
+         arr.forEach(payment => {
+           this.addPayment(payment);
+         });
+       },
+   
+       amountDue() {
+         console.log(this.invoiceTotal() - this.paymentTotal);
+       }
+     };
+   }
+   ```
+
+------
+
+1. 
+
+------
+
+#### Constructors
+
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/5ca112a7)
+
+1. What naming convention separates constructor functions from other functions?
+
+   Show Solution
+
+   Capitalizing constructor function names. 
+
+2. What happens if you run the following code? Why?
+
+   ```js
+   function Lizard() { // invoked as a normal function, function returns undefined.
+     this.scamper = function() { 
+       console.log("I'm scampering!");
+     };
+   }
+   
+   let lizzy = Lizard(); // lizzy's value is undefined.
+   lizzy.scamper(); // ?
+   ```
+
+   Show Solution
+
+   On line 7, `Lizard` is invoked as a normal function. It doesn't have an explicit return value, so it returns `undefined`, which is the value of `lizzy`. On line 8, `lizzy.scamper()` evaluates to `undefined.scamper()` which throws a `TypeError`. 
+
+   This code throws a `TypeError` since `scamper` is an undefined property on `lizzy`. Since `Lizard` was invoked without the `new` operator and it doesn't have an explicit return value, the return value is `undefined`. Thus, `lizzy` gets assigned to `undefined` which causes the call to `scamper` to throw an error: you can't call a method on `undefined`.
+
+3. Alter the code in problem 2 so that it produces the desired output: `I'm scampering!`.
+
+   Show Solution
+
+   ```js
+   function Lizard() { // 
+     this.scamper = function() { 
+       console.log("I'm scampering!");
+     };
+   }
+   
+   let lizzy = new Lizard(); 
+   lizzy.scamper(); 
+   ```
+
+------
+
+#### Practice Problems - Constructors and Prototypes
+
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/ee0fee9d)
+
+1. What does the following code log to the console? Try to answer without running the code. Can you explain why the code produces the output it does?
+
+   ```js
+   let RECTANGLE = {
+     area: function() {
+       return this.width * this.height;
+     },
+     perimeter: function() {
+       return 2 * (this.width + this.height);
+     },
+   };
+   
+   function Rectangle(width, height) {
+     this.width = width;
+     this.height = height;
+     this.area = RECTANGLE.area();
+     this.perimeter = RECTANGLE.perimeter();
+   }
+   
+   let rect1 = new Rectangle(2, 3);
+   
+   console.log(rect1.area);
+   console.log(rect1.perimeter);
+   ```
+
+   Solution
+
+2. How would you fix the problem in the code from problem 1?
+
+   Solution
+
+3. Write a constructor function called `Circle` that takes a radius as an argument. You should be able to call an `area` method on any objects created by the constructor to get the [circle's area](https://www.mathsisfun.com/geometry/circle-area.html). Test your implementation with the following code:
+
+   ```js
+   let a = new Circle(3);
+   let b = new Circle(4);
+   
+   a.area().toFixed(2); // => 28.27
+   b.area().toFixed(2); // => 50.27
+   a.hasOwnProperty('area'); // => false
+   ```
+
+   Solution
+
+4. What will the following code log to the console and why?
+
+   ```js
+   function Ninja() {
+     this.swung = true;
+   }
+   
+   let ninja = new Ninja();
+   
+   Ninja.prototype.swingSword = function() {
+     return this.swung;
+   };
+   
+   console.log(ninja.swingSword());
+   ```
+
+   Solution
+
+5. What will the following code output and why? Try to answer without running the code.
+
+   ```js
+   function Ninja() {
+     this.swung = true;
+   }
+   
+   let ninja = new Ninja();
+   
+   Ninja.prototype = {
+     swingSword: function() {
+       return this.swung;
+     },
+   };
+   
+   console.log(ninja.swingSword());
+   ```
+
+   Solution
+
+6. Implement the method described in the comments below:
+
+   ```js
+   function Ninja() {
+     this.swung = false;
+   }
+   
+   // Add a swing method to the Ninja prototype which
+   // modifies `swung` and returns the calling object
+   
+   let ninjaA = new Ninja();
+   let ninjaB = new Ninja();
+   
+   console.log(ninjaA.swing().swung);      // logs `true`
+   console.log(ninjaB.swing().swung);      // logs `true`
+   ```
+
+   Solution
+
+7. In this problem, we'll ask you to create a new instance of an object, without having direct access to the constructor function:
+
+   ```js
+   let ninjaA;
+   
+   {
+     const Ninja = function() {
+       this.swung = false;
+     };
+   
+     ninjaA = new Ninja();
+   }
+   
+   // create a `ninjaB` object here; don't change anything else
+   
+   ninjaA.constructor === ninjaB.constructor // => true
+   ```
+
+   Hint
+
+   Solution
+
+8. Since a constructor is just a function, you can call it without the `new` operator. However, that can lead to unexpected results and errors, especially for inexperienced programmers. Write a constructor function that you can use with or without the `new` operator. The function should return the same result with either form. Use the code below to check your solution:
+
+   ```js
+   function User(first, last) {
+     // ...
+   }
+   
+   let name = 'Jane Doe';
+   let user1 = new User('John', 'Doe');
+   let user2 = User('John', 'Doe');
+   
+   console.log(name);         // => Jane Doe
+   console.log(user1.name);   // => John Doe
+   console.log(user2.name);   // => John Doe
+   ```
+
+   Hint
+
+   Solution
+
+------
+
+#### Practice Problems - Classes
+
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/b29488f2)
+
+1. What do we mean when we say that classes are first-class values?
+
+   Solution
+
+2. Consider the following class declaration:
+
+   Copy Code
+
+   ```js
+   class Television {
+     static manufacturer() {
+       // omitted code
+     }
+   
+     model() {
+       // method logic
+     }
+   }
+   ```
+
+   What does the `static` modifier do? How would we call the method `manufacturer`?
+
+   Solution
+
+------
+
+## Lesson 4
+
+- Creation with Prototypes
+
+Give us your feedback
+
+#### Practice Problems: Object Creation with Prototypes
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/02f965cb)
+
+1. Use a factory function to create pet objects. The factory should let us create and use pets like this:
+
+   ```js
+   let pudding = createPet("Cat", "Pudding");
+   console.log(`I am a ${pudding.animal}. My name is ${pudding.name}.`);
+   pudding.sleep(); // I am sleeping
+   pudding.wake();  // I am awake
+   
+   let neptune = createPet("Fish", "Neptune");
+   console.log(`I am a ${neptune.animal}. My name is ${neptune.name}.`);
+   neptune.sleep(); // I am sleeping
+   neptune.wake();  // I am awake
+   ```
+
+   Solution
+
+2. Use the OLOO pattern to create an object prototype that we can use to create pet objects. The prototype should let us create and use pets like this:
+
+   ```js
+   let pudding = Object.create(PetPrototype).init("Cat", "Pudding");
+   console.log(`I am a ${pudding.animal}. My name is ${pudding.name}.`);
+   pudding.sleep(); // I am sleeping
+   pudding.wake();  // I am awake
+   
+   let neptune = Object.create(PetPrototype).init("Fish", "Neptune");
+   console.log(`I am a ${neptune.animal}. My name is ${neptune.name}.`);
+   neptune.sleep(); // I am sleeping
+   neptune.wake();  // I am awake
+   ```
+
+   Solution
+
+3. Consider the objects created by the programs in problems 1 and 2. How do objects for the same animal differ from each other?
+
+   solution
+
+------
+
+#### Practice Problems: Subtyping with Classes
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/16921628)
+
+1. Suppose we have the following classes:
+
+   ```js
+   class Game {
+     play() {
+       return 'Start the game!';
+     }
+   }
+   
+   class Bingo extends Game {
+     rulesOfPlay() {
+       // rules of play
+     }
+   }
+   ```
+
+   What would happen if we added a `play` method to the `Bingo` class, keeping in mind that there is already a method of this name in the `Game` class from which the `Bingo` class inherits? Explain your answer. What do we call it when we define a method like this?
+
+   Solution
+
+2. Let's practice creating a class hierarchy.
+
+   Create a class named `Greeting` that has a single method named `greet`. The method should take a string argument, and it should print that argument to the console.
+
+   Now, create two more classes that inherit from `Greeting`: one named `Hello`, and the other `Goodbye`. The `Hello` class should have a `hi` method that takes no arguments and logs `"Hello"`. The `Goodbye` class should have a `bye` method that logs `"Goodbye"`. Use the `greet` method from the `Greeting` class when implementing `Hello` and `Goodbye`; don't call `console.log` from either `Hello` or `Goodbye`.
+
+   Solution

@@ -1803,24 +1803,10 @@ Let's begin by writing a textual description of the game.
   - The dealer hides one of his cards (places it face-down) so that the player can't see what it is.
   - The player can see both of her cards.
 
-- The player takes the first turn, and can
-
-   
-
-  hit
-
-   
-
-  or
-
-   
-
-  stay
-
-  .
+- The player takes the first turn, and can hit or stay
 
   - If the player hits, she gets another card, and again has the opportunity to hit (get another card) or stay.
-  - If the player goes over 21 points, she busts.
+- If the player goes over 21 points, she busts.
   - If the player stays, the dealer plays next.
 
 - If the player didn't bust, it's now the dealer's turn.
@@ -1900,6 +1886,40 @@ After each game is over, ask the player if they want to play again. Start a new 
 When the program starts, give the player 5 dollars with which to bet. Deduct 1 dollar each time she loses, and add 1 dollar each time she wins. The program should quit when she is broke (0 dollars) or rich (has a total of 10 dollars).
 
 Be prepared to run out of cards. You can either create a new deck for each game, or keep track of how many cards remain and create a new deck as needed.
+
+### All requirements
+
+- Twenty-One is a card game with a dealer and a player.
+- The participants try to get as close to 21 points as possible without going over.
+- The game starts by dealing cards from a 52-card deck consisting of cards from 4 suits of 13 ranks each.
+- Both participants receive two cards.
+  - The dealer hides one of his cards (places it face-down) so that the player can't see what it is.
+  - The player can see both of her cards.
+- The player takes the first turn, and can hit or stay.
+  - If the player hits, she gets another card, and again has the opportunity to hit (get another card) or stay.
+  - If the player goes over 21 points, she busts.
+  - If the player stays, the dealer plays next.
+- If the player didn't bust, it's now the dealer's turn.
+  - The dealer reveals his face-down card.
+  - If the dealer's total points are less than 17, he must hit and receive another card.
+  - If the dealer goes over 21 points, he busts.
+  - If the dealer has 17 points or more, he must stay.
+- Results of the game are determined.
+
+##### Additional Requirements
+
+- Welcome the player to the game, and say good bye when they quit.
+- Each time the player has an opportunity to hit or stay:
+  - Display the computer's hand; one card should remain hidden.
+  - Display the player's hand and her point total.
+- For the dealer's turn:
+  - The dealer doesn't play at all if the player busts.
+  - Display the dealer's hand, including the hidden card, and report his point total.
+  - Redisplay the dealer's hand and point total and each time he hits.
+  - Display the results when the dealer stays.
+- After each game is over, ask the player if they want to play again. Start a new game if they say yes, else end the game.
+- When the program starts, give the player 5 dollars with which to bet. Deduct 1 dollar each time she loses, and add 1 dollar each time she wins. The program should quit when she is broke (0 dollars) or rich (has a total of 10 dollars).
+- Be prepared to run out of cards. You can either create a new deck for each game, or keep track of how many cards remain and create a new deck as needed.
 
 ### Scaffolding and Spike
 

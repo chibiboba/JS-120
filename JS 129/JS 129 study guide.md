@@ -1589,9 +1589,9 @@ typeof myFunc; // => "function"
 ### The Global object
 
 - JavaScript creates a global object when it starts running. 
-- This global object is the **implicit execution context** for function invocations. 
   - In Node.js, the global object is the object named `global`. [object global]
   - In the browser, it's the `window` object. 
+- This global object is the **implicit execution context** for function invocations. 
 - Can investigate this in the node REPL or a browser's console. 
 
 ```terminal
@@ -1644,6 +1644,7 @@ isNaN('I am not a number');          // true - string gets coerced to NaN
 
 ##### The Global Object and Undeclared Variables
 
+- Undeclared variables are added to the global object as property. 
 - The global object has an interesting property: whenever you assign a value to a variable without using the `let`, `const`, or `var` keywords (we'll discuss `var` later), the variable gets added to the global object as a property. 
 
 ```js
@@ -3150,7 +3151,7 @@ Clarifications about `this`
   console.log(person.fullName); 
   ```
 
-  - But if `this` is inside a function/method, then the execution context is dependent soley on how the function is invoked, not on how and where the function is defined. 
+  - But if `this` is inside a function/method, then the execution context is dependent solely on how the function is invoked, not on how and where the function is defined. 
 
     ```js
     let person = {
@@ -3971,7 +3972,7 @@ Disadvantages
      };
    
      payment.total = function () {
-       return this.amount || (this.phone || this.internet); // why assign the method here, rather than just set the method already in the payment object? Since this method will always be invoked by method invocation, `this` will always refer to the payment object. 
+       return this.amount || (this.phone + this.internet); // why assign the method here, rather than just set the method already in the payment object? Since this method will always be invoked by method invocation, `this` will always refer to the payment object. 
      }
    
      return payment;
@@ -3987,7 +3988,7 @@ Disadvantages
        amount: services.amount, 
        
        total: function () {
-         return this.amount || (this.phone || this.internet);
+         return this.amount || (this.phone + this.internet);
        }
      }
    }
@@ -4210,7 +4211,7 @@ let car1 = new foo.Car('Toyota', 'Camry', 2019);
 car1.make; //=> 'Toyota'
 ```
 
-- Calling a method defined with concise syntax (also called a concise method) won't work:
+- Exception: Calling a method defined with concise syntax (also called a concise method) won't work:
 
 ```js
 let foo = {
@@ -4276,6 +4277,8 @@ fluffy.foo; // 1
 - Rule: constructor that explicitly tries to return an object returns that object instead of a new object of the desired type. In all other situations, it returns the newly created object, provided no errors occur. In particular, the constructor ignores primitive return values and returns the new object instead.
 
 ##### Supplying Constructor Arguments with Plain Objects
+
+- Can shorten arguments in a constructor by merging object argument with instance object. 
 
 Constructor functions sometimes have to grow with the needs of a program. That often means adding more arguments to the constructor. For instance, our `Car` constructor may one day end up looking like this:
 
@@ -4359,11 +4362,18 @@ function Car(args) {
 ##### Determining an Object's Type
 
 - Many object-oriented languages, like Java or C++, have a strong notion of object types. In most such languages, it's easy to determine the object's type, such as a dog or car. 
+
 - JavaScript, however, treats objects and their types in a looser, more dynamic way. You can't determine the specific type of arbitrary JavaScript objects; they are dynamic structures with a type of `object`, no matter what properties and methods they have. However, we can get some useful information about an object if we know which constructor created it.
 
 - Remember that the `new` operator creates a new object. Suppose that you call the Car constructor with `new`. Informally, we can say that the resulting object is a car. More formally, we can say that the object is an **instance** of a `Car`.
 
 - The `instanceof` operator lets us determine whether a given constructor created an object:
+
+  - Syntax
+
+  - ```md
+    Object instanceof function
+    ```
 
 ```js
 let civicArgs = {
@@ -4395,7 +4405,8 @@ if (civic instanceof Car) {
 
 ##### Constructor.name
 
-- The `constructor` property returns a reference to the `Object` constructor function that created the instance object. This constructor function has access to `name` property which returns the function's name as specified when it was created.
+- The `constructor` property returns a reference(not string name!) to the `Object` constructor function that created the instance object. 
+- This constructor function has access to `name` property which returns the function's name as specified when it was created.
 
 ```js
 console.log("Hello".constructor.name); // String
@@ -4528,7 +4539,7 @@ Okay, we now have a constructor and a related prototype object. Together, they *
 // Delete DogPrototype
 
 function Dog(name, breed, weight) {
-  Object.setPrototypeOf(this, Dog.myPrototype); // this is really interesting! We are creating the property after "invoking" it?
+  Object.setPrototypeOf(this, Dog.myPrototype); // this is really interesting! We are creating the property after "invoking" it? --> recursion happening. 
   // rest of the code
 }
 
@@ -4540,7 +4551,7 @@ Dog.myPrototype = {
 ```
 
 - Since JavaScript functions are objects, we can add properties to them. 
-- Here we assign the prototype object to a `myPrototype` property on the `Dog` function object. Note that it's the `Dog` function object, not the object created by `Dog`!! 
+- Here we assign the prototype object to a `myPrototype` property on the `Dog` function object. Note that it's the `Dog` function, not the instance object created by `Dog`!! 
 
 - This code is confusing, but it works. Kind of like working with recursive functions. 
 
@@ -4577,8 +4588,8 @@ Object.getPrototypeOf(biggie).bark === Dog.myPrototype.bark; // true
 - Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
 
 - All **function objects** have a `prototype` property. 
-- Dunder proto will usually equal `consturctor.prototype` (aka the **prototype property**) given that the constructor is the constructor function that created that object. 
-- References the default prototype objeect. 
+- Dunder proto will usually equal `constructor.prototype` (aka the **prototype property**) given that the constructor is the constructor function that created that object. 
+- References the default prototype object. 
 - What makes constructors special is a characteristic of all function objects in JavaScript: they all have a `prototype` property that we call the **function prototype** to distinguish them from the prototypes used when creating ordinary objects. 
 - The code in the previous section emulates something that JavaScript bundles with constructors. 
 
@@ -4588,7 +4599,7 @@ Dog.prototype; // => Dog {}
 
 - When you call a function `Foo` with the `new` keyword, JavaScript sets the new object's prototype to the current value of `Foo`'s `prototype` property. 
   - That is, the constructor creates an object that inherits from the constructor function's prototype (`Foo.prototype`)
-  - Since inheritance in JS uses prototypes, we can also say that the consturctor creates an object whose prototype references`Foo.prototype`. 
+  - Since inheritance in JS uses prototypes, we can also say that the constructor creates an object whose prototype references`Foo.prototype`. 
 
 ------
 
