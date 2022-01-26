@@ -1,3 +1,11 @@
+#### Questions
+
+- Losing reference to `object.prototype` if it is reassigned to a different object. 
+
+- instance properties include the ones inherited from `object.prototype`??
+
+  
+
 ## Specific Topics of Interest
 
 #### Objects, object factories, constructors and prototypes, OLOO, and ES6 classes 1, 3,4 
@@ -40,7 +48,7 @@
 ##### Object Factories
 
 - **Object factories** (factory functions): are functions that create and return objects of a particular type. 
-  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to create related objects based on a predefined template. 
+  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to automate the creation related objects based on a predefined template. 
   - **Type** means an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
   - Each invocation of the factory function specifies the differences between the objects with arguments. 
   
@@ -61,7 +69,7 @@
 ##### Constructors  (main points)
 
 - **Constructors** is a function that creates and returns an object (**the instance**) of the constructor function.
-  - are an object form of functions used to create objects in JavaScript. 
+  - are an <u>object form of functions</u> used to create objects in JavaScript. 
   - Acts like a factory function: define a constructor once and invoke it each time you want to create an object of that type. 
   - Capitalizing name of constructor is a convention. 
   - Use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
@@ -82,13 +90,14 @@
 - What `new` does. 
   1. It creates an entirely new object(the **instance**), with its **own** properties.
   2. It sets the prototype of the new object to the object that is referenced by the constructor's `prototype` property. 
-  3. It sets the value of `this` inside the function to point to the new object. 
-  4. It invokes the constructor function. Since `this` refers to the new object, we use it within the function to set the object's properties and methods. 
-  5. Finally, once the function finishes running `new` returns the new object "automatically"; we don't explicitely return anything.
+  3. It sets the execution context(value of `this` ) inside the function to point to the new object. 
+     - Since `this` refers to the new object, we use it within the function to set the object's properties and methods. 
+  4. It invokes the constructor function. 
+  5. Finally, once the function finishes running `new` returns the new object "automatically"; we don't explicitly return anything.
 - What `new` doesn't do.
   - It does not create a new function. 
 
-##### Side notes about constructor
+##### Other notes about constructor
 
 - Calling a constructor without `new`
 
@@ -140,21 +149,86 @@
 
   - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe. `String` is not:
 
+##### Advantage of constructor 
+
+Advantage of Constructor 
+
+- Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
+- Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+  - constructors have a prototype property that references an object that instance objects inherit from. 
+  - So properties defined on the constructor `prototype` property are shared through the prototype chain. 
+- Prototypes can be overridden by assigning inheriting objects their own properties. 
+
 ##### Constructors with Prototypes
 
-- Advantage of Constructor 
-  - Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
-  - Saves memory because constructors have a prototype property that references an object that instance objects inherit from. 
-    - The instance object(inheriting objects) delegate method calls to `Object.prototype`. 
-    - Thus, properties are shared through the prototype chain, unlike factory functions where every object create has an own copy of each property. 
 - Constructor `prototype` property 
-  - Constructors have a  `prototype` property, also known as the **function prototype**. 
-  - This property points to an object that the the instance object created by a constructor inherits from. 
+
+  - Known as **constructor's prototype object** /  **function prototype** / **`prototype` property**
+  - Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword. 
+  -  `Constructor.prototype` references the constructor's prototype object.
+    - The constructor stores the prototype object in its `prototype` property; that is, if the constructor's name is `Foo`, then `Foo.prototype` references the constructor's prototype object.
+  - The **constructor's prototype object** is the object that the the instance object(inheriting object) created by a constructor inherits from. 
     - When you call a function `Foo` with the `new` keyword, JavaScript sets the new object's prototype to the current value of `Foo`'s `prototype` property. 
-    - The inheriting object's prototype references `Foo.prototype`. 
-  - Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
+    - The inheriting object's prototype references `Foo.prototype`.
+    - Even if you assign `constructor.prototype` to a different object, the inheriting object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
+  - Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
+  - Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
+
+- <u>**An object's prototype**</u>: 
+
+  - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
+
+  - Referenced by  dunder proto `__proto__` or hidden `[[prototype]]` property
+
+  - An **object's prototype**  is what an inheriting object's `[[prototype]]` or `__prototype__` property references. 
+    - It is the object that the current object inherits from. 
+    - If `bar` is an object, then the object from which `bar` inherits is the **object prototype**. 
+    - By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
+    - The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
+
+##### Terminology Confusion: prototype
+
+- An object's prototype is not the same as constructor's prototype object, but often times an object's prototype references the Constructor's prototype object, given that the constructor is the constructor function that created the object. 
+  - Object's `__proto__` or hidden `[[prototype]]` references an object's prototype. It also references `constructor.prototype`.
+- A constructor's `[[prototype]]` !== `constructor.prototype` , but the inheriting object's `[[prototype]]` references `constructor.prototype`. 
+
+##### Classes
+
+------
 
 #### Methods and properties; instance and static methods and properties 1, 3
+
+##### Property Existence
+
+- `in` operator (`property in object`)
+- `obj.hasOwnProperty`: Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+- `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
+- `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
+- `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
+
+##### Instance 
+
+- **Instance **: objects created using any means of defining multiple objects of the same kind. 
+  - Objects created by factory functions are considered instances, even if there's no way to test that in code. 
+- In JavaScript, "instance" does not have this technical meaning because JavaScript does not have this difference between classes and instances. However, in talking about JavaScript, "instance" can be used informally to mean an object created using a particular constructor function'
+- **Instance Properties** : properties of an instance.
+  - Properties of instances created by a constructor. 
+
+- **Instance Methods**: any method defined in any prototype in the prototype chain of an object is considered to be an instance method of an object. 
+  - Methods usually aren't stored directly in instances, but rather in the object's prototype object (the object referenced by **prototype** property). 
+  - Methods aren't stored in the object object, but still operate on individual instances so we refer to them as instance methods. 
+
+##### Static Properties
+
+- **Static properties** are defined and accessed directly on the <u>constructor</u>, not on an instance or a prototype.
+
+  - Static properties are properties about a constructor. 
+
+  - Typically, static properties belong to the type (e.g., `Dog`) rather than to the individual instances or the prototype object.
+
+    
+
+------
 
 #### Prototypal and pseudo-classical inheritance 4
 
@@ -162,12 +236,18 @@
 - Pseudo-classical inheritance (constructor inheritance)
   - Using functions to create objects. 
 
+------
+
 #### Encapsulation - 1, 3
 
 - **Encapsulation**: grouping related properties and methods in a single object. 
   - bundle state(data) and behavior (operations related to that data) into a single entity (object). 
 
+------
+
 #### Polymorphism- 4
+
+------
 
 #### Collaborator objects - 1
 
@@ -199,9 +279,15 @@
 
   
 
+------
+
 #### Single vs multiple inheritance
 
+------
+
 #### Mix-ins; mix-ins vs. inheritance 4
+
+------
 
 #### Higher-order functions 2
 
@@ -212,6 +298,8 @@
   - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
 - Function factories are higher- order functions
 
+------
+
 #### The global object 2
 
 - JavaScript creates a global object when it starts running. 
@@ -221,71 +309,43 @@
 - Undeclared variables are added to the global object as property. 
   - When you assign a value to a variable without using `let` `const` or `var` keywords, the variable gets added to global object as property. 
 
+------
+
 #### Method and property lookup sequence 2
 
-##### Property Look-Up in the Prototype Chain 
+##### What is prototype chain
 
-- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
-- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
+##### What it's used for. 
+
+- The prototype chain is used to look up properties, and this is done through **prototypal delegation**. 
+- **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
+
+##### Property Access
+
+- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+
+  - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
   - A downstream object overrides an inherited property if it has a property with the same name. 
-  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
+- What happens when you set a property to a different value? 
 
-```js
-let a = {
-  foo: 1,
-};
+  - Property assignment creates a new "own " property in the object.
+    - It assumes that the property belongs to the object named to the left of the property name. 
+    - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
 
-let b = {
-  foo: 2,
-};
+##### Usefulness
 
-Object.setPrototypeOf(b, a);
-
-let c = Object.create(b);
-console.log(c.foo); // => 2;
-// Line 12 logs the value of property `foo` in object c. Object c is lowest in the prototype chain and inherits property `foo` from it's prototype object b. A property with same name `foo` also exists in object a, which is the prototype object of b. Since b is closer to the calling object than a, it takes precedence and the value of property `foo` in object b is logged to the console. 
-
-// A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
-```
-
-What happens when you set a property to a different value? 
-
-- When assigning a property on a JavaScript object, the property is always treated as an "own" property. 
-  - It assumes that the property belongs to the object named to the left of the property name. 
-  - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
-
-```js
-console.log(c.hasOwnProperty('foo')); // => true, foo becomes an "own" property of c. 
-```
-
-- Inheriting properties from other objects also applies to methods. Methods in JS are merely properties that refer to functions. So when we discuss object properties, that also means methods. 
-
-```js
-let a = {
-  foo: 1,
-};
-
-let b = {
-  foo: 2,
-};
-
-Object.setPrototypeOf(b, a);
-
-let c = Object.create(b);
-console.log(c.foo); // => 2
-c.foo = 42;
-console.log(c.foo); // => 42 c.foo is now 42 
-console.log(b.foo);
-
-// Line 14 logs 42, value of property `foo` in object c. On line 13, a property with name `foo` is assigned to object c which means that the property is now treated as an 'own' property of object c. So even though object c inherits a property name `foo` from it's prototype object b, object c now overrides the inherited property since it has an own property with the name `foo`. 
-```
+- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+- Looking up a property in the prototype chain is the basis for prototypal inheritance. 
 
 ##### Implications
 
-- Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well. 
-- Property assignment creates a new "own" property in the object. 
+- Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
+
+------
 
 #### Implicit and explicit execution context 2
 
@@ -301,10 +361,15 @@ console.log(b.foo);
      - Method calls use the <u>calling object</u> as its implicit execution context. 
      - A constructor call with `new` uses the <u>new object</u> as its implicit execution context. 
 
+------
+
 #### Methods and functions; method invocation vs. function invocation 1,2 
 
 - **Regular function** calls (**standalone** function) <u>implicitly</u> use the **global object** as their execution context
 - **method calls** <u>implicitly</u> use the calling object as their context.
+  - When you call a method on an object, JavaScript binds`this` to the calling object. If it doesn't find the method in that object, but does find it in the prototype, that doesn't change the value of `this`. 
+
+------
 
 
 #### Function execution context and `this` 2
@@ -361,6 +426,8 @@ Clarifications about `this`
     console.log(person.fullName()); // invoked as a method
     ```
 
+------
+
 #### Dealing with context loss 2
 
 - Method is copied out of an object and used elsewhere. 
@@ -391,6 +458,8 @@ Clarifications about `this`
   - `bind`
   - arrow function
   - `thisArg`
+
+------
 
 #### `call`, `apply`, and `bind` 2
 
@@ -435,6 +504,8 @@ Clarifications about `this`
   - We have to call on the new function using (). 
 
   - You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+
+------
 
 #### `Object.assign` and `Object.create`
 
@@ -491,13 +562,35 @@ Clarifications about `this`
 
 
 
+------
+
 #### Built-in constructors like `Array`, `Object`, `String` and `Number` 3
 
+------
+
 #### Reading OO code
+
+------
 
 #### Reminders
 
 ##### Default parameters
+
+- Careful to differentiate instance properties and static (object.prototype) properties!
+
+  ```js
+  function original () {
+    this.a = true;
+  }
+  
+  original.prototype.b = true;
+  
+  let copy = new original();
+  console.log(copy.hasOwnProperty('a')); // true
+  console.log(copy.hasOwnProperty('b')); // false
+  ```
+
+- The instance object `copy`  of the `original` function has its own copy of `a`, not `b` because `b` is inherited from the constructor prototype object. 
 
 - Need default parameter in case no argument is passed to a function. 
 
@@ -526,4 +619,6 @@ Clarifications about `this`
 ##### Undefined
 
 - TypeError: you can't call a method on `undefined`. 
+
+------
 

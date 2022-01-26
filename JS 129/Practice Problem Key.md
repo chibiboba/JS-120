@@ -957,7 +957,7 @@ if (Object.getPrototypeOf(obj)) {
    ```js
    let RECTANGLE = {
      area: function() {
-       return this.width * this.height;
+       return this.width * this.height; // this refers to RECTANGLE
      },
      perimeter: function() {
        return 2 * (this.width + this.height);
@@ -979,9 +979,39 @@ if (Object.getPrototypeOf(obj)) {
 
    Solution
 
+   ```terminal
+   NaN
+   NaN
+   ```
+
+   When `RECTANGLE.area` is invoked, `this` refers to `RECTANGLE` instead of the instance object of the `Rectangle` constructor. `RECTANGLE` doesn't defined `width ` or `height` properties, so `this.width` and `this.height` evaluated to `undefined`.  Mathematical operations on `undefined` result in `NaN`. 
+
 2. How would you fix the problem in the code from problem 1?
 
    Solution
+
+   ```js
+   let RECTANGLE = {
+     area: function() {
+       return this.width * this.height; // this refers to RECTANGLE
+     },
+     perimeter: function() {
+       return 2 * (this.width + this.height);
+     },
+   };
+   
+   function Rectangle(width, height) {
+     this.width = width;
+     this.height = height;
+     this.area = RECTANGLE.area.call(this);
+     this.perimeter = RECTANGLE.perimeter.call(this);
+   }
+   
+   let rect1 = new Rectangle(2, 3);
+   
+   console.log(rect1.area);
+   console.log(rect1.perimeter);
+   ```
 
 3. Write a constructor function called `Circle` that takes a radius as an argument. You should be able to call an `area` method on any objects created by the constructor to get the [circle's area](https://www.mathsisfun.com/geometry/circle-area.html). Test your implementation with the following code:
 
@@ -995,6 +1025,16 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Solution
+
+   ```js
+   function Circle(radius) {
+     this.radius = radius; 
+   }
+   
+   Circle.prototype.area = function () {
+     return Math.PI * this.radius * this.radius;
+   }
+   ```
 
 4. What will the following code log to the console and why?
 
@@ -1013,6 +1053,12 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Solution
+
+   ```terminal
+   true
+   ```
+
+   Even though we define the `swingSword` method on the prototype after we create the `ninja`, all objects created by the `Ninja` constructor share the same prototype object. Thus, when we define `swingSword`, it immediately becomes available to the `ninja` object.
 
 5. What will the following code output and why? Try to answer without running the code.
 
@@ -1034,6 +1080,12 @@ if (Object.getPrototypeOf(obj)) {
 
    Solution
 
+   ```terminal
+   Uncaught TypeError: ninja.swingSword is not a function
+   ```
+
+   We reassigning `Ninja.prototype` to an entirely new object instead of mutating the original prototype object. The prototype for the `ninja` object doesn't change; it's still the original prototype defined during the constructor's invocation. Thus, JavaScript can't find the `swingSword` method in the prototype chain of `ninja`.
+
 6. Implement the method described in the comments below:
 
    ```js
@@ -1053,6 +1105,25 @@ if (Object.getPrototypeOf(obj)) {
 
    Solution
 
+   ```js
+   function Ninja() {
+     this.swung = false;
+   }
+   
+   Ninja.prototype.swing = function () {
+     this.swung = true;
+     return this;
+   }
+   
+   let ninjaA = new Ninja();
+   let ninjaB = new Ninja();
+   
+   console.log(ninjaA.swing().swung);      // logs `true`
+   console.log(ninjaB.swing().swung);      // logs `true`
+   ```
+
+   This pattern of "chainable" methods invocations and property accesses on an object requires that methods defined on the prototype always return the context object (in this case, `ninjaA` and `ninjaB`).
+
 7. In this problem, we'll ask you to create a new instance of an object, without having direct access to the constructor function:
 
    ```js
@@ -1066,14 +1137,41 @@ if (Object.getPrototypeOf(obj)) {
      ninjaA = new Ninja();
    }
    
-   // create a `ninjaB` object here; don't change anything else
+   let ninjaB = new ninjaA.constructor(); // create a `ninjaB` object here; don't change anything else
    
    ninjaA.constructor === ninjaB.constructor // => true
    ```
 
    Hint
 
+   The value assigned to `ninjaA` is an object created by a constructor function. As such, this object has a `constructor` property that points back to its constructor. Think of a way to use this property; that should help lead you to a solution.
+
    Solution
+
+   ```js
+   let ninjaB = new ninjaA.constructor();
+   ```
+
+   Does your answer use `Object.create` instead?
+
+   ```js
+   let ninjaB = Object.create(ninjaA);
+   ```
+
+   This code works as well, but there is a flaw: it puts the `swung` property in the prototype object instead of in the `ninjaB` object where it belongs. Thus, `ninjaA` and `ninjaB` are somewhat different objects:
+
+   ```plaintext
+   ninjaA:
+     swung: false 
+     constructor: Ninja
+     prototype: {}
+   
+   ninjaB:
+     constructor: Ninja
+     prototype: {
+       swung: false
+     }
+   ```
 
 8. Since a constructor is just a function, you can call it without the `new` operator. However, that can lead to unexpected results and errors, especially for inexperienced programmers. Write a constructor function that you can use with or without the `new` operator. The function should return the same result with either form. Use the code below to check your solution:
 
@@ -1093,7 +1191,21 @@ if (Object.getPrototypeOf(obj)) {
 
    Hint
 
+   In the constructor function, check the value of `this` to see whether it is an instance created by the constructor function. If it is, then the function was called with the `new` operator; otherwise, the function was called without `new`. You can use this in your code; if you determine that `new` wasn't used, then you can have the constructor call itself with the `new` keyword and use its return value.
+   
    Solution
+   
+   ```js
+   function User(first, last) {
+     if (!(this instanceof User)) {
+       return new User(first, last); // need return statement to avoid side effects
+     }
+     
+     this.name = `${first} ${last}`;
+     
+   }
+   ```
+   
 
 ------
 

@@ -477,8 +477,8 @@ obj['1, 2, 3'] // 'three'
 
 - Two ways to distinguish a non-existent property from an property with value of `undefined`: 
 
-  - `in` operator
-  - `hasOwnProperty` (is an instance method)
+  - `in` operator (`property in object`)
+  - `hasOwnProperty` (is an instance method): Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
 
   ```js
   Object.keys(obj) = ['7', 'false', '1, 2, 3', 'a-key'];
@@ -740,8 +740,20 @@ What is it
 What it's used for. 
 
 - The prototype chain is used to look up properties, and this is done through prototypal delegation. Objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
-- When I access a property that is not owned by an object, JavaScript traverses up the prototype chain until it finds the property. In other words, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+
+Property Access
+
+- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+
   - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
+  - A downstream object overrides an inherited property if it has a property with the same name. 
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
+- What happens when you set a property to a different value? 
+
+  - Property assignment creates a new "own " property in the object.
+    - It assumes that the property belongs to the object named to the left of the property name. 
+    - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
 
 Usefulness
 
@@ -4585,12 +4597,12 @@ Object.getPrototypeOf(biggie).bark === Dog.myPrototype.bark; // true
 
 ##### The Constructor `prototype` Property
 
-- Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
-
-- All **function objects** have a `prototype` property. 
-- Dunder proto will usually equal `constructor.prototype` (aka the **prototype property**) given that the constructor is the constructor function that created that object. 
-- References the default prototype object. 
 - What makes constructors special is a characteristic of all function objects in JavaScript: they all have a `prototype` property that we call the **function prototype** to distinguish them from the prototypes used when creating ordinary objects. 
+  - Every function has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. 
+
+  - All function objects have a `prototype` property. 
+- Dunder proto will usually equal `constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
+- References the default prototype object. . ?
 - The code in the previous section emulates something that JavaScript bundles with constructors. 
 
 ```terminal
