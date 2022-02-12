@@ -1225,7 +1225,7 @@ if (Object.getPrototypeOf(obj)) {
      ```
 
      ```js
-     let functionName = (parameter) => { // arrow functions are always function expressions
+     let functionName = (parameter) => { // arrow functions are always anonymous function expressions
        
      };
      ```
@@ -1248,7 +1248,7 @@ if (Object.getPrototypeOf(obj)) {
      // Greeter is a function expression because it starts with return. 
      ```
 
-   - Function expressions are often anonymous. Such as callback functions for array methods like `forEach` and `map`. 
+   - Function expressions are usually anonymous. Such as callback functions for array methods like `forEach` and `map`. 
 
      ```js
      let squaredNums = [1, 2, 3].map(function(num) {
@@ -1258,7 +1258,7 @@ if (Object.getPrototypeOf(obj)) {
 
    - Function expressions **<u>don't</u>** have to be anonymous: You can name a function expression. 
 
-     - use `Function` keyword can be used to define a function inside an expression. 
+     - `Function` keyword can be used to define a function inside an expression. 
 
        ```js
        let squaredNums = [1, 2, 3].map(function squareNum(num) { // call back functions don't have to be anonymous
@@ -2512,7 +2512,7 @@ obj.foo();        // => undefined undefined
 
 - By now, you should be able to understand why this code logs `undefined undefined` instead of `hello world`. 
   - Here, `bar`is invoked as a standalone function on line 9. Thus, its execution context is the global object, not the `obj` object that you may have expected. (Every function invocation has an execution context, look at the most specific one inside of a method call... if that makes sense. )
-  - Once again, a function or method's execution context depends soley on how you invoke it, now on how and where it's defined. 
+  - Once again, a function or method's execution context depends solely on how you invoke it, now on how and where it's defined. 
 - Let's examine solutions to this problem. 
 
 ##### Solution1: Preserve Context with a Variable in Outer Scope
@@ -5119,7 +5119,7 @@ dexter.bark(); // WOOF!
 - **Instance**: individual objects of a specific data type (OOP term)
 
   - For example, in the `Dog` example from the [Constructors with Prototypes assignment](https://launchschool.com/lessons/e3c64e3f/assignments/bdc27fe0), `maxi` and `dexter` are instances of the `Dog` type. 
-  - An instance is just another term for the objects created using any means of defining multiple objects of the same kind (e.g., dogs). 
+  - Definition: An instance is just another term for the objects created using any means of defining multiple objects of the same kind (e.g., dogs). 
   - The term *object* is more general, while *instance* is more specific.
 
 - Objects created by facotry functions are also considered **instances**, even if there is no way to test that in code. 

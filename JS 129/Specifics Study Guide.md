@@ -1,4 +1,4 @@
-#### Questions
+#### .Questions
 
 - Losing reference to `object.prototype` if it is reassigned to a different object. 
 
@@ -8,7 +8,9 @@
 
 ## Specific Topics of Interest
 
-#### Objects, object factories, constructors and prototypes, OLOO, and ES6 classes 1, 3,4 
+### Objects, object factories, constructors and prototypes, OLOO, and ES6 classes 1, 3,4 
+
+#### Objects
 
 ##### Object creation
 
@@ -66,7 +68,9 @@
     - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
     - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
 
-##### Constructors  (main points)
+#### Constructors 
+
+##### Main Points
 
 - **Constructors** is a function that creates and returns an object (**the instance**) of the constructor function.
   - are an <u>object form of functions</u> used to create objects in JavaScript. 
@@ -159,7 +163,7 @@ Advantage of Constructor
   - So properties defined on the constructor `prototype` property are shared through the prototype chain. 
 - Prototypes can be overridden by assigning inheriting objects their own properties. 
 
-##### Constructors with Prototypes
+##### Constructors with Prototypes: terminology confusion
 
 - Constructor `prototype` property 
 
@@ -192,11 +196,21 @@ Advantage of Constructor
   - Object's `__proto__` or hidden `[[prototype]]` references an object's prototype. It also references `constructor.prototype`.
 - A constructor's `[[prototype]]` !== `constructor.prototype` , but the inheriting object's `[[prototype]]` references `constructor.prototype`. 
 
-##### Classes
+#### ES6 Classes (4)
+
+- Definition: classes act like **syntactic sugar** -- syntax designed to be easier to read or use. 
+  - In essence, they provide little more than a more natural and possibly familiar way to create constructors and prototypes.
+  - makes it easier for programmers to migrate to JavaScript from other OOP languages. 
+
+##### Constructor and prototype pattern
+
+
+
+
 
 ------
 
-#### Methods and properties; instance and static methods and properties 1, 3
+### Methods and properties; instance and static methods and properties 1, 3
 
 ##### Property Existence
 
@@ -213,24 +227,55 @@ Advantage of Constructor
 - In JavaScript, "instance" does not have this technical meaning because JavaScript does not have this difference between classes and instances. However, in talking about JavaScript, "instance" can be used informally to mean an object created using a particular constructor function'
 - **Instance Properties** : properties of an instance.
   - Properties of instances created by a constructor. 
-
+  - May be stored directly on the instance, or its prototype. 
+  
 - **Instance Methods**: any method defined in any prototype in the prototype chain of an object is considered to be an instance method of an object. 
   - Methods usually aren't stored directly in instances, but rather in the object's prototype object (the object referenced by **prototype** property). 
-  - Methods aren't stored in the object object, but still operate on individual instances so we refer to them as instance methods. 
+  - Methods aren't stored in the object, but still operate on individual instances so we refer to them as instance methods. 
+  - The methods that use this syntax: `Constructor.prototype.method` are the **instance** methods for the Constructor type. 
 
-##### Static Properties
+##### Static 
 
 - **Static properties** are defined and accessed directly on the <u>constructor</u>, not on an instance or a prototype.
 
   - Static properties are properties about a constructor. 
 
-  - Typically, static properties belong to the type (e.g., `Dog`) rather than to the individual instances or the prototype object.
+  - Typically, static properties belong to the **type** (e.g., `Dog`) rather than to the individual instances or the prototype object.
 
+  - One common use of static properties is to keep track of all of the objects created by a constructor.
+
+    ```js
+    function Dog(name, breed, weight) {
+      this.name = name;
+      this.breed = breed;
+      this.weight = weight;
+      Dog.allDogs.push(this);
+    }
     
+    Dog.allDogs = [];
+    ```
+
+    - In this case, the static property `allDogs` contains an array with a reference to every dog object created while the program is running. 
+    - While `allDogs` maintains a list of all the dogs, it isn't information that is pertinent to a specific dog -- it's information about dogs in general. Therefore, it should be a static property.
+
+- **Static methods**: are also stored on the constructor. 
+
+  - ```js
+    Dog.showSpecies = function() {
+      console.log(`Dogs belong to the species ${Dog.species}`);
+    };
+    
+    Dog.showSpecies();
+    ```
+  
+  - You've already seen examples of static methods on built-in JavaScript constructors. `Object.assign`, `Array.isArray`, and `Date.now` are all examples of static methods.
+  - Is `forEach`  static method of the `Array` constructor then?
+    - No, `forEach` is an instance method of the `Array` constructor, because you are using an object (array object) to invoke an instance method of the `Array` constructor, rather than calling the `Array` constructor directly. 
+
 
 ------
 
-#### Prototypal and pseudo-classical inheritance 4
+### Prototypal and pseudo-classical inheritance 4
 
 - Prototypal Inheritance (prototypal delegation)
 - Pseudo-classical inheritance (constructor inheritance)
@@ -238,18 +283,18 @@ Advantage of Constructor
 
 ------
 
-#### Encapsulation - 1, 3
+### Encapsulation - 1, 3
 
 - **Encapsulation**: grouping related properties and methods in a single object. 
   - bundle state(data) and behavior (operations related to that data) into a single entity (object). 
 
 ------
 
-#### Polymorphism- 4
+### Polymorphism- 4
 
 ------
 
-#### Collaborator objects - 1
+### Collaborator objects - 1
 
 - **Collaborator Objects**: objects that help provide state in another object. 
 
@@ -281,15 +326,15 @@ Advantage of Constructor
 
 ------
 
-#### Single vs multiple inheritance
+### Single vs multiple inheritance
 
 ------
 
-#### Mix-ins; mix-ins vs. inheritance 4
+### Mix-ins; mix-ins vs. inheritance 4
 
 ------
 
-#### Higher-order functions 2
+### Higher-order functions 2
 
 - **Higher-order function**:  are functions that return another function or take another function as an argument. 
 - Higher-order functions let the programmer use powerful and flexible abstractions.
@@ -300,7 +345,7 @@ Advantage of Constructor
 
 ------
 
-#### The global object 2
+### The global object 2
 
 - JavaScript creates a global object when it starts running. 
   - In Node.js, the global object is the object named `global`. [object global]
@@ -311,7 +356,7 @@ Advantage of Constructor
 
 ------
 
-#### Method and property lookup sequence 2
+### Method and property lookup sequence 2
 
 ##### What is prototype chain
 
@@ -347,7 +392,7 @@ Advantage of Constructor
 
 ------
 
-#### Implicit and explicit execution context 2
+### Implicit and explicit execution context 2
 
 - **Execution context**:  the **environment** in which a function executes.
 - There are two basic ways to set the context when calling a function or method
@@ -363,7 +408,7 @@ Advantage of Constructor
 
 ------
 
-#### Methods and functions; method invocation vs. function invocation 1,2 
+### Methods and functions; method invocation vs. function invocation 1,2 
 
 - **Regular function** calls (**standalone** function) <u>implicitly</u> use the **global object** as their execution context
 - **method calls** <u>implicitly</u> use the calling object as their context.
@@ -372,7 +417,7 @@ Advantage of Constructor
 ------
 
 
-#### Function execution context and `this` 2
+### Function execution context and `this` (2)
 
 - Every JavaScript call has an execution context. 
 - Regular function invocations use the global object as its implicit execution context. 
@@ -426,9 +471,44 @@ Clarifications about `this`
     console.log(person.fullName()); // invoked as a method
     ```
 
-------
+##### Execution Context Rules
 
-#### Dealing with context loss 2
+- **Execution context**: the environment (an object) in which a function executes. 
+
+- Every single javascript invocation/ call has its own **execution context**
+
+- Execution context depends on how a function/method is invoked, not how or where it's defined.
+
+  - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
+    - In Node, global object is `global` and in browser, global object is `window`. 
+  - You can override this behavior by setting the execution context explicitly with either `call`,  `apply`, or `bind`.   
+  - While a variable's scope is determined by lexical scoping, meaning where you write the code, `this` depends on how you invoke it. 
+  - Arrow functions are also exceptions to this rule. 
+
+- **Arrow functions** inherit execution context from the surrounding scope. 
+
+  -  Arrow functions are permanently bound to the execution context of the (surrouding scope)**enclosing function invocation** . 
+  -  **enclosing function invocation** (surrounding scope): the most <u>immediate</u> function scope in which the arrow function is defined. 
+     - This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
+     - The execution context of this enclosing function is determined by  how it is invoked. 
+     - Tricky: `forEach` is not considered the enclosing function for arrow functions, why? Because arrow functions are passed to `forEach` - it's not defined inside `forEach`. 
+  -  Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
+  -  Exception: don't use arrow functions as methods on an object, else it will take global object as the surrounding context. 
+
+  ```js
+  let obj = {
+    a: 5,
+  
+    foo: () => {
+      console.log(this.a);
+    },
+  };
+  
+  obj.foo(); // => undefined
+  // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+  ```
+
+##### Context Loss & their solutions
 
 - Method is copied out of an object and used elsewhere. 
 
@@ -461,53 +541,481 @@ Clarifications about `this`
 
 ------
 
-#### `call`, `apply`, and `bind` 2
+### Dealing with context loss (2)
 
-- `call`: invokes a function or method with an explicit execution context - the first argument passed to it 
+#### Context Loss 1 : Method is copied out of an object and used elsewhere.
 
-  - Syntax
+- When we take a method out of an object and execute it as a function or method on another object, the function's context is no longer the original object.
 
-    ```
-    someObject.someMethod.call(context, arg1, arg2 …)
-    someObject.someMethod.call(context, ...args);
-    function.call(context)
-    ```
+```js
+let john = {
+  firstName: 'John',
+	lastName: 'Doe',
+  greetings() {
+    console.log('hello, ' + this.firstName + ' ' + this.lastName);
+  },
+};
 
-  - Can also pass a second array argument using spread operator. 
+john.greetings();         // context is john
+let foo = john.greetings; // Strips context
+foo(); // context is now the global object
+```
+
+##### Best Solution
+
+- Hard-bind the method's context by using `bind`
+
+```js
+let foo = john.greetings.bind(john); // bind returns a function
+foo(); // => need to invoke foo here in order to run greetings() 
+
+// using call
+let foo = john.greetings; 
+foo.call(john)
+```
+
+##### Unideal solutions
+
+- Use `call`
+
+  - problem is if you pass it to another function or don't execute function right away, the context passed to `call` may be out of scope by then. 
 
     ```js
-    let args = [arg1, arg2, arg3]
-    function.call(context, ...args);
+    function repeatThreeTimes(func) {
+      func(); // can't use func.call(john); john is out of scope
+      func();
+      func();
+    }
+    
+    function foo() {
+      let john = {
+        firstName: 'John',
+        lastName: 'Doe',
+        greetings: function() {
+          console.log('hello, ' + this.firstName + ' ' + this.lastName);
+        },
+      };
+    
+      repeatThreeTimes(john.greetings); // Strips context
+    }
+    
+    foo();
+    
+    // => hello, undefined undefined
+    // => hello, undefined undefined
+    // => hello, undefined undefined
     ```
 
-- `apply`: Calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
+- Change the original function to accept context object as second parameter, then pass context to original function when calling it
 
-  - Syntax
+  - problem is you can't always change function or methods, and not good to pass a lot of arguments to functions
+  - JS built-in methods like `forEach` `map` `filter` use this technique by taking a callback function as argument and optional `thisArg` context object that is used as the callback's execution context. 
 
-    ```js
-    someObject.someMethod.apply(context, [arg1, arg2, arg3…])
-    function.apply(context)
-    ```
+#### Context Loss 2: Nested Functions: inner function not using surrounding context
 
-- `bind`: **Bind** returns a new function that is permanently bound to the context passed to **bind**  as first argument. 
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    function bar() {
+      console.log(this.a + ' ' + this.b);
+    }
 
-  - Syntax
+    bar(); // bar is invoked as standalone function on line 9. THus its execution context is the global object, not `obj` object. 
+  },
+};
 
-    ```js
-    newFunc = someObject.someMethod.bind(context)
-    // Or 
-    function.bind(context)
-    ```
+obj.foo();        // => undefined undefined
+```
 
-  - Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
+##### Solution 1 : Preserve context with variable in outer scope 
 
-  - We have to call on the new function using (). 
+- `let self = this` in the outer function
 
-  - You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+- Set `this` to a variable to access the correct context object. 
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    let self = this; // self references `obj`
+
+    function bar() {
+      console.log(self.a + ' ' + self.b); // Can use self instead of `this` to access the correct context object. 
+    }
+
+    bar();
+  },
+};
+
+obj.foo(); // => hello world
+```
+
+##### Solution 2 : Call Inner function with explicit context
+
+- `call` or `apply`
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    function bar() {
+      console.log(this.a + ' ' + this.b);
+    }
+
+    bar.call(this); // call invokes bar with `obj` as execution context.
+  },
+};
+
+obj.foo(); // => hello world
+```
+
+- We won't show an example of `apply` since you can always use `call` in its place if you use the spread operator to expand `apply`'s array argument.
+
+##### Solution 3: use `bind`
+
+- call `bind` on inner function and get a new function with its execution context permanently set to the object. 
+- Advantage of `bind` is that you can do it once and then call it as often as needed without an explicit context. 
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    let bar = function() { // anonymous function expression
+      console.log(this.a + ' ' + this.b);
+    }.bind(this); 
+
+    // some code
+    bar(); // bar is invoked twice in foo 
+
+    // some more code
+    bar();
+  }
+};
+
+obj.foo();
+// => hello world
+// => hello world
+```
+
+- We're calling bind on the function expression here, then assigning the returned function to the `bar` variable. 
+- You can use a function declaration instead of a function expression, but you'll need an extra variable. 
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    function bar() {
+      console.log(this.a + ' ' + this.b);
+    }
+
+    let qux = bar.bind(this); // function declaration
+
+    // some code
+    qux();
+
+    // some more code
+    qux();
+
+    // still more code
+  }
+};
+
+obj.foo();
+// => hello world
+// => hello world
+```
+
+##### Solution 4: Use arrow function
+
+- Arrow functions use lexical scoping. 
+- Arrow functions ignore the rule that a function or method's execution context depends soley on how you invoke it, now on how and where it's defined. 
+- This exception comes in very handy when dealing with context loss. 
+- A property of arrow functions is that <u>they inherit their execution context from the surrounding scope</u>. 
+- An Arrow function defined inside another function always has the same context as the outer function: 
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() { // outer function is foo, which is invoked with obj as implicit context
+    let bar = () => {
+      console.log(this.a + ' ' + this.b);
+    }
+
+    // some code
+    bar();
+
+    // some more code
+    bar();
+
+    // still more code
+  }
+};
+
+obj.foo();
+// => hello world
+// => hello world
+```
+
+- Using arrow functions like this is similar to using `bind` in that you don't have to worry about arrow functions losing their surrounding context. 
+- An arrow function, once created, always has the same context as the function that surrounded it when it was created. 
+- Of all the techniques we saw in the assignment, using arrow functions is most common these days. 
+
+##### Arrow function Exception 
+
+- Don't try to use arrow functions as methods on an object. 
+
+```js
+let obj = {
+  a: 5,
+
+  foo: () => {
+    console.log(this.a);
+  },
+};
+
+obj.foo(); // => undefined
+// // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+```
+
+- This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
+- The surrounding context is the **global object**. The reason for that is simple: the `let` statement in this example is in the program's top level code, so its context is the global object. That means `this` inside the object literal is also the global object, so `this` on line 5 refers to the global object, not `obj`. 
+- Note that `this` in `obj.foo` is not determined by how the method is called. 
+  - We call the method on line 9, and we seem to be telling JavaScript to use `obj` as the context. 
+  - Instead, the context ends up being the global object. 
+  - That seems to contradict our repeated statements that the context is determined entirely by how a function or method is invoked. That's clearly not the case here; it certainly violates the rule.
+  - However, you won't usually see code like this in practice.
+  - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
+
+#### Context Loss 3: Function as argument losing surrounding context
+
+- Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
+
+##### Solution 1: Preserve the Context with a Variable in Outer Scope
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    let self = this; // this refers to obj, because of method invocation on line 12. 
+    [1, 2, 3].forEach(function(number) {
+      console.log(String(number) + ' ' + self.a + ' ' + self.b);
+    });
+  },
+};
+
+obj.foo();
+
+// => 1 hello world
+// => 2 hello world
+// => 3 hello world
+```
+
+##### Solution 2 : Use `bind`
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    [1, 2, 3].forEach(function(number) {
+      console.log(String(number) + ' ' + this.a + ' ' + this.b); // why does this refer to obj? 
+    }.bind(this)); // binding foo method, which is an anonymous function expression. 
+  },
+};
+
+obj.foo();
+
+// => 1 hello world
+// => 2 hello world
+// => 3 hello world
+```
+
+- `this` on line 6 refers to `obj` because the order of method calls starts from line 11, where method `foo` is invoked by `obj` and the context is set to `obj`. Then on line 7, foo references a new function that is permanently bound to context of `this`, which still refers to `obj`. The new function invokes the original `foo` function with permanent context of `obj`, so on line 6, `this` refers to `obj`.  
+
+##### Solution 3 : Use arrow function
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    [1, 2, 3].forEach(number => {
+      console.log(String(number) + ' ' + this.a + ' ' + this.b); // arrow function inherits surrounding context, the surrounding context is obj. 
+    });
+  },
+};
+
+obj.foo();
+
+// => 1 hello world
+// => 2 hello world
+// => 3 hello world
+```
+
+##### Solution 4: Use the optional `thisArg` argument
+
+- Some methods that take function arguments allow an optional argument that specifies the context to use when invoking the function. 
+- For example `Array.prototype.forEach` has an optional `thisArg` argument for the context. 
+- `map`, `every`, `some`, and others take this optional argument. 
+
+```js
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    [1, 2, 3].forEach(function(number) {
+      console.log(String(number) + ' ' + this.a + ' ' + this.b);
+    }, this);
+  },
+};
+
+obj.foo();
+
+// => 1 hello world
+// => 2 hello world
+// => 3 hello world
+```
 
 ------
 
-#### `Object.assign` and `Object.create`
+### `call`, `apply`, and `bind` 2
+
+##### `call`
+
+- Definition: invokes a function or method with an explicit execution context - the first argument passed to it 
+
+- Syntax
+
+  ```
+  someObject.someMethod.call(context, arg1, arg2 …)
+  someObject.someMethod.call(context, ...args);
+  function.call(context)
+  ```
+
+- Can also pass a second array argument using spread operator. 
+
+  ```js
+  function.call(context, ...args);
+  ```
+
+##### `apply`
+
+- Definition: Calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
+
+- Syntax
+
+  ```js
+  someObject.someMethod.apply(context, [arg1, arg2, arg3…])
+  function.apply(context)
+  ```
+
+##### `bind`
+
+- Definition: **Bind** returns a new function that is permanently bound to the context passed to **bind**  as first argument. 
+
+  - Hard binds a function to an explicit execution context. 
+  - We have to call on the new function using `()`. 
+
+- Syntax
+
+  ```js
+  newFunc = someObject.someMethod.bind(context)
+  // Or 
+  function.bind(context)
+  ```
+
+- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
+
+  - In detail: `bind`'s context is the *original* function and it returns a new function that is permanently bound to the context passed to `bind` as first argument. When we call this new function using `()`, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
+  - What's important is to recognize that `bind`'s context is the original function, and it <u>returns a new function that calls the original function with the context supplied to bind as its first argument.</u> 
+  - `bind`'s execution context is the original function, because it is invoked using method invocation. Method invocations always use the calling function as its implicit execution context. But `bind` explicitly sets the execution context for the new function. 
+
+- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+
+  ```js
+  function sumNum(num1) {
+    return this.num + num1;
+  }
+  
+  let obj = {
+    num: 42
+  };
+  
+  let sumNum2 = sumNum.bind(obj);
+  sumNum2(5); // => 47
+  // new function sumNum2 is permanently bound to obj. 
+  ```
+
+- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
+
+  ```js
+  let object = {
+    a: 'hello',
+    b: 'world',
+    foo: function() {
+      return this.a + ' ' + this.b;
+    },
+  };
+  
+  let bar = object.foo;
+  bar();                                // "undefined undefined" 
+  																			// undefined because there is no 'a' property in the global object
+  
+  let baz = object.foo.bind(object);
+  baz();                                // "hello world"
+  																			// baz is permanently bound to object, so the context / 'this' now refers to object 
+  // baz calls on foo, passing permanent object context to it. 
+  ```
+
+  ```js
+  let object2 = {
+    a: 'hi',
+    b: 'there',
+  };
+  
+  baz.call(object2);  // "hello world" - `this` still refers to `object`
+  ```
+
+- JavaScript implements `bind` method like this: 
+
+  ```js
+  Function.prototype.bind = function (...args) {
+    let fn = this; // bind's context is the original function function ()
+    let context = args.shift();
+  
+    return function () {  										// bind returns a function function(), which is permanently bound to context. 
+      return fn.apply(context, args); // this function calls the original function fn. using apply. 
+    };
+  };
+  ```
+
+  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
+
+- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
+
+  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
+  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
+
+> - A trap is thinking that `bind` permanently alters the original function. 
+> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
+> - The original function isn't changed and doesn't have its context changed. 
+
+##### Advantage and disadvantage of `bind`
+
+- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
+- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
+
+------
+
+### `Object.assign` and `Object.create`
 
 ##### Object.assign
 
@@ -564,15 +1072,571 @@ Clarifications about `this`
 
 ------
 
-#### Built-in constructors like `Array`, `Object`, `String` and `Number` 3
+### Built-in constructors like `Array`, `Object`, `String` and `Number` 3
+
+##### The `Array` constructor
+
+- Simplest way to create an array object uses the bracket syntax:
+
+  ```js
+  > let numbers = [1, 2, 3, 4]
+  > numbers
+  [ 1, 2, 3, 4 ]
+  ```
+
+- Can also use the `Array` constructor:
+
+- Syntax
+
+  ```js
+  new Array() // empty array
+  new Array(elements, etc...)
+  new Array(arrayLength) // [ <arrayLength empty items> ]
+  Array() // omit new keyword
+  ```
+
+- Calling `new Array()` creates and returns a new array. That array is empty unless you also pass some arguments to the constructor. Each argument you provide gets added to the new array as an element:
+
+  ```terminal
+  > let emptyArray = new Array()
+  > emptyArray
+  []
+  
+  > let numbers = new Array(1, 2, 3, 4)
+  > numbers
+  [ 1, 2, 3, 4 ]
+  
+  > let colors = new Array('green', 'blue', 'yellow')
+  > colors
+  [ 'green', 'blue', 'yellow' ]
+  ```
+
+- The behavior is considerably different when you provide a single *number* argument. In this case, the constructor creates an array with a length equal to the number specified by the argument, but with no actual elements:
+
+  ```terminal
+  > new Array(3)
+  [ <3 empty items> ]
+  ```
+
+  - You can think of `[ <3 empty items> ]` as an array that has three empty slots. In effect, it's an empty array that happens to contain spaces for three items; alternatively, it's a non-empty array that contains no values. Call it Schrödinger's array if you wish.
+
+  - Note that the single-number form of the constructor does not accept non-integers or negative numbers:
+
+    ```js
+    > new Array(3.1415)
+    => RangeError: Invalid array length
+    
+    > new Array(-5)
+    => RangeError: Invalid array length
+    ```
+
+- The single-number constructor, together with the `Array.prototype.fill` method, lets you create arrays with a value that is repeated in every element:
+
+  ```terminal
+  > (new Array(3)).fill('*')
+  [ '*', '*', '*' ]
+  ```
+
+  - The `fill` method takes any value as an argument and replaces all elements of the array with that value. Note that the parentheses around `new Array(3)` aren't strictly necessary; however, you should use them for clarity. They show your intent to run `fill` on the new array.
+
+- Interestingly, `Array` lets you omit the `new` keyword:
+
+  ```terminal
+  > Array(1, 2, 3)
+  [1, 2, 3]
+  ```
+
+- Stay consistent and use `new` unless there's a good reason to omit it.
+
+##### `Array.prototype` property
+
+- `Array.prototype` property references the prototype object that the `Array` constructor uses to create array objects. 
+
+-  All arrays inherit from the object referenced by this property:
+
+  ```js
+  > let numbers = [1, 2, 3] 
+  > Object.getPrototypeOf(numbers) === Array.prototype
+  true
+  // even arrays defined using bracket syntax inherit from Array.prototye
+  ```
+
+- This implies that every array can use the methods defined in `Array.prototype`. 
+
+  - In particular, that means that all arrays can use methods like `forEach`, `map`, `includes`, as well as all the other methods defined on `Array.prototype`:
+
+- The methods that use this syntax: `Array.prototype.method` are the **instance** methods for the Array type. 
+
+  ```js
+  > numbers.map(number => number * number);
+  [ 1, 4, 9 ]
+  
+  > numbers.includes(3)
+  true
+  ```
+
+##### Static Array Methods
+
+- Remember: static methods belong directly to the constructor function; they aren't part of the prototype used to create new objects. 
+- As a result, their names don't include `.prototype`. 
+- Moreover, you usually use the constructor to invoke the static methods, not the object created by that constructor. 
+
+- **`Array.isArray`**
+
+  - The `Array.isArray` method takes one argument and returns `true` if the argument is an array object, and `false` if it is not:
+
+    ```terminal
+    > Array.isArray([])
+    true
+    
+    > Array.isArray({})
+    false
+    
+    > Array.isArray(5)
+    false
+    ```
+
+  - Why do we need it? Won't `typeof` tell us whether the argument is an array? Unfortunately, no. The `typeof` operator returns an unexpected and somewhat useless value when used with an array:
+
+    ```terminal
+    > typeof []
+    'object'
+    ```
+
+  - You already know that all arrays are objects. That doesn't make it any less useless, however, so we need `Array.isArray` to distinguish between arrays and other objects.
+
+- `Array.from`
+
+  - The `Array.from` method takes an **array-like object** as an argument and returns a new array with the equivalent element values. 
+
+  - An **array-like object** is any object that has a `length` property and provides indexed access to some of its properties with the `[index]` notation. 
+
+    ```node
+    > Array.from({0: 'a', 1: 'b', 2: 'c', length: 3})
+    ['a', 'b', 'c']
+    ```
+  
+    - Does it need properties with keys that are non-negative integers? (yes)
+  
+    - Such objects have properties whose keys are non-negative integers. 
+  
+  - In many cases, the `length` property won't self-update if you add or remove properties to or from the object.
+
+  - The following code shows one way to implement the logic behind `Array.from`. Studying this code should help you make sense of what `Array.from` does:
+
+    ```js
+    let arrayFrom = obj => { // anonymous arrow function, obj is parameter
+      let len = obj.length;
+      let returnArr = [];
+    
+      for (let idx = 0; idx < len; idx += 1) {
+        returnArr.push(obj[idx]);
+      }
+    
+      return returnArr;
+    };
+    
+    arrayFrom({0: 'a', 1: 'b', 2: 'c', length: 3});
+    // => [ 'a', 'b', 'c' ]
+    ```
+
+  Why would somebody need to do that? It seems silly to create an object that looks like an array but isn't an array. Why bother?
+  - The use case shown isn't particularly useful, but there are other use cases for `Array.from`. In particular, some functions and methods return objects that resemble arrays in some ways but serve some other purpose. 
+  - For instance, if you use JavaScript to request a list of elements from your browser, the *DOM* (more on that much later) may return an array-like object called a *node list*. Such objects can store *live* data -- dynamic data that can change without intervention by your code. A simple array wouldn't do the trick here, but a node list does. Better yet, the node list is an array-like object, so `Array.from` can create an array based on its content.
+
+  - In the degenerate(??) case, all arrays are themselves array-like objects.
+
+##### The `Object` constructor
+
+- As with the `Array` constructor, the `Object` constructor creates new objects:
+
+  ```node
+  > new Object()
+  {}
+  ```
+
+  - You can invoke `Object` without the `new` keyword, just as you can omit `new` with the `Array` constructor:
+
+  ```node
+  > Object()
+  {}
+  ```
+
+  - To repeat ourselves, omitting `new` is probably not a good practice.
+
+- `Object.prototype`
+
+  - All objects created by the `Object` constructor or with object literal syntax (e.g., `{ a: 1, b: 2 }`, inherit from `Object.prototype`. 
+
+  - Thus, all such objects have access to the instance methods defined in `Object.prototype`. We've already seen some of these methods in action, such as `Object.prototype.hasOwnProperty` and `Object.prototype.isPrototypeOf`.
+
+  - Since arrays are a subtype of objects, <u>all</u> array objects have access to <u>all</u> the methods on `Object.prototype`.
+
+    ```terminal
+    > ['a', 'b', 'c'].hasOwnProperty(1) # integer indices are properties of the array. 
+    true
+    ```
+
+  - You can think of the **integer indices** as properties of the array. In our example, `0`, `1`, `2` are the properties and `'a'`, `'b'`, `'c'` are the values. We can verify that `Array` is a subtype of `Object` by checking whether `Array.prototype` inherits from `Object.prototype`:
+
+    ```node
+    > Object.getPrototypeOf(Array.prototype) === Object.prototype
+    true
+    ```
+
+  **Almost all JavaScript objects, whether built-in or custom-created, inherit from `Object.prototype`(the default prototype), either directly or further down the prototype chain.** 
+
+  - That includes prototype objects of constructors. 
+
+  - Note that we said "almost all"; as discussed in an earlier lesson, it is possible to create objects that don't inherit from `Object.prototype`
+
+    ```js
+    let bareObj = Object.create(null); // creates an object without a prototype
+    ```
+
+  - Another oft-used  method is `Object.prototype.toString`. It returns a string representation of the object that it's called on. Since `toString` is a method on `Object.prototype`, all JavaScript objects -- including arrays, functions, and dates -- inherit this method.
+
+    - However, the default behavior of `Object.prototype.toString` is not very useful; it merely returns `[object Object]` for objects that don't override this method to provide smarter behavior:
+    - Can override the default`toString()` method by creating a function in place of it. 
+    
+    ```terminal
+    > let obj = { a: 1, b: 2 }
+    > obj.toString()
+    '[object Object]'   # not very helpful!
+    
+    > [1, 2, 3].toString() # use on array 
+    '1,2,3'
+    
+    > let func = function hello() {} # use on functions.
+    > func.toString()
+    'function hello() {}'
+    ```
+
+##### Static `Object` Methods
+
+- The list below shows some commonly used static `Object` methods. You've already seen and used several. Feel free to follow the links and read more about these methods, but you don't have to memorize them. Instead, learn what's available. You can look them up later when you need to use them:
+
+  - [`Object.assign`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+  - [`Object.create`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+  - [`Object.entries`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries)
+  - [`Object.freeze`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+  - [`Object.isFrozen`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
+  - [`Object.keys`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
+  - [`Object.values`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
+
+##### The Date Constructor
+
+- The `Date` constructor creates objects, commonly called a **date object**, that represent a specific date and time. 
+
+  - Calling `Date` without arguments returns a date object that represents the creation date and time of the object:
+
+    ```node
+    > let now = new Date()
+    > now
+    2019-06-07T05:03:26.813Z
+    ```
+
+  - You can create date objects that represent any given date and time by passing additional arguments to the `Date` constructor. For instance, to create a date object that represents "May 1, 1983", you can write:
+
+    ```node
+    > let birthday = new Date("May 1, 1983")
+    > birthday
+    1983-05-01T07:00:00.000Z
+    ```
+
+  - You can get even more specific by including the time:
+
+    ```node
+    > birthday = new Date("May 1, 1983 05:03 am")
+    > birthday
+    1983-05-01T12:03.00.000Z
+    ```
+
+  - The dates shown by the above code may appear as 1983-05-02. This issue is caused by the time zone of the environment where you run the code. Working with time zones is messy; we won't get into that in this course.
+
+  - There are several other ways to specify the date and time, including variations on the date strings shown above, and by providing other arguments to the `Date` constructor. Check the [MDN documentation for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) to learn more.
+
+##### `Date.prototype` 
+
+- The `Date` prototype object provides a variety of convenient methods for working with dates. We'll mention a few here.
+
+- `Date.prototype.toString`
+
+  The `toString` method returns a string that represents the date (it's pretty verbose):
+
+  ```terminal
+  > let now = new Date()
+  > now.toString()
+  'Sat Jun 01 2019 01:15:06 GMT+0500 (Pakistan Standard Time)'
+  ```
+
+- `Date.prototype.getFullYear`
+
+  The `getFullYear` method returns the year from the date as a number:
+
+  ```terminal
+  > now.getFullYear()
+  2019
+  ```
+
+- `Date.prototype.getDay`
+
+  The `getDay` method returns a number that represents the day of the week that corresponds to the date object. 
+
+  - The return value is `0` for Sunday, `1` for Monday, and so on until it returns `6` for Saturday.
+
+  ```terminal
+  > now.getDay()
+  4 // (represents Thursday)
+  ```
+
+  The `Date` prototype has a bunch of useful methods for working with dates and times. Be sure to check the [MDN documentation page for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) and explore a few more methods.
+
+##### The `String` constructor
+
+- Why do we need a constructor for strings? Aren't JavaScript strings a primitive type? We know they are since the strict equality operator compares strings by value rather than identity:
+
+  ```terminal
+  > 'abc' === 'abc'
+  true
+  ```
+
+  Two strings with the same characters are considered equal in JavaScript. Equality for objects works by identity, however. Two objects are strictly equal only when they are the same object. Consider:
+
+  ```terminal
+  > let arr1 = [1, 2, 3];
+  > let arr2 = arr1    // arr1 and arr2 both reference the same object
+  > arr1 === [1, 2, 3] // false
+  > arr1 === arr2      // true
+  # objects are compare by identity, not value
+```
+  
+Interestingly, we can access properties and call methods on strings:
+  
+  ```node
+  > 'abc'.length
+  3
+  
+  > 'abc'.toUpperCase()
+  'ABC'
+```
+  
+How is that possible given that strings are primitive values? Primitive values aren't objects, so where does JavaScript find those properties and methods?
+  
+We'll return to those questions shortly. 
+
+###### String primitive vs `String` object
+
+- First, though, we need to learn that JavaScript has two kinds of strings: string primitives and `String` objects. 
+- Thus far, all the strings we've created and used have been string primitives. We create string primitives by using quotes (single or double) or back-tick characters to define a string's value. To create a `String` object, on the other hand, we must use the `String` constructor:
+
+```node
+> let strPrimitive = 'abc'
+> typeof strPrimitive
+'string'
+
+> let strObject = new String('xyz')
+> typeof strObject
+'object'
+```
+
+That's interesting: a string primitive's type is `'string'`, but the `String` object's type is `'object'`. It's clear that JavaScript considers the two types of string as different types. That difference has implications. Consider this code:
+
+```node
+> 'abc' === 'abc'
+true
+
+> new String('abc') === new String('abc')
+false
+```
+
+Wow! Two string primitives that have the same value are equal, but not two `String` objects. If you're confused by that, think of poor JavaScript. What's an OOP language to do with weirdness like that? Fortunately, JavaScript is pretty good about remembering what's what.
+
+That still leaves us with a big question: why in the world do we need a `String` object? That goes back to our original question: 
+
+###### How can we call methods on string primitives?
+
+- The answer is that when you try to access a property or invoke a method on a string primitive, JavaScript *wraps* the string primitive in a `String` object behind the scenes. 
+  - The process sounds complicated and costly in computing resources, but the implementation is reasonably lightweight; there is little impact on your program. Best of all, the process is invisible.
+- Once JavaScript has wrapped your string primitive in a `String` object, it then uses the object to access the property or call the method. When the wrapping object has served its purpose, JavaScript <u>discards</u> it.
+- Properties and Methods always return strings as primitive, so you also don't have to worry about converting `String` objects to primitives.
+- As a general rule, you should not create `String` objects explicitly. That's where you're likely to run into problems with the distinction between string primitives and `String` objects. 
+  - However, if you're writing code where you may have to operate on `String` objects, you can use `String.prototype.valueOf()` to retrieve the value of the `String` object as a primitive.
+
+##### `String` without `new` 
+
+- As with most constructors, with the notable exception of `Array` and `Object`, calling the constructor without the `new` keyword does *not* create an object. In the case of `String`, it simply returns a new string primitive, not an object, when you omit the `new` keyword:
+
+  ```terminal
+  > let str = String('abc')
+  > typeof str
+  'string'
+  ```
+
+- If called without `new`, `String` constructor converts arguments to a primitive string. 
+
+```node
+> String(obj)
+'[object Object]'
+
+> String(undefined)
+'undefined'
+
+> String(3.14)
+'3.14'
+
+> String([1, 2, 3])
+'1,2,3'
+
+> String(a => a * a)
+'a => a * a'
+```
+
+
+##### The `Number` and `Boolean` Constructors
+
+- The `Number` and `Boolean` constructors work in much the same way as the `String` constructor (if called with `new`, an object is created, otherwise, it returns the same type as the constructor)
+
+  - When called with `new`, they create `Number` and `Boolean` **<u>objects.</u>** 
+  - When called without `new`, the `Number` function converts its argument to a number, and the `Boolean` function converts its argument to a boolean.
+
+  ```node
+  > Number('123');
+  123
+  
+  > Boolean(0);
+  false
+  
+  > Boolean('abc');
+  true
+  ```
+
+- As with strings, numbers and booleans both have primitive and object forms, and JavaScript invisibly wraps primitives in objects to access methods and properties. 
+
+- You should also avoid creating `Number` and `Boolean` objects explicitly.
+
+##### Extending Built-in Prototypes
+
+- Change prototypes to add new capabilities to our built-in objects. Best to avoid this though. 
+
+  - Since all JavaScript objects derive their behavior from the prototype objects associated with their constructors, we can add new capabilities to our built-in objects by changing those prototypes. 
+
+  - For example, we can add a `first` method to all arrays by adding it to `Array.prototype`:
+
+    ```js
+    Array.prototype.first = function() {
+      return this[0];
+    }
+    
+    [1, 2, 3].first(); //=> 1
+    ```
+
+  - Since we use the array `[1, 2, 3]` to call `first`, `this` inside the function refers to `[1, 2, 3]`. Thus, the `first` method returns the first element of the array used to call it, or `undefined` if the array is empty.
+
+  - Extending built-in objects is interesting to study, but it's best to avoid doing so. Adding a method like `first` to an array object can confuse other developers working on your project. It can lead to errors when other developers forget or don't realize that your array has an unexpected bonus.
+
+##### Borrowing Array Methods for Strings
+
+###### Summary
+
+- Definition: Can use non-mutating array methods on strings by using `call` or `apply`. 
+
+  - The `call` and `apply` functions don't change a function's logic or return values; they merely change what object the method uses for its context. 
+  - Array methods that return an array will still do so even when called on a string value. If you need a string result, you can use `join` to convert the array to a string:
+  - Strings are immutable, so can only use non-mutating array methods. 
+
+  ```JS
+  // syntax 
+  let anyArray = []; // can use any array
+  let string = 'yes';
+  
+  string = anyArray.arrayMethod.call(string, callbackFn).join('');
+  string = [].arrayMethod.call(string, callbackFn).join('');
+  ```
+
+  ```js
+  // examples
+  [].every.call(string, char => char === 'E'); // => true
+  [].filter.call('olives', val => val < 'm'); // [ 'l', 'i', 'e' ]
+  [].filter.call('olives', val => val < 'm').join(''); // => 'lie'
+  ```
+
+  ------------------------------------------------------------------------------------------------------------------------------------------
+
+- First-class functions in a programming language provide several benefits. One significant benefit is that methods aren't tied to a particular object type. 
+
+- Using explicit context-binding techniques, we can apply a method to a different object type than the one that defines the method. 
+
+- This "method borrowing," however, doesn't make sense for every object and every method. For example, it doesn't make sense to use the `getDay` date method on an array.
+
+- Array methods, however, are surprisingly useful with `String` objects. 
+
+  - We can borrow many array methods to manipulate `String` objects. Consider the following code:
+
+  ```js
+  let string = 'EEE';
+  Array.prototype.every.call(string, char => char === 'E'); // => true
+  ```
+
+- JavaScript strings don't have an `every` method, but we can use `Array.prototype.every` on our string by using `call` or `apply`. Here, we use `every` to determine whether the string `EEE` contains all `E` characters.
+
+- We can shorten that expression noticeably by using an empty array instead of `Array.prototype` as the calling object:
+
+  ```js
+  [].every.call(string, char => char === 'E'); // => true
+  // invoking every() with string as its context 
+  ```
+
+###### Why does method borrowing work? 
+
+- Array method borrowing works because `String` objects also have a `length` property and use index-based element access. `this` inside array methods refers to the context, which now is a string. 
+
+Let's look at a simplified implementation of `Array.prototype.every`:
+
+```js
+Array.prototype.every = function(callback) {
+  for (let index = 0; index < this.length; index++) {
+    if (!callback(this[index])) return false;
+  }
+
+  return true;
+};
+```
+
+- Note how the method uses `this` to access the length and elements of the array(which is a string). Since `String` objects also have a `length` property and use index-based element access, this code works with strings as well as arrays.
+- `this` refers to the context, which is a string. 
+
+Let's see another example:
+
+```js
+[].filter.call('olives', val => val < 'm'); // [ 'l', 'i', 'e' ]
+```
+
+- Notice that the `filter` method returns an array, even though we called it on a string.
+
+- The `call` and `apply` functions don't change a function's logic or return values; they merely change what object the method uses for its context. Array methods that return an array will still do so even when called on a string value. If you need a string result, you can use `join` to convert the array to a string:
+
+  ```js
+  [].filter.call('olives', val => val < 'm').join(''); // => 'lie'
+  ```
+
+- Note that not all array methods can operate on strings. Consider the following example:
+
+  ```js
+  let ingredients = 'olives';
+  [].push.call(ingredients, ' and pepper');
+  // TypeError: Cannot assign to read only property 'length' of object '[object String]'
+  ```
+
+- Array methods that mutate the array won't work with strings. Again, that makes sense: strings are immutable.
 
 ------
 
-#### Reading OO code
+### Reading OO code
 
 ------
 
-#### Reminders
+### Reminders
 
 ##### Default parameters
 
