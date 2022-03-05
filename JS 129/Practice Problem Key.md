@@ -1217,9 +1217,9 @@ if (Object.getPrototypeOf(obj)) {
 
    Solution
 
-2. Consider the following class declaration:
+   We can treat JavaScript classes like any other JavaScript value. They can be passed around to functions, returned from functions, assigned to variables, and used anywhere a value is expected. 
 
-   Copy Code
+2. Consider the following class declaration:
 
    ```js
    class Television {
@@ -1235,7 +1235,18 @@ if (Object.getPrototypeOf(obj)) {
 
    What does the `static` modifier do? How would we call the method `manufacturer`?
 
-   Solution
+   The `static` modifier when used with a method declaration, marks the method as static. That means the method is defined directly on the class, not on the objects the class creates. We use it like this: 
+
+   ```js
+   Television.manufacturer();
+   ```
+
+   The `model`method, on the other hand, is an instance method and must be called by an instance object.
+
+   ```js
+   let tv = new Television();
+   tv.model();
+   ```
 
 ------
 
@@ -1265,6 +1276,23 @@ Give us your feedback
 
    Solution
 
+   ```js
+   function createPet(animal, name) {
+     return {
+       animal: animal,
+       name: name,
+       
+       sleep() {
+         console.log('I am sleeping');
+       }, 
+         
+       wake() {
+         console.log('I am awake');
+       }
+     };
+   }
+   ```
+
 2. Use the OLOO pattern to create an object prototype that we can use to create pet objects. The prototype should let us create and use pets like this:
 
    ```js
@@ -1281,9 +1309,109 @@ Give us your feedback
 
    Solution
 
+   ```js
+   let petPrototype = {  
+     init(animal, name) {
+       this.animal = animal;
+       this.name = name;
+       return this;
+     }, 
+     
+     sleep: function() {
+      console.log('I am sleeping');
+     }, 
+     
+     wake: function() {
+     	console.log('I am awake');
+     }, 
+   };
+   ```
+
+   
+
 3. Consider the objects created by the programs in problems 1 and 2. How do objects for the same animal differ from each other?
 
    solution
+
+   Objects created with the OLOO have a prototype object that contains the methods associated with the created objects. Since all pets created from the prototype share a single prototype object, they all share the same methods. With the factory function, each object has a copy of all the methods. Thus, objects created by OLOO are more efficient in terms of memory use.
+
+   Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+
+------
+
+#### Practice Problems:
+
+Consider the following code:
+
+```js
+function Greeting() {}
+
+Greeting.prototype.greet = function(message) {
+  console.log(message);
+};
+
+function Hello() {}
+
+Hello.prototype = Object.create(Greeting.prototype);
+
+Hello.prototype.hi = function() {
+  this.greet('Hello!');
+};
+
+function Goodbye() {}
+
+Goodbye.prototype = Object.create(Greeting.prototype);
+
+Goodbye.prototype.bye = function() {
+  this.greet("Goodbye");
+};
+```
+
+What happens in each of the following cases? Try to answer without running the code.
+
+**Case 1**
+
+```js
+let hello = new Hello();
+hello.hi();
+```
+
+This code logs `Hello!` to the console.
+
+**Case 2**
+
+```js
+let hello = new Hello();
+hello.bye();
+```
+
+This code raises a `TypeError`. Neither `Hello.prototype` nor its prototype, `Greeting.prototype`, have a `bye` method defined.
+
+**Case 3**
+
+```js
+let hello = new Hello();
+hello.greet();
+```
+
+This code logs `undefined` to the console. Since `Hello` inherits from `Greeting`, the `hello` object has access to `greet`. However, `greet` takes an argument, which isn't supplied by this code.
+
+**Case 4**
+
+```js
+let hello = new Hello();
+hello.greet('Goodbye');
+```
+
+This code logs `Goodbye` to the console.
+
+**Case 5**
+
+```js
+Hello.hi();
+```
+
+This code also raises a `TypeError`. The `hi` method is defined on `Hello.prototype`, not on the `Hello` constructor itself. Thus, only instances of `Hello` have access to `hi`.
 
 ------
 

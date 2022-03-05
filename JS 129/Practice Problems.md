@@ -577,7 +577,7 @@ console.log(obj.num);
 
 ------
 
-#### Practice Problems - Constructors and Prototypes
+####  Constructors and Prototypes
 
 [reference](https://launchschool.com/lessons/e3c64e3f/assignments/ee0fee9d)
 
@@ -726,7 +726,7 @@ console.log(obj.num);
 
 ------
 
-#### Practice Problems - Classes
+#### Classes
 
 [reference](https://launchschool.com/lessons/e3c64e3f/assignments/b29488f2)
 
@@ -801,6 +801,72 @@ Give us your feedback
 3. Consider the objects created by the programs in problems 1 and 2. How do objects for the same animal differ from each other?
 
    solution
+
+------
+
+#### Practice Problems:
+
+Consider the following code:
+
+```js
+function Greeting() {}
+
+Greeting.prototype.greet = function(message) {
+  console.log(message);
+};
+
+function Hello() {}
+
+Hello.prototype = Object.create(Greeting.prototype);
+
+Hello.prototype.hi = function() {
+  this.greet('Hello!');
+};
+
+function Goodbye() {}
+
+Goodbye.prototype = Object.create(Greeting.prototype);
+
+Goodbye.prototype.bye = function() {
+  this.greet("Goodbye");
+};
+```
+
+What happens in each of the following cases? Try to answer without running the code.
+
+**Case 1**
+
+```js
+let hello = new Hello();
+hello.hi();
+```
+
+**Case 2**
+
+```js
+let hello = new Hello();
+hello.bye();
+```
+
+**Case 3**
+
+```js
+let hello = new Hello();
+hello.greet();
+```
+
+**Case 4**
+
+```js
+let hello = new Hello();
+hello.greet('Goodbye');
+```
+
+**Case 5**
+
+```js
+Hello.hi();
+```
 
 ------
 
