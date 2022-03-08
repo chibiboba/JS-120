@@ -7365,8 +7365,6 @@ console.log(func.constructor.constructor); // [Function: Function]
 
 ```
 
-
-
 ##### Summary
 
 - all Function objects have a prototype property that references an object which contains a constructor property, which usually points back to the Function Object itself. 
@@ -7407,29 +7405,22 @@ console.log(func.constructor.constructor); // [Function: Function]
 
    ```js
    class Greeting {
-     
-     constructor () {
-   
-     }
-     
-     greet(str) {
-       console.log(str);
+     greet(message) {
+       console.log(message);
      }
    }
    
    class Hello extends Greeting {
-     hi () {
-       this.greet('Hello');
+     hi() {
+       this.greet("Hello");
      }
    }
    
    class Goodbye extends Greeting {
-     bye () {
-       this.greet('Goodbye');
+     bye() {
+       this.greet("Goodbye");
      }
    }
-   
-   Greeting
    
    ```
 
@@ -7441,7 +7432,104 @@ In the first lesson of this course, we wrote an RPS game using factory functions
 
 Before we begin, here's the RPS code that we will convert:
 
-Show
+```js
+let readline = require('readline-sync');
+
+function createPlayer() {
+  return {
+    move: null,
+  };
+}
+
+function createComputer() {
+  let playerObject = createPlayer();
+
+  let computerObject = {
+    choose() {
+      const choices = ['rock', 'paper', 'scissors'];
+      let randomIndex = Math.floor(Math.random() * choices.length);
+      this.move = choices[randomIndex];
+    },
+  };
+
+  return Object.assign(playerObject, computerObject);
+}
+
+function createHuman() {
+  let playerObject = createPlayer();
+  let humanObject = {
+    choose() {
+      let choice;
+
+      while (true) {
+        console.log('Please choose rock, paper, or scissors:');
+        choice = readline.question();
+        if (['rock', 'paper', 'scissors'].includes(choice)) break;
+        console.log('Sorry, invalid choice.');
+      }
+
+      this.move = choice;
+    },
+  };
+
+  return Object.assign(playerObject, humanObject);
+}
+
+const RPSGame = {
+  human: createHuman(),
+  computer: createComputer(),
+
+  displayWelcomeMessage() {
+    console.log('Welcome to Rock, Paper, Scissors!');
+  },
+
+  displayGoodbyeMessage() {
+    console.log('Thanks for playing Rock, Paper, Scissors. Goodbye!');
+  },
+
+  displayWinner() {
+    console.log(`You chose: ${this.human.move}`);
+    console.log(`The computer chose: ${this.computer.move}`);
+
+    let humanMove = this.human.move;
+    let computerMove = this.computer.move;
+
+    if ((humanMove === 'rock' && computerMove === 'scissors') ||
+        (humanMove === 'paper' && computerMove === 'rock') ||
+        (humanMove === 'scissors' && computerMove === 'paper')) {
+      console.log('You win!');
+    } else if ((humanMove === 'rock' && computerMove === 'paper') ||
+               (humanMove === 'paper' && computerMove === 'scissors') ||
+               (humanMove === 'scissors' && computerMove === 'rock')) {
+      console.log('Computer wins!');
+    } else {
+      console.log("It's a tie");
+    }
+  },
+
+  playAgain() {
+    console.log('Would you like to play again? (y/n)');
+    let answer = readline.question();
+    return answer.toLowerCase()[0] === 'y';
+  },
+
+  play() {
+    this.displayWelcomeMessage();
+    while (true) {
+      this.human.choose();
+      this.computer.choose();
+      this.displayWinner();
+      if (!this.playAgain()) break;
+    }
+
+    this.displayGoodbyeMessage();
+  },
+};
+
+RPSGame.play();
+```
+
+
 
 #### OO RPS With Constructors and Prototypes
 
@@ -7964,6 +8052,8 @@ JavaScript objects can only inherit from one other object. This limitation makes
 
 ### Practice Problems
 
+[reference](https://launchschool.com/lessons/d5964d17/assignments/e7850b07)
+
 1. If we have a `Car` class and a `Truck` class, how can you use the `Speed` object as a mix-in to make them `goFast`? How can you check whether your `Car` or `Truck` can now go fast?
 
    ```js
@@ -8005,8 +8095,6 @@ JavaScript objects can only inherit from one other object. This limitation makes
    'goFast' in smallCar; // true
    'goFast' in bluTruck; // true
    ```
-
-   
 
 2. In the last question, we used a mix-in named `Speed` that contained a `goFast` method. We included the mix-in in the `Car` class and then called the `goFast` method from an instance of the `Car` class. You may have noticed that the string printed when we call `goFast` includes the name of the type of vehicle we are using. How is that done?
 

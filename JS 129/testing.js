@@ -1,24 +1,43 @@
-let obj = {};
-console.log(obj.constructor); // [Function: Object]
-console.log(obj.hasOwnProperty('constructor')); // false
+const Flyable = { // mix-in object
+  fly() {
+    console.log('I can fly!');
+  }
+};
 
-console.log(obj.constructor.prototype.hasOwnProperty('constructor')); // true
-console.log(obj.__proto__.hasOwnProperty('constructor')); // true
-// obj.__proto__ references Object.prototype
+class Bird { // parent class
+  constructor(name) {
+    this.name = name;
+  }
 
-console.log(obj.constructor.__proto__); // {} which is Function.prototype, a Function object
-console.log(obj.constructor.constructor); // [Function: Function].
-
-let arr = [];
-console.log(arr.constructor); // [Function: Array]
-console.log(arr.hasOwnProperty('constructor')); // false
-console.log(arr.constructor.prototype.hasOwnProperty('constructor')); // true
-console.log(arr.__proto__.hasOwnProperty('constructor')); // true
-console.log(arr.constructor.constructor); // [Function: Function]
-
-function func() {
+  type() {
+    console.log('My type is bird.');
+  }
 }
-console.log(func.constructor); // [Function: Function]
-console.log(func.constructor.prototype); // {} which is Function.prototype
-console.log(func.prototype.hasOwnProperty('constructor')); // true
-console.log(func.constructor.constructor); // [Function: Function]
+
+Object.assign(Bird.prototype, Flyable); // endows parent class with more capability
+
+class Parrot extends Bird { // subclass of bird, parrot is a type of bird
+  constructor(name) {
+    super(name);
+  }
+}
+
+class Jet { // planes are not birds but can also fly
+  constructor(name) {
+    this.name = name;
+  }
+
+  type() {
+    console.log('My type is plane.');
+  }
+}
+
+Object.assign(Jet.prototype, Flyable);
+
+let eep = new Parrot('eep');
+let meep = new Jet('meep');
+
+eep.type();
+console.log(eep.name);
+meep.type();
+console.log(meep.name);

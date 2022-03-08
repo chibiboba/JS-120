@@ -1439,6 +1439,29 @@ This code also raises a `TypeError`. The `hi` method is defined on `Hello.protot
 
    Solution
 
+   If we add a new `play` method to the `Bingo` class, objects created by `Bingo` will use that method instead of looking up the prototype chain and finding it in the `Game` class. As soon as JavaScript finds a method, it calls it. When a class redefines a method that a superclass defines, we call this "method overriding."
+
+   ```js
+   class Game {
+     play() {
+       return 'Start the game!';
+     }
+   }
+   
+   class Bingo extends Game {
+     rulesOfPlay() {
+       // rules of play
+     }
+   
+     play() {
+       return 'Eyes down';
+     }
+   }
+   
+   let bingo = new Bingo();
+   bingo.play(); // 'Eyes down'.
+   ```
+
 2. Let's practice creating a class hierarchy.
 
    Create a class named `Greeting` that has a single method named `greet`. The method should take a string argument, and it should print that argument to the console.
@@ -1446,3 +1469,222 @@ This code also raises a `TypeError`. The `hi` method is defined on `Hello.protot
    Now, create two more classes that inherit from `Greeting`: one named `Hello`, and the other `Goodbye`. The `Hello` class should have a `hi` method that takes no arguments and logs `"Hello"`. The `Goodbye` class should have a `bye` method that logs `"Goodbye"`. Use the `greet` method from the `Greeting` class when implementing `Hello` and `Goodbye`; don't call `console.log` from either `Hello` or `Goodbye`.
 
    Solution
+   
+   ```js
+   class Greeting {
+     greet(str) {
+       console.log(str);
+     }
+   }
+   
+   class Hello extends Greeting() {
+     hi() {
+       this.greet('Hello');
+     }
+   }
+   
+   class Goodbye extends Greeting() {
+     bye() {
+       this.greet('Goodbye');
+     }
+   }
+   ```
+   
+
+------
+
+#### Practice Problems: Mix-ins
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/e7850b07)
+
+1. If we have a `Car` class and a `Truck` class, how can you use the `Speed` object as a mix-in to make them `goFast`? How can you check whether your `Car` or `Truck` can now go fast?
+
+   ```js
+   const Speed = {
+     goFast() {
+       console.log(`I'm a ${this.constructor.name} and going super fast!`);
+     }
+   };
+   
+   class Car {
+     goSlow() {
+       console.log(`I'm safe and driving slow.`);
+     }
+   }
+   
+   class Truck {
+     goVerySlow() {
+       console.log(`I'm a heavy truck and like going very slow.`);
+     }
+   }
+   ```
+
+   Solution
+
+   To add the `goFast` method to the `Car` and `Truck` classes, we need to mix `Speed` into the prototypes of both constructors.
+
+   ```js
+   const Speed = {
+     goFast() {
+       console.log(`I'm a ${this.constructor.name} and going super fast!`);
+     }
+   };
+   
+   class Car {
+     goSlow() {
+       console.log(`I'm safe and driving slow.`);
+     }
+   }
+   
+   Object.assign(Car.prototype, Speed);
+   
+   class Truck {
+     goVerySlow() {
+       console.log(`I'm a heavy truck and like going very slow.`);
+     }
+   }
+   
+   Object.assign(Truck.prototype, Speed);
+   ```
+
+   Testing that we can make our cars and trucks go fast is simple; all we must do is call `goFast` on a car or truck object:
+
+   ```js
+   let blueTruck = new Truck();
+   blueTruck.goFast(); // => logs "I'm a Truck and going super fast!"
+   
+   let smallCar = new Car();
+   smallCar.goFast(); // => logs "I'm a Car and going super fast!"
+   ```
+
+   If you need to check whether an object responds to a specific method, you can use the `in` operator:
+
+   ```js
+   'goFast' in smallCar;  // => true
+   'goFast' in blueTruck; // => true
+   ```
+
+   
+
+2. In the last question, we used a mix-in named `Speed` that contained a `goFast` method. We included the mix-in in the `Car` class and then called the `goFast` method from an instance of the `Car` class. You may have noticed that the string printed when we call `goFast` includes the name of the type of vehicle we are using. How is that done?
+
+   Hint: Since the `constructor` property references a function object, `constructor.name` references the `name` property on that object. Use MDN to lookup the definition of `Function.name`.
+
+   Solution
+
+   We used `this.constructor.name` to determine the name. It works like this:
+
+   1. Within `goFast`, `this` refers to the object that invoked the method. In this case, we used `Car` and `Truck` objects.
+   2. The `constructor` property of an object references the class that the object belongs to, i.e., `Car` or `Truck`.
+   3. Constructors have a `name` property that merely contains the name of the class as a string, and that's what we output in `goFast`.
+
+3. Ben and Alyssa are working on a vehicle management system. Thus far, they have created classes named `Auto` and `Motorcycle` to represent automobiles and motorcycles. After they noticed that the information and calculations performed was common to both vehicle types, they decided to break out the commonality into a separate class named `WheeledVehicle`. Their code, thus far, looks like this:
+
+   ```js
+   
+   class WheeledVehicle {
+     constructor(tirePressure, kmTravelledPerLiter) {
+       this.tires = tirePressure;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   
+     tirePressure(tireIdx) {
+       return this.tires[tireIdx];
+     }
+   
+     inflateTire(tireIdx, pressure) {
+       this.tires[tireIdx] = pressure;
+     }
+   
+     range() {
+       return this.fuelCap *  this.fuelEfficiency;
+     }
+   }
+   
+   class Auto extends WheeledVehicle {
+     constructor() {
+       // the array represents tire pressure for four tires
+       super([30,30,32,32], 50, 25.0);
+     }
+   }
+   
+   class Motorcycle extends WheeledVehicle {
+     constructor() {
+       // array represents tire pressure for two tires
+       super([20,20], 80, 8.0);
+     }
+   }
+   ```
+
+   Their boss now wants them to incorporate a new type of vehicle: a `Catamaran`.
+
+   ```js
+   class Catamaran {
+     constructor(propellerCount, hullCount, kmTravelledPerLiter, fuelCapInLiter) {
+       // catamaran specific logic
+   
+       this.propellerCount = propellerCount;
+       this.hullCount = hullCount;
+     }
+   }
+   ```
+
+   This new class doesn't fit well with our existing class hierarchy: Catamarans don't have tires, and aren't wheeled vehicles. However, we still want to share the code for tracking fuel efficiency and range. Modify the class definitions and move code into a mix-in, as needed, to share code between the `Catamaran` and the wheeled vehicle classes.
+
+   Solution
+
+   ```js
+   const MixIn = {
+   	range() {
+       return this.fuelEfficiency * this.fuelCap;
+     } 
+   };
+   
+   class WheeledVehicle {
+     constructor(tirePressure, kmTravelledPerLiter) {
+       this.tires = tirePressure;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   
+     tirePressure(tireIdx) {
+       return this.tires[tireIdx];
+     }
+   
+     inflateTire(tireIdx, pressure) {
+       this.tires[tireIdx] = pressure;
+     }
+   }
+   
+   Object.assign(WheeledVehicle.prototype, MixIn);
+   
+   class Auto extends WheeledVehicle {
+     constructor() {
+       // the array represents tire pressure for four tires
+       super([30,30,32,32], 50, 25.0);
+     }
+   }
+   
+   class Motorcycle extends WheeledVehicle {
+     constructor() {
+       // array represents tire pressure for two tires
+       super([20,20], 80, 8.0);
+     }
+   }
+   
+   class Catamaran {
+     constructor(propellerCount, hullCount, kmTravelledPerLiter, fuelCapInLiter) {
+       // catamaran specific logic
+       this.propellerCount = propellerCount;
+       this.hullCount = hullCount;
+       this.fuelEfficiency = kmTravelledPerLiter;
+       this.fuelCap = fuelCapInLiter;
+     }
+   }
+   
+   Object.assign(Catamaran.prototype, MixIn);
+   ```
+
+   We've moved the code shared by `Catamaran` and `WheeledVehicles` to the `Moveable` mix-in. The definitions of `Auto` and `Motorcycle` remain unchanged since they both inherit from `WheeledVehicle`.
+
