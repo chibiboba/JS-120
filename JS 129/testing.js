@@ -1,43 +1,45 @@
-const Flyable = { // mix-in object
-  fly() {
-    console.log('I can fly!');
-  }
-};
-
-class Bird { // parent class
-  constructor(name) {
-    this.name = name;
+class Chef {
+  prepare(wedding) {
+    this.prepareFood(wedding.guests);
   }
 
-  type() {
-    console.log('My type is bird.');
+  prepareFood(guests) {
+    // implementation
   }
 }
 
-Object.assign(Bird.prototype, Flyable); // endows parent class with more capability
+class Decorator {
+  prepare(wedding) {
+    this.decoratePlace(wedding.flowers);
+  }
 
-class Parrot extends Bird { // subclass of bird, parrot is a type of bird
-  constructor(name) {
-    super(name);
+  decoratePlace(flowers) {
+    // implementation
   }
 }
 
-class Jet { // planes are not birds but can also fly
-  constructor(name) {
-    this.name = name;
+class Musician {
+  prepare(wedding) {
+    this.preparePerformance(wedding.songs);
   }
 
-  type() {
-    console.log('My type is plane.');
+  preparePerformance(songs) {
+    // implementation
   }
 }
 
-Object.assign(Jet.prototype, Flyable);
+class Wedding {
+  constructor(guests, flowers, songs) {
+    this.guests = guests;
+    this.flowers = flowers;
+    this.songs = songs;
+  }
 
-let eep = new Parrot('eep');
-let meep = new Jet('meep');
+  prepare(preparers) {
+    preparers.forEach(preparer => {
+      preparer.prepare(this);
+    });
+  }
+}
 
-eep.type();
-console.log(eep.name);
-meep.type();
-console.log(meep.name);
+let preparers = [new Chef(), new Decorator(), new Musician()];

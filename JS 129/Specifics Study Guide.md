@@ -2775,7 +2775,7 @@ Yes, that code is identical to what we would write if we were using the construc
 
 Definitions
 
-- Summary :  Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects. All shared properties will be defined on this parent object. 
+- Summary :  Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
 
   - Shared properties are defined on a parent object. Other objects can then be created from this parent object using `Object.create(obj)` .
   - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties.
@@ -3383,7 +3383,7 @@ will.toString(); // => My name is William and I'm 28 years old.
 
 ------
 
-### Mix-ins; mix-ins vs. inheritance 4
+### Mix-ins; mix-ins vs. inheritance (4)
 
 #### Mix-ins
 
@@ -3732,9 +3732,239 @@ This approach is valid, but it suffers the downsides of all factory functions:
 
 ------
 
-### Polymorphism- 4
+### Polymorphism (4)
+
+- Summary : Polymorphism refers to the ability of objects of <u>different types</u> to respond to the <u>same</u> method invocation. It can be implemented through inheritance by *method overriding*. It can also be implemented through **duck typing**; by ensuring that objects of *different types* use the same method *name* to perform different but related functions, those objects can be interacted with in a uniform way.
+
+**Polymorphism** refers to the ability of objects of different types to respond in different ways to the same message (or method invocation). 
+
+-  <u>Object type</u>:  As long as the objects involved use the same method name and take the same number of arguments, we can treat the object as belonging to a specific category of objects.
+
+- That is, data of different types can respond to a common interface. 
+- When two or more object types have a method with the same name, we can invoke that method with any of those objects.
+- When we don't care what type of object is calling the method, we're using polymorphism.
+- Often, polymorphism involves inheritance from a common superclass. However, inheritance isn't necessary as we'll see in this assignment.
+- It's a crucial concept in OO programming that can lead to more maintainable code.
+
+- For example, assume we have a method that expects an argument that has a `move` method. We can pass it any type of argument, provided it has a compatible `move` method. The object might represent a human, a cat, a jellyfish, or, conceivably, even a car or train. That is, it lets objects of different types respond to the same method invocation.
+
+There are two chief ways to implement polymorphism.
+
+1. Polymorphism through inheritance: 
+
+   - Definition: Objects of different types can respond to the same method call simply by **overriding** a method inherited from a superclass.
+   - An example is the `toString()` method
+
+2. Polymorphism through **Duck-typing**: Objects of different types use the same method *name* to perform different but related functions
+
+   - Definition: When objects of different unrelated types both respond to the same method name.
+
+   - We aren't concerned with the class or type of an object, but whether the object has a particular behavior. 
+     - As long as the objects involved use the same method name and take the same number of arguments, we can treat the object as belonging to a specific category / type of objects. 
+     - *If an object quacks like a duck, we can treat it as a duck*. 
+   - Duck typing is an informal way to classify or ascribe a type to objects- whereas Classes and constructors provide a formal way to do that. 
+     - For example  an application may have a variety of elements that can respond to a mouse click by calling a method named something like `handleClick`. Those elements may be completely different -- for instance, a checkbox vs. a text input field -- but they're all *clickable* objects. 
+
+#### Polymorphism Though Inheritance
+
+- Definition: Objects of different types can respond to the same method call simply by **overriding** a method inherited from a superclass.
+
+- Example
+
+  ```js
+  class Animal {
+    move() {}
+  }
+  
+  class Fish extends Animal {
+    move() {
+      console.log("swimming");
+    }
+  }
+  
+  class Cat extends Animal {
+    move() {
+      console.log("walking");
+    }
+  }
+  
+  // Sponges and Corals don't have a separate move method - they don't move
+  class Sponge extends Animal {}
+  class Coral extends Animal {}
+  
+  let animals = [new Fish(), new Cat(), new Sponge(), new Coral()];
+  animals.forEach(animal => animal.move());
+  ```
+
+  - Every object in the array is a different animal, but the client code -- the code that uses those objects -- doesn't care what each object is. The only thing it cares about here is that each object in the array has a `move` method that requires no arguments. That is, every generic animal object implements some form of locomotion, though some animals don't move. The interface for this class hierarchy lets us work with all of those types in the same way even though the implementations may be dramatically different. That is polymorphism.
+
+  - If we run the above code, we call the `move` method for each of 4 different kinds of animal. Let's look at them in pairs.
+  - The `Sponge` and `Coral` classes don't have a `move` method -- at least not one of their own. Instead, they both inherit it from the `Animal` class via the prototype chain. Thus, when we call `move` on a `Sponge` or `Coral` object, the `move` method in the `Animal` class gets called. That method does nothing here, so the `Sponge` or `Coral` doesn't move. This is polymorphism through inheritance -- instead of providing our own behavior for the `move` method, we're using inheritance to acquire the behavior of a supertype. In this case, that behavior does nothing, but it could do something else.
+  - For `Fish` objects, we call the `move` method from the `Fish` class, which enables a fish to swim. Likewise, a `Cat` object walks when we tell it to `move`. This is a simple example of polymorphism in which two different object types can respond to the same method call simply by **overriding** a method inherited from a superclass. In a sense, overriding methods like this is similar to duck-typing, a concept that we'll meet shortly. However, overriding is generally treated as an aspect of inheritance, so this is polymorphism through inheritance.
+
+- Another example is the `toString()` method
+
+  - The `Object` type provides a default implementation of `toString()` that other types inherit. Other types can also override the method to return a customized string representation of the object. Without customization, `toString` returns the string `'[object Object]'` when called on an object. With customization, it can return something more meaningful and useful. For instance, arrays and dates are objects that have customized `toString` methods:
+
+    ```js
+    > [1, 2, 3].toString()
+    '1,2,3'
+    
+    > (new Date()).toString()
+    'Fri Jun 28 2019 20:50:13 GMT-0700 (Pacific Daylight Time)'
+    ```
+
+#### Polymorphism Through Duck Typing
+
+- Definition:  Objects of *different unrelated* types use the same method *name* to perform different but related functions
+  - When objects of different unrelated types both respond to the same method name.
+
+- We aren't concerned with the class or type of an object, but we do care whether the object has a particular behavior. 
+  - As long as the objects involved use the same method name and take the same number of arguments, we can treat the object as belonging to a specific category / type of objects. 
+  - *If an object quacks like a duck, we can treat it as a duck*. 
+- Duck typing is an informal way to classify or ascribe a type to objects- whereas Classes and constructors provide a formal way to do that. 
+  - For example  an application may have a variety of elements that can respond to a mouse click by calling a method named something like `handleClick`. Those elements may be completely different -- for instance, a checkbox vs. a text input field -- but they're all *clickable* objects. 
+
+- Example:  we define a `Wedding` class and several preparer classes. The example attempts to implement polymorphic behavior without using duck typing; it shows you how you **shouldn't** do it!
+
+```js
+class Chef {
+  prepareFood(guests) {
+    // implementation
+  }
+}
+
+class Decorator {
+  decoratePlace(flowers) {
+    // implementation
+  }
+}
+
+class Musician {
+  preparePerformance(songs) {
+    // implementation
+  }
+}
+
+class Wedding {
+  constructor(guests, flowers, songs) {
+    this.guests = guests;
+    this.flowers = flowers;
+    this.songs = songs;
+  }
+
+  prepare(preparers) {
+    preparers.forEach(preparer => {
+      if (preparer instanceof Chef) {
+        preparer.prepareFood(this.guests);
+      } else if (preparer instanceof Decorator) {
+        preparer.decoratePlace(this.flowers);
+      } else if (preparer instanceof Musician) {
+        preparer.preparePerformance(this.songs);
+      }
+    });
+  }
+}
+
+let preparers = [new Chef(), new Decorator(), new Musician()];
+```
+
+- The problem with this code is that the `prepare` method has too many dependencies; it relies on specific classes and their names. It also needs to know which method it should call on each type of object, as well as the arguments that each method requires. If you change the way any of those methods are used or add a new type of preparer, you must also change `Wedding.prototype.prepare`. For instance, if we need to add a dressmaker, we must add another `else` clause. With only 4 preparers, `prepare` is already becoming long and messy.
+
+- The right way to implement this program is to use duck typing to implement polymorphism:
+
+```js
+class Chef {
+  prepare(wedding) {
+    this.prepareFood(wedding.guests);
+  }
+
+  prepareFood(guests) {
+    // implementation
+  }
+}
+
+class Decorator {
+  prepare(wedding) {
+    this.decoratePlace(wedding.flowers);
+  }
+
+  decoratePlace(flowers) {
+    // implementation
+  }
+}
+
+class Musician {
+  prepare(wedding) {
+    this.preparePerformance(wedding.songs);
+  }
+
+  preparePerformance(songs) {
+    // implementation
+  }
+}
+
+class Wedding {
+  constructor(guests, flowers, songs) {
+    this.guests = guests;
+    this.flowers = flowers;
+    this.songs = songs;
+  }
+
+  prepare(preparers) {
+    preparers.forEach(preparer => {
+      preparer.prepare(this);
+    });
+  }
+}
+
+let preparers = [new Chef(), new Decorator(), new Musician()];
+```
+
+- Though there is no inheritance in this example, each of the preparer-type classes provides a `prepare` method. We still have polymorphism since all of the objects respond to the `prepare` method call. If we later need to add another preparer type, we can create another class and implement the `prepare` method to perform the appropriate actions.
+
+- Note that merely having two different objects that have a method with the same name and compatible arguments doesn't mean that you have polymorphism. In theory, those methods might be used polymorphically, but that doesn't always make sense. Consider the following two classes:
+
+  ```js
+  class Circle {
+    draw() {}
+  }
+  
+  class Blinds {
+    draw() {}
+  }
+  ```
+
+  - These classes each have a method named `draw`, and the methods take no arguments. In the `Circle` class, `draw` presumably draws a circle on the screen. In the `Blinds` class, `draw` may cause the window blinds in an office building to be drawn (as in close or open). In theory, you could write some code that uses these methods polymorphically:
+
+  ```js
+  [new Circle(), new Blinds()].forEach(obj => obj.draw());
+  ```
+
+  - However, it's unlikely that this would ever make sense in real code. Unless you're actually calling the method in a polymorphic manner, you don't have polymorphism. In practice, polymorphic methods are intentionally designed to be polymorphic; if there's no intention, you probably shouldn't use them polymorphically.
+
+------
 
 ### Reading OO code
+
+#### Assignment: Twenty- One
+
+[reference](https://launchschool.com/lessons/fb4809a8/assignments/62238c60)
+
+[solution](https://launchschool.com/lessons/fb4809a8/assignments/2b1f136c)
+
+- Rules
+  - 
+
+#### Assignment: OO Twenty-One
+
+[reference](https://launchschool.com/lessons/93a83d87/assignments/ab05d402)
+
+[solution](https://launchschool.com/lessons/93a83d87/assignments/83ff3989)
+
+
+
+
 
 ------
 
