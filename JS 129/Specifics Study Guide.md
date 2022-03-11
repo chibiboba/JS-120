@@ -2282,6 +2282,31 @@ typeof Foo; // => "function"
 
   - Hoisting is an internal step performed by the engine; it doesn't actually move code around. 
 
+```js
+class Parent {
+  print() {
+    if (this === meep) { // meep was used before it was defined
+      console.log(`I'm meep`);
+    }
+  }
+}
+
+class Child extends Parent() {
+
+}
+
+class Sheep extends Parent() {
+
+}
+
+let theParent = new A();
+let eep = new Sheep();
+let meep = new Child();
+meep.print();
+```
+
+
+
 ##### Static Methods and Properties
 
 ###### Static Methods
@@ -2677,7 +2702,7 @@ Yes, that code is identical to what we would write if we were using the construc
       return 'A rectangle is a shape with 4 sides'; // static method
     }
     
-    static description = 'A rectangle is a shape with 4 sides'; // static property 
+    static DESCRIPTION = 'A rectangle is a shape with 4 sides'; // static property 
   }
   
   let rect = new Rectangle();
@@ -3797,7 +3822,6 @@ There are two chief ways to implement polymorphism.
   ```
 
   - Every object in the array is a different animal, but the client code -- the code that uses those objects -- doesn't care what each object is. The only thing it cares about here is that each object in the array has a `move` method that requires no arguments. That is, every generic animal object implements some form of locomotion, though some animals don't move. The interface for this class hierarchy lets us work with all of those types in the same way even though the implementations may be dramatically different. That is polymorphism.
-
   - If we run the above code, we call the `move` method for each of 4 different kinds of animal. Let's look at them in pairs.
   - The `Sponge` and `Coral` classes don't have a `move` method -- at least not one of their own. Instead, they both inherit it from the `Animal` class via the prototype chain. Thus, when we call `move` on a `Sponge` or `Coral` object, the `move` method in the `Animal` class gets called. That method does nothing here, so the `Sponge` or `Coral` doesn't move. This is polymorphism through inheritance -- instead of providing our own behavior for the `move` method, we're using inheritance to acquire the behavior of a supertype. In this case, that behavior does nothing, but it could do something else.
   - For `Fish` objects, we call the `move` method from the `Fish` class, which enables a fish to swim. Likewise, a `Cat` object walks when we tell it to `move`. This is a simple example of polymorphism in which two different object types can respond to the same method call simply by **overriding** a method inherited from a superclass. In a sense, overriding methods like this is similar to duck-typing, a concept that we'll meet shortly. However, overriding is generally treated as an aspect of inheritance, so this is polymorphism through inheritance.
@@ -3806,13 +3830,62 @@ There are two chief ways to implement polymorphism.
 
   - The `Object` type provides a default implementation of `toString()` that other types inherit. Other types can also override the method to return a customized string representation of the object. Without customization, `toString` returns the string `'[object Object]'` when called on an object. With customization, it can return something more meaningful and useful. For instance, arrays and dates are objects that have customized `toString` methods:
 
+  ```js
+  > [1, 2, 3].toString()
+  '1,2,3'
+  
+  > (new Date()).toString()
+  'Fri Jun 28 2019 20:50:13 GMT-0700 (Pacific Daylight Time)'
+  ```
+
+##### `toString()` method
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
+
+- Syntax
+
+  ```js
+  toString();
+  ```
+
+- Return value: a string representing the object. 
+
+- An object's `toString()` method is most commonly invoked when that object undergoes...
+
+  - explicit [type conversion](https://developer.mozilla.org/en-US/docs/Glossary/Type_Conversion) to a string 
+
     ```js
-    > [1, 2, 3].toString()
-    '1,2,3'
-    
-    > (new Date()).toString()
-    'Fri Jun 28 2019 20:50:13 GMT-0700 (Pacific Daylight Time)'
+    String(obj);
     ```
+
+  - implicit [type coercion](https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion) into a string
+
+    ```js
+    let obj = [];
+    console.log(`${obj}`); // implicit type coeorcion in string interpolation
+    ```
+
+- While not as common, the method can be invoked directly (for example, `myObject.toString()`).
+
+- By default `toString()` returns `"[object Type]"`, where `Type` is the object type.
+
+  ```
+  const o = new Object().toString() // o is "[object Object]";
+  ```
+
+- Can override `toString` by creating a function in place of it. 
+
+  - creating a custom `toString` inside of the constructor / class of the instance object. 
+
+  ```js
+  // from OO 21.js
+  toString() {
+   if (this.isHidden()) return "Hidden";
+   return `${this.getRank()} of ${this.getSuit()}`;
+  }
+  ```
+
+  
 
 #### Polymorphism Through Duck Typing
 
@@ -3954,13 +4027,180 @@ let preparers = [new Chef(), new Decorator(), new Musician()];
 [solution](https://launchschool.com/lessons/fb4809a8/assignments/2b1f136c)
 
 - Rules
-  - 
+
+  - Deck
+  - Goal
+  - Setup
+  - Card values
+  - Payer turn
+  - Dealer turn
+  - Comparing cards
+
+- Data Structure
+
+  - the deck
+
+    ```js
+    [['H', '2'], ['S', 'J'], ['D', 'A']] // card's suit and car'ds value
+    ```
+
+- Calculating Aces
+
+  - ```js
+    function total(cards) {
+      // cards = [['H', '3'], ['S', 'Q'], ... ]
+      let values = cards.map(card => card[1]);
+    
+      let sum = 0;
+      values.forEach(value => {
+        if (value === "A") {
+          sum += 11;
+        } else if (['J', 'Q', 'K'].includes(value)) {
+          sum += 10;
+        } else {
+          sum += Number(value);
+        }
+      });
+    
+      // correct for Aces
+      values.filter(value => value === "A").forEach(_ => {
+        if (sum > 21) sum -= 10;
+      });
+    
+      return sum;
+    }
+    ```
+
+- Player turn
+
+  ```md
+  - Ask player to hit or stay.
+  - If stay, stop asking.
+  - Otherwise, go to #1.
+  ```
+
+  ```js
+  while (true) {
+    console.log("hit or stay?");
+    let answer = readline.question();
+    if (answer === 'stay' || busted()) break;
+  }
+  ```
+
+  - once loop ends, we can recheck the conditions to see why the loop ended, and handle things differently if needed. 
+
+  ```js
+  while (true) {
+    console.log("hit or stay?");
+    let answer = readline.question();
+    if (answer === 'stay' || busted()) break;
+  }
+  
+  if (busted()) {
+    // probably end the game? or ask the user to play again?
+  } else {
+    console.log("You chose to stay!");  // if player didn't bust, must have stayed to get here
+  }
+  ```
+
+  
+
+- Shuffle cards
+
+  - JS doesn't have a method for shuffling elements so we'll need to implement our own shuffling function.
+  - One good algorithm for shuffling an array is the **Fisher-Yates shuffle**: 
+
+  ```js
+  function shuffle(array) {
+    for (let index = array.length - 1; index > 0; index--) {
+      let otherIndex = Math.floor(Math.random() * (index + 1)); // 0 to index
+      [array[index], array[otherIndex]] = [array[otherIndex], array[index]]; // swap elements
+    }
+  }
+  ```
+
+- Displaying the result
+
+  - When you display the result, you also need to perform the calculation of who won.
+  - Having one function that both performs the calculation and displays the result is hard to reason about. 
+  -  The trick is to create a function that only returns the result of the game, and another that only handles displaying the result. 
+  - you want to write functions that only do one thing.
+
+- Pseudocode
+
+  ```md
+  1. Initialize deck
+  2. Deal cards to player and dealer
+  3. Player turn: hit or stay
+     - repeat until bust or stay
+  4. If player bust, dealer wins.
+  5. Dealer turn: hit or stay
+     - repeat until total >= 17
+  6. If dealer busts, player wins.
+  7. Compare cards and declare winner.
+  ```
 
 #### Assignment: OO Twenty-One
 
 [reference](https://launchschool.com/lessons/93a83d87/assignments/ab05d402)
 
 [solution](https://launchschool.com/lessons/93a83d87/assignments/83ff3989)
+
+- Rules
+  - Twenty-One is a card game with a dealer and a player.
+  - The participants try to get as close to 21 points as possible without going over.
+  - The game starts by dealing cards from a 52-card deck consisting of cards from 4 suits of 13 ranks each.
+  - Both participants receive two cards.
+    - The dealer hides one of his cards (places it face-down) so that the player can't see what it is.
+    - The player can see both of her cards.
+  - The player takes the first turn, and can hit or stay.
+    - If the player hits, she gets another card, and again has the opportunity to hit (get another card) or stay.
+    - If the player goes over 21 points, she busts.
+    - If the player stays, the dealer plays next.
+  - If the player didn't bust, it's now the dealer's turn.
+    - The dealer reveals his face-down card.
+    - If the dealer's total points are less than 17, he must hit and receive another card.
+    - If the dealer goes over 21 points, he busts.
+    - If the dealer has 17 points or more, he must stay.
+  - Results of the game are determined.
+  
+- Additional Requirements
+  - Welcome the player to the game, and say good bye when they quit.
+  - Each time the player has an opportunity to hit or stay:
+    - Display the computer's hand; one card should remain hidden.
+    - Display the player's hand and her point total.
+  - For the dealer's turn:
+    - The dealer doesn't play at all if the player busts.
+    - Display the dealer's hand, including the hidden card, and report his point total.
+    - Redisplay the dealer's hand and point total and each time he hits.
+    - Display the results when the dealer stays.
+  - After each game is over, ask the player if they want to play again. Start a new game if they say yes, else end the game.
+  - When the program starts, give the player 5 dollars with which to bet. Deduct 1 dollar each time she loses, and add 1 dollar each time she wins. The program should quit when she is broke (0 dollars) or rich (has a total of 10 dollars).
+  - Be prepared to run out of cards. You can either create a new deck for each game, or keep track of how many cards remain and create a new deck as needed.
+  
+- Shuffling array
+
+  - https://www.npmjs.com/package/shuffle-array
+
+  ```node
+   $ npm install shuffle-array
+  ```
+
+- Psuedocode
+
+  ```js
+  
+      this.displayWelcomeMessage();
+      this.dealCards();
+      this.showCards();
+      this.playerTurn();
+      this.dealerTurn();
+      this.displayResult();
+      this.displayGoodbyeMessage();
+   
+  ```
+
+  
 
 
 
