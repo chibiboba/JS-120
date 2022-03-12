@@ -2,7 +2,6 @@
 const readline = require("readline-sync");
 const shuffle = require("shuffle-array");
 
-
 class Card {
   // properties of the Card constructor are static
   static SUITS = ['Heart', 'Diamond', 'Spade', 'Club'];
@@ -113,18 +112,43 @@ class Participant {
 }
 
 class Player extends Participant {
+  static STARTING_MONEY = 5;
+  static WINNING_MONEY = 10;
+  static LOSING_MONEY = 0;
+
   constructor() {
     super();
     //STUB
     // What sort of state does a player need?
     // Score? Hand? Amount of money available?
     this.name = 'Player';
+    this.money = Player.STARTING_MONEY;
   }
 
   showHand() {
     console.log(`=> Your cards are:`);
     this.hand.forEach(card => console.log(` ${card}`)); // invokes toString()
     console.log();
+  }
+
+  winBet() {
+    this.money += 1;
+  }
+
+  loseBet() {
+    this.money -= 1;
+  }
+
+  isBroke() {
+    return this.money === 0;
+  }
+
+  isRich() {
+    return this.money === 10;
+  }
+
+  showPurse() {
+    return this.money;
   }
 }
 
@@ -165,24 +189,37 @@ class TwentyOneGame {
   }
 
   start() {
-    //SPIKE
     this.displayWelcomeMessage();
-    this.dealCards();
-    this.showCards();
-    this.playerTurn();
-    this.dealerTurn();
-    this.displayResult();
+
+    do {
+      this.dealCards();
+      this.showCards();
+      this.playerTurn();
+      this.dealerTurn();
+      this.detectResult();
+      this.displayResult();
+      this.displayPurse();
+    // eslint-disable-next-line max-len
+    } while (!([Player.LOSING_MONEY, Player.WINNING_MONEY].includes(this.player.money)));
+
+    this.whoWon();
     this.displayGoodbyeMessage();
   }
 
   displayWelcomeMessage() {
-    this.prompt("Welcome to 21");
-    console.log("");
+    console.log("----------------------------------- Welcome to 21 ----------------------------------------");
+    console.log(`The rules are as following:`);
+    console.log(`○ You start with $5 to bet with.`);
+    console.log(`○ A dollar is deducted each round that you lose, and a dollar is added each time you win.`);
+    console.log(`○ The game ends when you are broke: $0, or rich: $10.`);
+    console.log(`○ During each round, the goal is to get as close to 21 without going over it.`);
+    console.log("------------------------------------------------------------------------------------------");
   }
   // create new deck each game
   // both participants receive two cards
   // dealer hides one of his cards (face-down) so player can't see it
   // player can see both of her cards.
+
   dealCards() {
     this.deck = new Deck();
     this.player.resetHand(); // creates hand object for player to hold cards
@@ -204,12 +241,15 @@ class TwentyOneGame {
   // Display the computer's hand; one card should remain hidden.
   // Display the player's hand and her point total.
   playerTurn() {
+    console.log("----------------------------------- Your Turn -------------------------------------------");
+
     while (true) {
       let answer = this.hitOrStay ();
       if (answer === TwentyOneGame.HIT) {
         this.hit(this.player);
         if (this.isBusted(this.player)) {
           this.prompt('You busted!');
+          console.log();
           break;
         }
       } else {
@@ -238,6 +278,8 @@ class TwentyOneGame {
   // Redisplay the dealer's hand and point total each time he hits.
   // Display the results when dealer stays.
   dealerTurn() {
+    console.log("---------------------------------- Dealer's Turn ----------------------------------------");
+
     this.dealer.revealHand(); //make card not hidden
     this.dealer.showHand();
 
@@ -271,12 +313,8 @@ class TwentyOneGame {
     this.showScore(participant);
   }
 
-  displayResult() {
-    //STUB
-  }
-
   displayGoodbyeMessage() {
-    this.prompt("Thanks for playing 21! Goodbye~");
+    this.prompt("Thanks for playing 21! Goodbye ~");
   }
 
   prompt(text) {
@@ -303,9 +341,60 @@ class TwentyOneGame {
     return score;
   }
 
+  detectResult() {
+    let playerScore = this.computeScore(this.player);
+    let dealerScore = this.computeScore(this.dealer);
+
+    if (this.isBusted(this.player)) {
+      this.player.loseBet();
+    } else if (this.isBusted(this.dealer)) {
+      this.player.winBet();
+    } else if (playerScore > dealerScore) {
+      this.player.loseBet();
+    } else if (playerScore < dealerScore) {
+      this.player.winBet();
+    }
+  }
+
+  displayResult() {
+    console.log("-----------------------------------------------------------------------------------------");
+    console.log();
+    let playerScore = this.computeScore(this.player);
+    let dealerScore = this.computeScore(this.dealer);
+
+    if (this.isBusted(this.player)) {
+      this.prompt(`You lose this round with your score of ${playerScore} to the dealer's ${dealerScore}.`);
+    } else if (this.isBusted(this.dealer)) {
+      this.prompt(`You win this round with a score of ${playerScore} to ${ dealerScore }.`);
+    } else if (dealerScore > playerScore) {
+      this.prompt(`Dealer wins this round with a total of ${dealerScore} to your ${playerScore}.`);
+    } else if (playerScore > dealerScore) {
+      this.prompt(`You win this round with a total of ${playerScore} to the dealer's ${dealerScore}.`);
+    } else {
+      this.prompt(`You tied!`);
+    }
+
+  }
+
+  whoWon() {
+    if (this.player.money === Player.LOSING_MONEY) {
+      console.log('You are broke. The game will now conclude.');
+    } else if (this.player.money === Player.WINNING_MONEY) {
+      console.log('Congrats, you are rich! The game will now conclude.');
+    }
+  }
+
   showScore(participant) {
     let score = this.computeScore(participant);
     this.prompt(`${participant.name}'s score is now ${score}.`);
+    console.log();
+  }
+
+  displayPurse() {
+    console.log();
+    this.prompt(`Your purse: $${this.player.money}.`);
+    console.log();
+    console.log("----------------------------------- Next Round -------------------------------------------");
     console.log();
   }
 
