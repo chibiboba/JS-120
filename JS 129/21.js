@@ -208,11 +208,18 @@ class TwentyOneGame {
 
   displayWelcomeMessage() {
     console.log("----------------------------------- Welcome to 21 ----------------------------------------");
-    console.log(`The rules are as following:`);
+    console.log(`The game rules are as following:`);
     console.log(`○ You start with $5 to bet with.`);
     console.log(`○ A dollar is deducted each round that you lose, and a dollar is added each time you win.`);
     console.log(`○ The game ends when you are broke: $0, or rich: $10.`);
+    console.log();
+    console.log(`Details pertaining to each round:`);
     console.log(`○ During each round, the goal is to get as close to 21 without going over it.`);
+    console.log(`○ You will decide whether to 'hit' or 'stay'.`);
+    console.log(` • 'Hit' means you want to be dealt another card.`);
+    console.log(` • 'Stay' means you stayed at your total.`);
+    console.log(`○ The dealer follows a strict rule for determining whether to hit or stay:`);
+    console.log(`○ Dealer hits until the total is at least 17. If the dealer busts, then you win the round.`);
     console.log("------------------------------------------------------------------------------------------");
   }
   // create new deck each game
@@ -350,9 +357,9 @@ class TwentyOneGame {
     } else if (this.isBusted(this.dealer)) {
       this.player.winBet();
     } else if (playerScore > dealerScore) {
-      this.player.loseBet();
-    } else if (playerScore < dealerScore) {
       this.player.winBet();
+    } else if (playerScore < dealerScore) {
+      this.player.loseBet();
     }
   }
 
