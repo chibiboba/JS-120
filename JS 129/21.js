@@ -399,7 +399,7 @@ class TwentyOneGame {
 
   displayPurse() {
     console.log();
-    this.prompt(`Your purse: $${this.player.money}.`);
+    this.prompt(`Your purse: $${this.player.money}`);
     console.log();
     console.log("----------------------------------- Next Round -------------------------------------------");
     console.log();
