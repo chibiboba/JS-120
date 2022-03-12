@@ -202,7 +202,7 @@ class TwentyOneGame {
       this.displayResult();
       this.displayPurse();
 
-    // eslint-disable-next-line max-len
+      // eslint-disable-next-line max-len
     } while (!([Player.LOSING_MONEY, Player.WINNING_MONEY].includes(this.player.money)));
 
     this.whoWon();
@@ -210,7 +210,7 @@ class TwentyOneGame {
   }
 
   playFirstRound() {
-    console.log("---------------------------- First Round -----------------------------");
+    console.log("--------------------------- First Round ------------------------------");
     this.dealCards();
     this.showCards();
     this.playerTurn();
@@ -221,12 +221,12 @@ class TwentyOneGame {
   }
 
   displayNextRound() {
-    console.log("---------------------------- Next Round ------------------------------");
+    console.log("------------------------- Next Round ---------------------------------");
   }
 
   // eslint-disable-next-line max-statements
   displayWelcomeMessage() {
-    console.log("--------------------------- Welcome to 21 ----------------------------");
+    console.log("------------------------- Welcome to 21 ------------------------------");
     console.log(`The game rules are as following:`);
     console.log(`○ You start with $5 to bet with.`);
     console.log(`○ A dollar is deducted each round that you lose, and a dollar is added`);
@@ -272,10 +272,10 @@ class TwentyOneGame {
   // Display the computer's hand; one card should remain hidden.
   // Display the player's hand and her point total.
   playerTurn() {
-    console.log("---------------------------- Your Turn -------------------------------");
+    console.log("------------------------- Your Turn ----------------------------------");
 
     while (true) {
-      let answer = this.hitOrStay ();
+      let answer = this.hitOrStay();
       if (answer === TwentyOneGame.HIT) {
         this.hit(this.player);
         if (this.isBusted(this.player)) {
@@ -333,7 +333,7 @@ class TwentyOneGame {
 
   // add card to participant's deck
   // also display the hand and current score
-  hit (participant) {
+  hit(participant) {
     participant.addToHand(this.deck.dealCardFaceUp());
     if (participant.name === 'Dealer') {
       this.prompt('Dealer chose to hit!');
@@ -396,7 +396,7 @@ class TwentyOneGame {
     if (this.isBusted(this.player)) {
       this.prompt(`You lose this round with your score of ${playerScore} to the dealer's ${dealerScore}.`);
     } else if (this.isBusted(this.dealer)) {
-      this.prompt(`You win this round with a score of ${playerScore} to ${ dealerScore }.`);
+      this.prompt(`You win this round with a score of ${playerScore} to ${dealerScore}.`);
     } else if (dealerScore > playerScore) {
       this.prompt(`Dealer wins this round with a total of ${dealerScore} to your ${playerScore}.`);
     } else if (playerScore > dealerScore) {
