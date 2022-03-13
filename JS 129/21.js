@@ -51,6 +51,18 @@ class Card {
   isFaceCard() {
     return ['Joker', 'King', 'Queen'].includes(this.value);
   }
+
+  valueOfCard() {
+    if (this.isHidden()) {
+      return 0;
+    } else if (this.isAce()) {
+      return 11;
+    } else if (this.isFaceCard()) {
+      return 10;
+    } else {
+      return parseInt(this.getValue(), 10);
+    }
+  }
 }
 
 class Deck {
@@ -256,7 +268,7 @@ class TwentyOneGame {
   // Display the player's hand and her point total.
   playerTurn() {
     while (true) {
-      let answer = this.hitOrStay ();
+      let answer = this.hitOrStay();
       if (answer === TwentyOneGame.HIT) {
         this.clearConsole();
         this.hit(this.player);
@@ -331,7 +343,7 @@ class TwentyOneGame {
 
   // add card to participant's deck
   // also display the hand and current score
-  hit (participant) {
+  hit(participant) {
     participant.addToHand(this.deck.dealCardFaceUp());
   }
 
@@ -341,15 +353,9 @@ class TwentyOneGame {
 
   computeScore(participant) {
     let cards = participant.getHand();
-    let score = cards.reduce((total, card) => {
-      if (card.isFaceCard()) {
-        return total + 10;
-      } else if (card.isAce()) {
-        return total + 11;
-      } else {
-        return total + Number(card.value);
-      }
-    }, 0); // need initial value, else accumulator value is at index 0, which is not a number.
+    let score = cards.reduce((total, card) => total + card.valueOfCard(), 0);
+    // need initial value
+    // else accumulator value is at index 0, which is not a number.
 
     // correct for Aces
     cards.filter(card => card.isAce() && !card.isHidden()).forEach(_ => {

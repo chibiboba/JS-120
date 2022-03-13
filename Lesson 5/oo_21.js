@@ -26,7 +26,7 @@ class Card {
   }
 
   // toString() is invoked during implicit type coercion
-  // when we `this.prompt` the card objects
+  // when we `console.log` the card objects
   toString() {
     if (this.hidden) return "Hidden";
     return `${this.getValue()} of ${this.getSuit()}`;
@@ -50,6 +50,18 @@ class Card {
 
   isFaceCard() {
     return ['Joker', 'King', 'Queen'].includes(this.value);
+  }
+
+  valueOfCard() {
+    if (this.isHidden()) {
+      return 0;
+    } else if (this.isAce()) {
+      return 11;
+    } else if (this.isFaceCard()) {
+      return 10;
+    } else {
+      return parseInt(this.getRank(), 10);
+    }
   }
 }
 
@@ -126,7 +138,7 @@ class Player extends Participant {
   }
 
   showHand() {
-    console.log(`=> Your cards are:`);
+    console.log(`Your cards:`);
     this.hand.forEach(card => console.log(` ${card}`)); // invokes toString()
     console.log();
   }
@@ -168,7 +180,7 @@ class Dealer extends Participant {
   }
 
   showHand() {
-    console.log(`=> Dealer's cards are:`);
+    console.log(`Dealer's cards:`);
     this.hand.forEach(card => console.log(` ${card}`)); // invokes toString()
     console.log();
   }
@@ -188,61 +200,51 @@ class TwentyOneGame {
     this.dealer = new Dealer();
   }
 
+  // eslint-disable-next-line max-statements
   start() {
     this.displayWelcomeMessage();
-    this.playFirstRound();
+    this.pressToContinue();
+    this.clearConsole();
 
     do {
-      this.displayNextRound();
+      this.clearConsole();
       this.dealCards();
-      this.showCards();
+      this.showHandAndScores();
+      this.displayPurse();
       this.playerTurn();
       this.dealerTurn();
       this.detectResult();
       this.displayResult();
       this.displayPurse();
 
-      // eslint-disable-next-line max-len
-    } while (!([Player.LOSING_MONEY, Player.WINNING_MONEY].includes(this.player.money)));
+      if (this.player.isBroke() || this.player.isRich()) break;
+      if (!this.playAgain()) break;
+
+    } while (true);
 
     this.whoWon();
     this.displayGoodbyeMessage();
   }
 
-  playFirstRound() {
-    console.log("--------------------------- First Round ------------------------------");
-    this.dealCards();
-    this.showCards();
-    this.playerTurn();
-    this.dealerTurn();
-    this.detectResult();
-    this.displayResult();
-    this.displayPurse();
-  }
-
-  displayNextRound() {
-    console.log("------------------------- Next Round ---------------------------------");
-  }
-
   // eslint-disable-next-line max-statements
   displayWelcomeMessage() {
-    console.log("------------------------- Welcome to 21 ------------------------------");
+    console.log("--------------------------- Welcome to 21 ----------------------------");
     console.log(`The game rules are as following:`);
     console.log(`○ You start with $5 to bet with.`);
     console.log(`○ A dollar is deducted each round that you lose, and a dollar is added`);
     console.log(`  each time you win.`);
     console.log(`○ The game ends when you are broke: $0, or rich: $10.`);
     console.log();
-    console.log(`Details pertaining to each round:`);
-    console.log(`○ During each round, the goal is to get as close to 21 without going`);
-    console.log(`  over it.`);
+    console.log(`Details for each game/round:`);
+    console.log(`○ Your goal is to get as close to 21 without going over it.`);
     console.log(`○ You will decide whether to 'hit' or 'stay'.`);
     console.log(`   • 'Hit' means you want to be dealt another card.`);
     console.log(`   • 'Stay' means you stayed at your total.`);
+    console.log(`○ If you bust, dealer autoamtically wins.`);
     console.log(`○ The dealer follows a strict rule for determining whether to hit or`);
     console.log(`  stay:`);
-    console.log(`   • Dealer hits until the total is at least 17. If the dealer busts,`);
-    console.log(`     then you win the round.`);
+    console.log(`   • Dealer hits until the total is at least 17.`);
+    console.log(`○ If the dealer busts, then you win the game.`);
     console.log("----------------------------------------------------------------------");
   }
 
@@ -262,30 +264,19 @@ class TwentyOneGame {
     this.dealer.addToHand(this.deck.dealCardFaceDown());
   }
 
-  // Display dealers's hand, one card remain hidden, and dealer's score.
-  // Display the player's hand and her point total.
-  showCards() {
-    this.dealer.showHand();
-    this.player.showHand();
-  }
-
   // Display the computer's hand; one card should remain hidden.
   // Display the player's hand and her point total.
   playerTurn() {
-    console.log("------------------------- Your Turn ----------------------------------");
-
     while (true) {
       let answer = this.hitOrStay();
       if (answer === TwentyOneGame.HIT) {
+        this.clearConsole();
         this.hit(this.player);
+        this.showHandAndScores();
         if (this.isBusted(this.player)) {
-          this.prompt('You busted!');
-          console.log();
           break;
         }
       } else {
-        this.prompt(`You stayed at a total of: ${this.computeScore(this.player)}.`);
-        console.log();
         break;
       }
     }
@@ -295,10 +286,10 @@ class TwentyOneGame {
     let answer;
 
     while (true) {
-      this.prompt('Would you like to (h)it or (s)tay?');
+      console.log('Would you like to (h)it or (s)tay?');
       answer = readline.question().toLowerCase();
       if ([TwentyOneGame.HIT, TwentyOneGame.STAY].includes(answer)) break;
-      this.prompt(`Sorry, must enter 'h' or 's'.`);
+      console.log(`Sorry, must enter 'h' or 's'.`);
     }
 
     return answer;
@@ -308,61 +299,63 @@ class TwentyOneGame {
   // Display the dealer's hand, includding hidden card, and his point total.
   // Redisplay the dealer's hand and point total each time he hits.
   // Display the results when dealer stays.
+
+  // dealer doesn't play at all if player busts.
+  // eslint-disable-next-line max-lines-per-function
   dealerTurn() {
-    console.log("------------------------ Dealer's Turn ------------------------------");
+    if (!(this.isBusted(this.player))) {
+      this.dealer.revealHand(); //make card not hidden
+      this.dealer.showHand();
 
-    this.dealer.revealHand(); //make card not hidden
-    this.dealer.showHand();
+      while (true) {
+        let score = this.computeScore(this.dealer);
 
-    while (true) {
-      let score = this.computeScore(this.dealer);
-
-      if (score === TwentyOneGame.DEALER_MUST_STAY_SCORE) {
-        this.prompt(`Dealer stayed.`);
-        break;
-      } else if (score > TwentyOneGame.TARGET_SCORE) {
-        this.prompt('Dealer busted!');
-        break;
-      } else if (score === TwentyOneGame.TARGET_SCORE) {
-        break;
-      } else {
-        this.hit(this.dealer);
+        if (score === TwentyOneGame.DEALER_MUST_STAY_SCORE ||
+          score > TwentyOneGame.DEALER_MUST_STAY_SCORE) {
+          break;
+        } else if (score === TwentyOneGame.TARGET_SCORE ||
+          score > TwentyOneGame.TARGET_SCORE) {
+          break;
+        } else {
+          // hit and display the hands & scores of both players
+          this.clearConsole();
+          this.hit(this.dealer);
+          this.showHandAndScores();
+          // must press a key to continue
+          this.pressToContinue();
+        }
       }
     }
+  }
+
+  pressToContinue() {
+    readline.question("Press Return to continue...");
+  }
+
+  // display hand and current score
+  showHandAndScores() {
+    console.log();
+    this.player.showHand();
+    this.showPoints(this.player);
+    this.dealer.showHand();
+    this.showPoints(this.dealer);
   }
 
   // add card to participant's deck
   // also display the hand and current score
   hit(participant) {
     participant.addToHand(this.deck.dealCardFaceUp());
-    if (participant.name === 'Dealer') {
-      this.prompt('Dealer chose to hit!');
-    } else {
-      this.prompt('You chose to hit!');
-    }
-    participant.showHand();
-    this.showScore(participant);
   }
 
   displayGoodbyeMessage() {
-    this.prompt("Thanks for playing 21! Goodbye ~");
-  }
-
-  prompt(text) {
-    console.log(`=> ${text}`);
+    console.log("Thanks for playing 21! Goodbye ~");
   }
 
   computeScore(participant) {
     let cards = participant.getHand();
-    let score = cards.reduce((total, card) => {
-      if (card.isFaceCard()) {
-        return total + 10;
-      } else if (card.isAce()) {
-        return total + 11;
-      } else {
-        return total + Number(card.value);
-      }
-    }, 0); // need initial value, else accumulator value is at index 0, which is not a number.
+    let score = cards.reduce((total, card) => total + card.valueOfCard(), 0);
+    // need initial value
+    // else accumulator value is at index 0, which is not a number.
 
     // correct for Aces
     cards.filter(card => card.isAce() && !card.isHidden()).forEach(_ => {
@@ -388,47 +381,71 @@ class TwentyOneGame {
   }
 
   displayResult() {
-    console.log("----------------------------------------------------------------------");
     console.log();
     let playerScore = this.computeScore(this.player);
     let dealerScore = this.computeScore(this.dealer);
 
     if (this.isBusted(this.player)) {
-      this.prompt(`You lose this round with your score of ${playerScore} to the dealer's ${dealerScore}.`);
+      console.log(`You busted! Dealer wins.`);
     } else if (this.isBusted(this.dealer)) {
-      this.prompt(`You win this round with a score of ${playerScore} to ${dealerScore}.`);
+      console.log(`Dealer busted! You win.`);
     } else if (dealerScore > playerScore) {
-      this.prompt(`Dealer wins this round with a total of ${dealerScore} to your ${playerScore}.`);
+      console.log(`Dealer wins this round with a total of ${dealerScore} to your ${playerScore}.`);
     } else if (playerScore > dealerScore) {
-      this.prompt(`You win this round with a total of ${playerScore} to the dealer's ${dealerScore}.`);
+      console.log(`You win this round with a total of ${playerScore} to the dealer's ${dealerScore}.`);
     } else {
-      this.prompt(`You tied!`);
+      console.log(`You tied.`);
     }
 
   }
 
   whoWon() {
     if (this.player.money === Player.LOSING_MONEY) {
-      this.prompt('You are broke. The game will now conclude.');
+      console.log('You are broke. The game will now conclude.');
     } else if (this.player.money === Player.WINNING_MONEY) {
-      this.prompt('Congrats, you are rich! The game will now conclude.');
+      console.log('Congrats, you are rich! The game will now conclude.');
     }
   }
 
-  showScore(participant) {
+  showPoints(participant) {
     let score = this.computeScore(participant);
-    this.prompt(`${participant.name}'s score is now ${score}.`);
+    console.log(`Points: ${score}`);
     console.log();
   }
 
   displayPurse() {
     console.log();
-    this.prompt(`Your purse: $${this.player.money}`);
+    console.log(`You have: $${this.player.money}`);
     console.log();
   }
 
   isBusted(participant) {
     return this.computeScore(participant) > TwentyOneGame.TARGET_SCORE;
+  }
+
+  playAgain() {
+    // eslint-disable-next-line max-len
+    if (this.player.isBroke() || this.player.isRich()) {
+      return false;
+    } else {
+      let answer;
+      while (true) {
+        console.log('Play again? (y)es or (n)o');
+        answer = readline.question().toLowerCase();
+        if (['y', 'n'].includes(answer)) break;
+        console.log(`Sorry, must enter 'y' or 's'.`);
+      }
+
+      if (answer === 'y') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  clearConsole() {
+    console.clear();
   }
 }
 
