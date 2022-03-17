@@ -752,7 +752,8 @@ Object.getPrototypeOf(baz) // foo
 
      - Regular function calls use <u>global object</u> as implicit execution context. 
      - Method calls use the <u>calling object</u> as its implicit execution context. 
-     - A constructor call with `new` uses the <u>new object</u> as its implicit execution context. 
+     - A constructor call with `new` uses the <u>newly created object</u> as its implicit execution context. 
+     - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
 
 ------
 
@@ -825,9 +826,9 @@ Clarifications about `this`
   - It is bound based on how function is invoked. 
   - It is usually bound during function invocation /execution actually, there are exceptions such as `bind`, where the function is not immediately invoked and a copy of the function is returned with the execution context bound to the copy.
 
-- If `this` is outside a function
+- If `this` is <u>outside a function</u>
 
-  - If `this` is outside a function, it is bound to the global object. 
+  - Anywhere outside a function, the keyword `this` is bound to the global object.
 
   ```js
   let person = {
@@ -836,12 +837,10 @@ Clarifications about `this`
     fullName: this.firstName + this.lastName, // execution context is global
   };
   
-  console.log(person.fullName); 
+  console.log(person.fullName); // logs NaN
   ```
 
-- If `this` is inside a function, the implicit execution context is the `global` object. 
-
-- But if `this` is inside a method, then the execution context is dependent soley on how the method is invoked, not on how and where the method is defined. 
+- But if `this` is inside a function,  then the execution context is dependent soley on how the function is invoked. 
 
   ```js
   let person = {
@@ -865,7 +864,8 @@ Clarifications about `this`
 
   - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
     - In Node, global object is `global` and in browser, global object is `window`. 
-  - You can override this behavior by setting the execution context explicitly with either `call`,  `apply`, or `bind`.   
+  - Invoking a function with `new` <u>implicitly</u> sets `this` to the instance object created by the constructor function. 
+  - You can override this behavior by setting the execution context <u>explicitly</u> with either `call`,  `apply`, or `bind`.   
   - While a variable's scope is determined by lexical scoping, meaning where you write the code, `this` depends on how you invoke it. 
   - Arrow functions are also exceptions to this rule. 
 

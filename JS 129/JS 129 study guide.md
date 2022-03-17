@@ -95,7 +95,7 @@ const cat = {
 
 - when you use **this** <u>inside a method</u>, it refers to the <u>object that contains the method.</u> 
 
-  - 'this' can only be used inside a method, to refer to the object that contains the method.
+  - Typically 'this' is used inside a method, to refer to the object that contains the method. If outside a function, `this` refers to the global object. 
   - You can access properties and methods of an object from within a method using `this` keyword. 
 
 
