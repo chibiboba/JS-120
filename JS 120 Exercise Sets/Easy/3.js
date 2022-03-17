@@ -1,0 +1,23 @@
+class Cat {
+  constructor(name) {
+    this.name = name;
+  }
+  speaks() {
+    return `${this.name} says meowwww.`;
+  }
+
+}
+
+// class fakeCats extends Cat {
+//   constructor(name) {
+//     super(name);
+//   }
+// }
+// let fakeCat = new fakeCats();
+
+let fakeCat = Object.create(Cat.prototype);
+
+console.log(fakeCat instanceof Cat); // logs true
+console.log(fakeCat.name);           // logs undefined
+console.log('name' in fakeCat);      // false
+console.log(fakeCat.speaks());       // logs undefined says meowwww.

@@ -336,6 +336,26 @@ typeof myFunc; // => "function"
 
 ### Method and property lookup sequence 2
 
+ ##### Methods
+
+- **Methods**  are object properties that have function values. 
+- You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
+
+
+```js
+const cat = {
+  name() { // property key is name, and value is the function. 
+    return "Butterscotch";
+  },
+
+  age() {
+    return 13;
+  },
+};
+```
+
+- If you access the method property without (), it will return the function definition.  
+
 ##### What is prototype chain
 
 - The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
@@ -422,7 +442,7 @@ Object.getPrototypeOf(baz) // foo
 
 - Method overriding can be prevented in class syntax by calling `Super` 
 
-##### Property syntax 
+##### Property syntax : defining properties
 
 - Syntax errors when trying to define properties in an object. 
 
@@ -518,10 +538,13 @@ Object.getPrototypeOf(baz) // foo
 
 - Two ways to distinguish a non-existent property from an property with value of `undefined`: 
 
-  - `in` operator 
+  - The **`in` operator** : returns `true` if the specified property is in the specified object or its prototype chain.
+
+    - prop: A string or symbol representing a property name or array index (non-symbols will be coerced to strings).
 
     ```js
-    property in object // syntax
+    prop in object // syntax
+    'propertyName' in object
     ```
 
   - `hasOwnProperty` (is an instance method): Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
@@ -581,6 +604,7 @@ Object.getPrototypeOf(baz) // foo
 
   - Properties of instances created by a constructor. 
   - May be stored directly on the instance, or its prototype. Its prototype is `Constructor.prototype`
+  - For classes, instance properties must be defined in methods. 
 
 - **Instance Methods**:  (object methods / methods) :stored either as part of an object or anywhere in the object's prototype chain.
 
@@ -594,7 +618,7 @@ Object.getPrototypeOf(baz) // foo
 
   ```js
   function Rectangle(length, width) {
-    this.length = length; // not instance properties
+    this.length = length; // instance properties
     this.width = width;
   }
   
@@ -617,7 +641,7 @@ Object.getPrototypeOf(baz) // foo
   ```js
   class Rectangle {
     constructor(length, width) {
-    	this.length = length; // not instance properties
+    	this.length = length; // instance properties
     	this.width = width;
     }
     
@@ -625,7 +649,7 @@ Object.getPrototypeOf(baz) // foo
        return this.length * this.width;
     }
     
-    value = 2; // instance property ??
+    value = 2; // invalid code, instance properties must be defined in methods.
   }
   
   let rect = new Rectangle();
@@ -763,13 +787,30 @@ Object.getPrototypeOf(baz) // foo
   - console
   - log
 
+##### What is **this**?
+
+- In JavaScript, the `this` keyword refers to an **object**.
+
+- **Which** object depends on how `this` is being invoked (used or called).
+
+- The `this` keyword refers to different objects depending on how it is used:
+
+| In an object method, `this` refers to the **object**.        |
+| ------------------------------------------------------------ |
+| Alone, `this` refers to the **global object**.               |
+| In a function, `this` refers to the **global object**.       |
+| In a function, in strict mode, `this` is `undefined`.        |
+| In an event, `this` refers to the **element** that received the event. |
+| Methods like `call()`, `apply()`, and `bind()` can refer `this` to **any object**. |
+
 ##### This
 
 Definition
 
-- The value of `this` is the current execution context of a function or method that is running. 
+- The value of `this` is the current execution context (an object) of a function or method that is running. 
 - The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
 - When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object.
+- `this` is not a variable. It is a keyword.
 
 Implications
 
@@ -798,19 +839,21 @@ Clarifications about `this`
   console.log(person.fullName); 
   ```
 
-  - But if `this` is inside a function/method, then the execution context is dependent soley on how the function is invoked, not on how and where the function is defined. 
+- If `this` is inside a function, the implicit execution context is the `global` object. 
 
-    ```js
-    let person = {
-      firstName: 'Rick ',
-      lastName: 'Sanchez',
-      fullName() {
-        return this.firstName + this.lastName; // how is fullName invoked
-      },
-    };
-    
-    console.log(person.fullName()); // invoked as a method
-    ```
+- But if `this` is inside a method, then the execution context is dependent soley on how the method is invoked, not on how and where the method is defined. 
+
+  ```js
+  let person = {
+    firstName: 'Rick ',
+    lastName: 'Sanchez',
+    fullName() {
+      return this.firstName + this.lastName; // how is fullName invoked
+    },
+  };
+  
+  console.log(person.fullName()); // invoked as a method
+  ```
 
 ##### Execution Context Rules
 
@@ -1376,133 +1419,6 @@ obj.foo();
 
 - `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
 - The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
-
-------
-
-### `Object.assign` and `Object.create`
-
-##### Object.assign
-
-- Definition: Merges two or more objects into a single object and <u>returns</u> a reference to the modified object. 
-
-- Syntax 
-
-  ```js
-  object.assign(obj, obj)
-  ```
-
-
-Uses
-
-- One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
-
-- Can shorten arguments in a constructor by merging object argument with the instance object. 
-
-  ```js
-  function Car(args) { 
-    Object.assign(this, args); // merges the two objects into single object. `This` refers to instance object
-  
-    this.drive = function() {
-      this.started = true;
-    };
-  
-    // rest of the methods
-  }
-  ```
-
-  ```js
-  function Car(args) { // object argument with many properties
-    this.make = args.make; // Use Object.assign() instead of all this code 
-    this.model = args.model;
-    this.year = args.year;
-    this.color = args.color;
-    this.passengers = args.passengers;
-    this.convertible = args.convertible;
-    this.mileage = args.mileage;
-    this.started = false;
-  
-    this.drive = function() {
-      this.started = true;
-    };
-  
-    // rest of methods
-  }
-  ```
-
-- Mix-ins
-
-  - A mix-in is an object that defines one or more methods that can be "mixed in" to a class. This grants that class access to all of the methods in the object.
-  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
-    - Aka: Move code shared by 2 (or more) classes into a mix-in object then `Object.assign` the `.prototype` object of all the classes which share the code, with the mix-in Object. 
-
-  ```js
-  const Swimmable = { // mix-in object
-    swim() {};
-  }
-  
-  const Flyable = { // mix-in object
-    fly() {};
-  }
-  
-  Class Bird {}
-  
-  class Parrot {} // no inheritance here 
-  Object.assign(Parrot.prototype, Flyable); // one trait 
-  
-  class Duck{}
-  Object.assign(Duck.prototype, Swimmable, Flyable); // both traits.
-  ```
-
-##### Object.create
-
-- Is a static method of the Object Function
-
-- Definition: Creates a new object that inherits properties from an existing object (the prototype object).
-
-  - Creates a new object whose `[[Prototype]]` property references the argument.
-
-  ```js
-  Object.create(obj)
-  ```
-
-- When using `Object.create` , we must manually define a `constructor` property on the new object. 
-  -  `Object.create` is used to make one constructor a **sub-type** of the other, the **super-type**. Then restore the `constructor` property of the **sub-type**'s prototype object back to the **sub-type** function. 
-  
-- `Object.create` is used in prototypal inheritance
-
-  - Use `object.create` to create a new object that inherits properties from the prototype object.  
-    - It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
-    - The newly created object has access to all properties and methods that the prototype object provides. 
-
-  ```js
-  // notice we're working with an object
-  let humanPrototype = {
-    myName() { return this.name; },
-    myAge() { return this.age; },
-  };
-  
-  let personPrototype = Object.create(humanPrototype);
-  personPrototype.toString = function() {
-    return `My name is ${this.myName()} and I'm ${this.myAge()} years old.`;
-  };
-  
-  let will = Object.create(personPrototype);
-  will.name = 'William';
-  will.age = 28;
-  will.toString(); // => My name is William and I'm 28 years old.
-  ```
-
-- `Object.create` is also used in OLOO design pattern. 
-  
-  - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects. All shared properties will be defined on this parent object. 
-  - Shared properties are defined on a parent object. Other objects can then be created from this parent object using `Object.create(obj)` .
-  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties.
-  
-  ```js
-  Object.create(obj).init(values);
-  ```
-  
-  
 
 ------
 
@@ -2081,6 +1997,143 @@ Let's see another example:
   ```
 
 - Array methods that mutate the array won't work with strings. Again, that makes sense: strings are immutable.
+
+------
+
+### `Object.assign` and `Object.create`
+
+##### Object.assign
+
+- Definition: 
+
+  - The **`Object.assign()`** method copies all [enumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable) [own properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) from one or more *source objects* to a *target object*. It returns the modified <u>target</u> object
+  - Merges two or more objects into a single object and returns a reference to the modified object. 
+  - Target object is mutated!
+
+- Syntax 
+
+  ```js
+  Object.assign(targetObj, obj)
+  Object.assign(target, ...sources)
+  Object.assign(Constructor.prototype, mixIn, mixIn ...)
+  ```
+
+
+Uses
+
+- One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
+
+- Can shorten arguments in a constructor by merging object argument with the instance object. 
+
+  ```js
+  function Car(args) { 
+    Object.assign(this, args); // merges the two objects into single object. `This` refers to instance object
+  
+    this.drive = function() {
+      this.started = true;
+    };
+  
+    // rest of the methods
+  }
+  ```
+
+  ```js
+  function Car(args) { // object argument with many properties
+    this.make = args.make; // Use Object.assign() instead of all this code 
+    this.model = args.model;
+    this.year = args.year;
+    this.color = args.color;
+    this.passengers = args.passengers;
+    this.convertible = args.convertible;
+    this.mileage = args.mileage;
+    this.started = false;
+  
+    this.drive = function() {
+      this.started = true;
+    };
+  
+    // rest of methods
+  }
+  ```
+
+- Mix-ins
+
+  ```js
+  Object.assign(Constructor.prototype, mixIn, mixIn ...)
+  ```
+
+  - A mix-in is an object that defines one or more methods that can be "mixed in" to a class. This grants that class access to all of the methods in the object.
+  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object.
+    - Aka: Move code shared by 2 (or more) classes into a mix-in object then `Object.assign` the `.prototype` object of all the classes which share the code, with the mix-in Object. 
+
+  ```js
+  const Swimmable = { // mix-in object
+    swim() {};
+  }
+  
+  const Flyable = { // mix-in object
+    fly() {};
+  }
+  
+  Class Bird {}
+  
+  class Parrot {} // no inheritance here 
+  Object.assign(Parrot.prototype, Flyable); // one trait 
+  
+  class Duck{}
+  Object.assign(Duck.prototype, Swimmable, Flyable); // both traits.
+  ```
+
+##### Object.create
+
+- Is a static method of the Object Function
+
+- Definition: Creates a new object that inherits properties from an existing object (the prototype object).
+
+  - Creates a new object whose `[[Prototype]]` property references the argument.
+
+  ```js
+  Object.create(obj)
+  ```
+
+- When using `Object.create` , we must manually define a `constructor` property on the new object. 
+
+  -  `Object.create` is used to make one constructor a **sub-type** of the other, the **super-type**. Then restore the `constructor` property of the **sub-type**'s prototype object back to the **sub-type** function. 
+
+- `Object.create` is used in prototypal inheritance
+
+  - Use `object.create` to create a new object that inherits properties from the prototype object.  
+    - It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
+    - The newly created object has access to all properties and methods that the prototype object provides. 
+
+  ```js
+  // notice we're working with an object
+  let humanPrototype = {
+    myName() { return this.name; },
+    myAge() { return this.age; },
+  };
+  
+  let personPrototype = Object.create(humanPrototype);
+  personPrototype.toString = function() {
+    return `My name is ${this.myName()} and I'm ${this.myAge()} years old.`;
+  };
+  
+  let will = Object.create(personPrototype);
+  will.name = 'William';
+  will.age = 28;
+  will.toString(); // => My name is William and I'm 28 years old.
+  ```
+
+- `Object.create` is also used in OLOO design pattern. 
+
+  - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects. All shared properties will be defined on this parent object. 
+  - Shared properties are defined on a parent object. Other objects can then be created from this parent object using `Object.create(obj)` .
+  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties.
+
+  ```js
+  Object.create(obj).init(values);
+  ```
+
 
 ------
 
@@ -3319,6 +3372,8 @@ let subTypeObj = Object.create(subType).init();
 
 ### Subtyping (inheritance) (4)
 
+- Subtyping is a form of inheritance.
+
 #### Subtyping with constructors and prototypes
 
 - **pseudo-classical inheritance**
@@ -3472,13 +3527,14 @@ Reducing Complexity
   }
   
   class Square extends Rectangle {
-    constructor(size, size) { // variables you pass to subClass go here
-      super(size, size); // otherwise only need to pass variables to super()
+    constructor(size) { // pass variables you want to the subClass
+      super(size, size); // pass variables to the parent constructor method
     }
   }
   ```
 
   - Thus, `super(size, size)` performs the same role performed by this code from our constructor/prototype example. 
+    - When called in the constructor method, `super()`invokes the parent constructor function with the execution context explicitly set to the child constructor's instance object. 
 
   ```js
   function Square() {
@@ -3486,9 +3542,36 @@ Reducing Complexity
   }
   ```
 
-- You don't need to use `super` in every subclass, but in most cases you do. In particular, if the superclass's constructor creates any object properties, you <u>must</u> call `super` to ensure that those properties are set properly. For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
+- You don't need to use `super` in every subclass, but in most cases you do. 
 
-- If you do call `super` in a subclass's constructor, you must call it before you use `this` in that constructor.  
+  - You don't need `super` if the parent constructor and subclass constructor's code / parameters are redundant. 
+  - When a sub-class is invoked, the parent constructor is automatically executed. 
+
+  ```js
+  class Vehicle {
+    constructor(make, model) {
+      this.make = make;
+      this.model = model;
+    }
+  
+    info() {
+      return `${this.make} ${this.model}`;
+  
+    }
+  }
+  class Car extends Vehicle {
+    // constructor(make, model) { 
+    //   super(make, model);
+    // }
+  }
+  let stacy = new Car('hi', 'hello');
+  console.log(stacy.info());
+  
+  ```
+
+- In particular, if the superclass's constructor creates any object properties, you <u>must</u> call `super` to ensure that those properties are set properly. For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
+
+-  Also, you must call `super` in subclass' constructor  before you use `this` in that constructor.  
 
   **<u>Don't want method overriding</u>**
 
@@ -3543,7 +3626,7 @@ Reducing Complexity
 ```js
 class Rectangle {
   constructor(length, width) {
-    this.length = length;
+    this.length = length; // instance properties must be defined in class methods
     this.width = width;
   }
 
@@ -3675,6 +3758,10 @@ let subTypeObj = Object.create(subType).init(variable);
   Square.prototype.constructor = Square;
   ```
 
+#### Ways of inheritance
+
+- Class inheritance, prototypal inheritance, pseudo-classical inheritance, etc.
+
 ------
 
 ### Prototypal Inheritance vs pseudo-classical inheritance (4)
@@ -3735,7 +3822,6 @@ will.toString(); // => My name is William and I'm 28 years old.
   Square.prototype.constructor = Square;
   ```
 
-  - Class syntax uses `extends`, but is not the pseudo-classical pattern. 
 
 Example
 
@@ -3841,6 +3927,11 @@ will.toString(); // => My name is William and I'm 28 years old.
   // Can use this method if we don't know the name of an object's constructor. 
   ```
 
+#### Difference between class and pseudo-classical inheritance
+
+- subclass inherits <u>all the methods and properties</u> from parent class. 
+- pseudo-classical inheritance lets us inherit only the properties that have been defined on the parent constructor function’s `prototype` object. 
+
 ------
 
 ### Single vs multiple inheritance (4)
@@ -3863,6 +3954,12 @@ will.toString(); // => My name is William and I'm 28 years old.
 ### Mix-ins; mix-ins vs. inheritance (4)
 
 #### Mix-ins
+
+- Syntax 
+
+  ```js
+  Object.assign(Constructor.prototype, mixInObject...)
+  ```
 
 - Summary:
 
@@ -4771,6 +4868,32 @@ baz.qux()
 - `Object.create` creates a new object that inherits properties from an existing object (the prototype object).
   - `baz` inherits from `foo`. 
 
+```js
+let item = {
+  name: 'Foo',
+  description: 'Fusce consequat dui est, semper.',
+  price: 50,
+  quantity: 100,
+  discount: function(percent) {
+    let discount = this.price * percent / 100;
+    this.price -= discount;
+    
+    return this.price;
+  },
+};
+```
+
+- Problem is that the `discount` method is mutating the `item` object. Objects are mutable and changes made to the property `price` of the `item` object is compounded every time the `discount` method is called. To resolve this, the `discount` method should be modified so it doesn't mutate the original object. Here's one approach:
+
+  ```js
+  function discountItem(item, percent) {
+    let discount = item.price * percent / 100;
+    return item.price - discount;
+  }
+  ```
+
+  
+
 ------
 
 ### Vocab
@@ -4780,6 +4903,8 @@ baz.qux()
 ------
 
 ### Reminders
+
+- Use mix-ins to enhance a commonality that multiple classes share 
 
 - Default parameters
 
@@ -5131,9 +5256,175 @@ baz.qux()
 
 [reference](https://launchschool.com/exercises#js120_object_oriented_javascript)
 
+Before you begin the assessments, you should complete all of the [Object Oriented JavaScript exercise sets](https://launchschool.com/exercises#js120_object_oriented_javascript). Complete the sets in the following sequence:
+
+**Easy**
+
+- Problem: Creating an object that looks like an instance without calling the Constructor
+
+  ```js
+  class Cat {
+    constructor(name) {
+      this.name = name;
+    }
+    speaks() {
+      return `${this.name} says meowwww.`;
+    }
+  }
+  
+  let fakeCat = // your implementation
+  console.log(fakeCat instanceof Cat); // logs true
+  console.log(fakeCat.name);           // logs undefined
+  console.log(fakeCat.speaks());       // logs undefined says meowwww.
+  ```
+
+  - Both of the below code work,  But are different.
+  - Are similar in that they create a new object that can't be distinguished from a `Cat` instance. As in, `instanceof` will log true: The prototype property of `Cat` appears in the prototype chain of `fakeCat`. 
+
+  ```js
+  // code 1
+  let fakeCat = Object.create(Cat.prototype); // prototypal inheritance
+  ```
+
+  - Difference in code 1 is that  `fakeCat` doesn't have a name property because it only inherits properties defined on `Cat.prototype` object. 
+
+  ```js
+  console.log('name' in fakeCat); // false;
+  ```
+
+  ```js
+  // code 2
+  class fakeCats extends Cat { // class inheritance
+    constructor(name) {
+      super(name);
+    }
+  }
+  let fakeCat = new fakeCats();
+  ```
+
+  - `fakeCat` has a name property here because in class inheritance, subtype inherits all properties and methods from supertype, including properties that an instance object of the supertype class would inherit. 
+
+  ```js
+  console.log('name' in fakeCat); // true
+  ```
+
+
+**Objects**
+
+- Problem 2
+
+  ```js
+  let item = {
+    name: 'Foo',
+    description: 'Fusce consequat dui est, semper.',
+    price: 50,
+    quantity: 100,
+    discount: function(percent) {
+      let discount = this.price * percent / 100;
+      this.price -= discount;
+      
+      return this.price;
+    },
+  };
+  ```
+
+  - Problem is that the `discount` method is mutating the `item` object. Objects are mutable and changes made to the property `price` of the `item` object is compounded every time the `discount` method is called. To resolve this, the `discount` method should be modified so it doesn't mutate the original object. Here's one approach:
+
+  ```js
+  function discountItem(item, percent) {
+    let discount = item.price * percent / 100;
+    return item.price - discount;
+  }
+  ```
+
+  
+
+**Function Context**
+
+**OO Basics: Classes**
+
+**OO Basics: Inheritance and Mixins**
+
+**Object Creation Patterns**
+
 ------
 
 ### Question
+
+Question lesson 3 
+
+When do you need to call `super`?
+
+From 'gist' of lesson 3, it says that if the superclass's constructor creates object properties, then `super` has to be called. 
+
+> You don't need to use `super` in every subclass, but in most cases you do. In particular, if the superclass's constructor creates any object properties, you must call `super` to ensure that those properties are set properly. 
+
+```js
+// example given
+class Rectangle {
+  constructor(length, width) {
+    this.length = length;
+    this.width = width;
+  }
+
+  getArea() {
+    return this.length * this.width;
+  }
+
+  toString() {
+    return `[Rectangle ${this.width * this.length}]`;
+  }
+}
+
+class Square extends Rectangle {
+  constructor(size) {
+    super(size, size);
+  }
+
+  toString() {
+    return `[Square] ${this.width * this.length}`;
+  }
+}
+```
+
+However, in problem 6 of the 'Easy' exercise set, the solution showed that you don't need to call `super `, even though the parent constructor creates object properties. It seems that you don't need to call `super` when the parent constructor method is identical to the subclass' constructor method. 
+
+```js
+class Vehicle {
+  constructor(make, model) {
+    this.make = make;
+    this.model = model;
+  }
+
+  info() {
+    return `${this.make} ${this.model}`;
+  }
+}
+
+class Car extends Vehicle {
+  getWheels() {
+    return 4;
+  }
+}
+
+class Motorcycle extends Vehicle {
+  getWheels() {
+    return 2;
+  }
+}
+
+class Truck extends Vehicle {
+  constructor(make, model, payload) {
+    super(make, model);
+    this.payload = payload;
+  }
+  getWheels() {
+    return 6;
+  }
+}
+```
+
+
 
 Lesson 4 Quiz Question 8 Discussion 
 

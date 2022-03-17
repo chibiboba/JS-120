@@ -23,7 +23,7 @@ function createStudent(name, year) {
 
     addNote(courseCode, note) {
       if (this.notes[courseCode]) {
-        this.notes[courseCode] = `${this.notes[courseCode]}, ${note}`;
+        this.notes[courseCode] = `${this.notes[courseCode]}; ${note}`;
       } else {
         this.notes[courseCode] = note;
       }
