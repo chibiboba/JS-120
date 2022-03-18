@@ -6,7 +6,7 @@ class CircularQueue {
 
   enqueue(num) {
     if (this.queue.length === this.bufferSize) {
-      this.queue.shift();
+      this.dequeue();
     }
     this.queue.push(num);
   }
