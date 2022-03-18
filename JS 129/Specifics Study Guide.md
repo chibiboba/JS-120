@@ -1,13 +1,44 @@
 ## Specific Topics of Interest
 
-## Encapsulation - 1, 3
+## Lesson 1 Stuff
 
-- **Encapsulation**: grouping related properties and methods in a single object. 
-  - bundle state(data) and behavior (operations related to that data) into a single entity (object). 
+#### OOP
+
+- **OOP** (object oriented programming) is a programming **paradigm** in which we think about a problem in terms of objects,  by using objects to organize a program. 
+  -  Strive to understand the core concepts of OO before focusing on finding optimal designs. In this course, the core concepts are far more crucial; learning how to find optimal designs and architectures may take years.
+  -  Choosing an approach for an OO problem always comes down to making tradeoffs.
 
 ------
 
-## Collaborator objects - 1
+#### **Advantage and disadvantage of OOP**
+
+- Advantages 
+  - OOP lets programmers write programs in a manner that reduces dependencies and makes maintenance easier.
+    - Large, complex programs can be difficult to maintain due to dependencies throughout the program. 
+  - It lets programmers think about a problem at a higher-level of abstraction, which helps them break down and solve the problem.
+    - Complex coding problems are often difficult to break down and solve clearly and systematically. Using OOP to model objects and using real-world nouns to represent objects lets programmers think at a higher level of abstraction. That, in turn, helps them break down and solve problems.
+  - Done right, OOP makes code flexible, easy to understand, and easy to change.. 
+  - Large complex procedural programs end up with functions all throughout the code split up from the data they operate on. 
+- Disadvantages
+  - OOP programs are often much larger than the equivalent procedural program. 
+  - OOP may lead to less efficient code; OO programs may require more memory, disk space, and computing power.
+
+------
+
+#### Encapsulation
+
+- **Encapsulation** : grouping related properties and methods in a single object. 
+- bundle state(data) and behavior(operations related to data) into a single entity (an object). 
+- In OOP, encapsulation also refers to the idea of restricting access to state and some behavior, but JavaScript objects don't support that type of encapsulation.
+- **Interface of an object**: the state and behaviors exposed by the object for other objects to use.
+  - Encapsulation has a broader purpose in most OOP languages. It also refers to restricting access to the state and certain behaviors. An object only exposes the data and behaviors that other parts of the application need to work.  
+  - Objects expose a **public interface** for interacting with other objects and keep their implementation details hidden. Thus, other objects can't change the data of an object without going through the proper interface. Unfortunately, JS doesn't support access restrictions. 
+- How encapsulation differs in JavaScript from other languages
+  - In other languages, encapsulation concerns hiding details of an object from code that uses the object. An object should only expose the methods and properties that other objects need to use the encapsulated object. However, JavaScript does not directly provide the means to limit exposure of methods and properties. There are ways to achieve a degree of access restriction, but they're not perfect.
+
+------
+
+#### Collaborator objects - 1
 
 - **Collaborator Objects**: objects that help provide state in another object. 
 
@@ -36,6 +67,61 @@
   ```
 
 ------
+
+#### Compact Method Syntax
+
+- Using functions as object values (methods) is so common that there's short hand syntax called compact syntax for it. 
+
+```js
+let raceCar = {
+  make: 'BMW',
+  fuelLevel: 0.5,
+  engineOn: false,
+
+  startEngine() {
+    raceCar.engineOn = true;
+  },
+
+  drive() {
+    raceCar.fuelLevel -= 0.1;
+  },
+
+  stopEngine() {
+    raceCar.engineOn = false;
+  },
+
+  refuel(percent) {
+    if ((raceCar.fuelLevel + (percent / 100)) <= 1) {
+      raceCar.fuelLevel += (percent / 100);
+    } else {
+      raceCar.fuelLevel = 1;
+    }
+  },
+};
+```
+
+- ------
+
+ #### Methods
+
+- **Methods**  are object properties that have function values. 
+- You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
+
+
+```js
+const cat = {
+  name() { // property key is name, and value is the function. 
+    return "Butterscotch";
+  },
+
+  age() {
+    return 13;
+  },
+};
+```
+
+- **behavior** (method) change the **state** of an object. 
+  - **State** means data in an object. 
 
 ## Functions Definitions
 
@@ -3158,17 +3244,25 @@ Yes, that code is identical to what we would write if we were using the construc
 
 ------
 
-## Creation Patterns
+## Object Creation Patterns
 
-##### Compare and Contrast
+- object literals, object factories, constructors and prototypes (the pseudo-classical approach), the OLOO pattern (prototypal inheritance), and ES6 classes.
 
-| Creation type                  | Disadvantages                     | Disadvantages      |
-| ------------------------------ | --------------------------------- | ------------------ |
-| Factory Function               | create objects with private state | memory inefficient |
-| OLOO                           | memory efficient                  |                    |
-| Pseudo-classical (constructor) | memory efficient                  |                    |
+Compare and Contrast
 
-#### Factory functions
+| Object creation patterns                                    | Advantages                                                   | Disadvantages      |
+| ----------------------------------------------------------- | ------------------------------------------------------------ | ------------------ |
+| Object literals                                             | simple                                                       |                    |
+| Factory Function                                            | create objects with private state                            | memory inefficient |
+| constructors and prototypes (the pseudo-classical approach) | Like prototypal inheritance, uses prototypal delegation under the hood. |                    |
+| OLOO pattern (prototypal inheritance)                       | simpler, work with one object at time.                       |                    |
+| ES6 classes                                                 | JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. |                    |
+
+### Object Literals
+
+### Factory functions 
+
+Object Factory
 
 - Definition:  A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. 
 
@@ -3242,7 +3336,9 @@ Yes, that code is identical to what we would write if we were using the construc
   };
   ```
 
-#### OLOO
+### OLOO (prototypal inheritance)
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
 
 Definitions
 
@@ -3359,54 +3455,217 @@ let carPrototype = { // is an object, not a function.
 
 ##### Subtyping with OLOO
 
+- see oloo21.js
+
 ```js
-let superType = {
-  init(variable) {
-    
+let SuperType = {
+  initialize(variable) {
+    this.variable = variable;
+    return this;
   }
 }
 
-let subType = Object.create(superType);
+let SubType = Object.create(superType);
 
-subType.init = function() {
-  return this.init(variable);
+SubType.init = function() {
+  return this.initialize(variable); // use different initializer method names to prevent infinite loop here
+  // variable is usualy a set property of the subType. 
 }
 
 // creating a subType object
 // code essentially does what super() does in class syntax
-let subTypeObj = Object.create(subType).init();
+let subTypeObj = Object.create(SubType).init(variable);
 ```
 
-#### **Pseudo-classical** object creation pattern 
+### Constructors and Prototypes (**Pseudo-classical** object creation pattern) 
 
 - Definition: generates objects using a constructor function that defines state and a prototype object that defines shared behaviors.
   - If the function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's `prototype` property
   - This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. 
-- New objects are created from constructor functions using the keyword `new` .
-- Calling `new` on a function creates a new object. The code within the function executes with the execution context (`this`) set to the new object. The newly created object’s `__proto__` property is set to point at the object referenced by the functions `prototype` property. The newly created object is then implicitly returned.
-- `obj.constructor` can be used to find out the name of the constructor function that created an object.
+  - New objects are created from constructor functions using the keyword `new` .
+  - Calling `new` on a function creates a new object. The code within the function executes with the execution context (`this`) set to the new object. The newly created object’s `__proto__` property is set to point at the object referenced by the functions `prototype` property. The newly created object is then implicitly returned.
+  - `obj.constructor` can be used to find out the name of the constructor function that created an object.
 - Inheritance can be emulated by changing where a functions `.prototype` property points to (Just remember to restore where the `.constructor` property points to).
 
+##### **pseudo-classical inheritance**
+
+- We are creating a link without executing code in the parent constructor function. 
+- This lets us inherit only the properties that have been defined on the parent constructor function's `prototype` object, not instance methods or properties on the parent constructor. 
+
+- Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then restore the `constructor` property of the **sub-type**'s prototype object back to the **sub-type** function. 
+  - This must be done before you add new methods to the `subtype.prototype` 
+
 ```js
-// notice we're working with functions
-function Human() {}
-Human.prototype.myName = function() { return this.name; };
-Human.prototype.myAge = function() { return this.age; };
-
-function Person() {}
-Person.prototype = Object.create(Human.prototype);
-Person.prototype.constructor = Person;
-Person.prototype.toString = function() {
-  return `My name is ${this.myName()} and I'm ${this.myAge()} years old.`;
-};
-
-let will = new Person();
-will.name = 'William';
-will.age = 28;
-will.toString(); // => My name is William and I'm 28 years old.
+SubType.prototype = Object.create(SuperType.prototype);
+SubType.prototype.constructor = SubType; // restoring constructor property
 ```
 
+- Use `call` to use the super-type constructor inside subtype. 
 
+```js
+function SubType(parameter1) {
+  SuperType.call(this, parameter1, parameter2);
+}
+```
+
+Example
+
+- `Square` is a kind of rectangle where the length and width are the same, so `Square` is a **sub-type** of `Rectangle`, and `Rectangle` is a **super-type** of `Square`. 
+
+```js
+function Rectangle(length, width) {
+  this.length = length;
+  this.width = width;
+}
+
+Rectangle.prototype.getArea = function() {
+  return this.length * this.width;
+};
+
+Rectangle.prototype.toString = function() {
+  return `[Rectangle ${this.length} x ${this.width}]`;
+};
+
+let rect = new Rectangle(10, 5);
+rect.getArea();     // => 50
+rect.toString();    // => "[Rectangle 10 x 5]"
+```
+
+```js
+function Square(size) {
+  this.length = size;
+  this.width = size;
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+};
+
+let sqr = new Square(5);
+sqr.getArea();     // => 25
+sqr.toString();    // => "[Square 5 x 5]"
+```
+
+##### Restoring the `constructor` property
+
+- One side-effect of this approach is that the `constructor` property on square objects points to `Rectangle` when it should point to `Square` instead, so we need to reassign the `constructor` property to the subtype.
+
+```js
+function Square(size) {
+  this.length = size;
+  this.width = size;
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+Square.prototype.constructor = Square;
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+}
+
+let sqr = new Square(5);
+sqr.getArea();              // => 25
+sqr.toString();             // => "[Square 5 x 5]"
+sqr.constructor === Square; // => true
+```
+
+##### Constructor Reuse
+
+- Using the super-type constructor inside subtype
+- Example: invoke `Rectangle` with its execution context explicitly set to the execution context of `Square`. 
+
+```js
+function Square(size) {
+  Rectangle.call(this, size, size);
+}
+```
+
+Code now looks like this. 
+
+```js
+function Rectangle(length, width) {
+  this.length = length;
+  this.width = width;
+}
+
+Rectangle.prototype.getArea = function() {
+  return this.length * this.width;
+};
+
+Rectangle.prototype.toString = function() {
+  return `[Rectangle ${this.length} x ${this.width}]`;
+};
+
+// rect test code omitted
+
+function Square(size) {
+  Rectangle.call(this, size, size);
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+Square.prototype.constructor = Square;
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+};
+
+// sqr test code omitted
+```
+
+### ES6 Classes
+
+- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
+- JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
+
+##### Class Declarations
+
+- Class declarations begin with the `class` keyword, followed by the name of the class. The rest of the syntax looks similar to the simplified (concise) method definition that you can use in object literals.
+  - Constructor method is invoked when the class is invoked.
+  - Class names are capitalized. Use **PascalCase**. 
+
+- Remember that : you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
+
+```js
+class Rectangle {
+  constructor(length, width) { // constructor method 
+    this.length = length;
+    this.width = width;
+  }
+
+  getArea() { // is a prototype method / instance method
+    return this.length * this.width; 
+  }
+}
+
+let rec = new Rectangle(10, 5);
+console.log(typeof Rectangle);         // function
+console.log(rec instanceof Rectangle); // true
+console.log(rec.constructor);          // [class Rectangle]
+console.log(rec.getArea());            // 50
+```
+
+##### Class Expressions
+
+- Functions have an expression form that does not require a name after the `function` keyword. Classes have a similar expression form. 
+
+```js
+let Rectangle = class {
+  constructor(length, width) {
+    this.length = length;
+    this.width = width;
+  }
+
+  getArea() { // prototype method / instance method
+    return this.length * this.width;
+  }
+};
+```
+
+- Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
+  - This means <u>class expressions are hoisted</u>, unlike function expressions.
+  - **<u>However</u>** even though class expressions & class declarations are hoisted,  their values aren't initialized, so classes need to be defined before they are constructed. 
 
 
 ------
@@ -3734,23 +3993,23 @@ Note that this most recent example uses class expressions instead of class decla
 - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
 
 ```js
-let superType = {
+let SuperType = {
   initialize(variable) {
     this.variable = variable;
     return this;
   }
 }
 
-let subType = Object.create(superType);
+let SubType = Object.create(superType);
 
-subType.init = function() {
+SubType.init = function() {
   return this.initialize(variable); // use different initializer method names to prevent infinite loop here
   // variable is usualy a set property of the subType. 
 }
 
 // creating a subType object
 // code essentially does what super() does in class syntax
-let subTypeObj = Object.create(subType).init(variable);
+let subTypeObj = Object.create(SubType).init(variable);
 ```
 
 #### Compare 3
@@ -3821,7 +4080,9 @@ let subTypeObj = Object.create(subType).init(variable);
   -  This process follows the prototype chain until the property or method is found or the end of the prototype chain is found.
 - JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together.
 
-#### Prototypal Inheritance (object inheritance)
+#### Prototypal Inheritance (object inheritance)-
+
+- OLOO
 
 - simplier, *works with one object at a time*.  
 - We sometimes call this form of inheritance **object inheritance** since it works with one object at a time.
@@ -4003,19 +4264,20 @@ will.toString(); // => My name is William and I'm 28 years old.
 
 #### Mix-ins
 
+- Summary: Mix-ins are a way to share common behaviors between classes. When two more more classes share common behavior, you can move that behavior into a mix-in object. 
+  - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes. 
+  - It addresses the limitation single inheritance: limitation that objects can only have one prototype object - can only directly 'inherit' from one super-type object.
+  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object. 
+
 - Syntax 
 
   ```js
   Object.assign(Constructor.prototype, mixInObject...)
   ```
 
-- Summary:
+- **Mix-ins**:
 
   - JavaScript objects can only inherit from one other object. This limitation makes it difficult to model certain domains using class or constructor-based inheritance. You can use mix-ins to share behavior between otherwise unrelated classes.
-  - **Mixins** provide a way of addressing single inheritance: limitation that objects can only have one prototype object - can only directly 'inherit' from one super-type object.
-  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object. 
-
-- **Mix-ins**:  
 
   - Is a way to share common behaviors between classes. 
   - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes.
@@ -5014,11 +5276,17 @@ let item = {
 
 ------
 
-## Mastery 
+## Summary 
 
 - You should understand the different ways to create objects in JavaScript, including object literals, object factories, constructors and prototypes (the pseudo-classical approach), the OLOO pattern (prototypal inheritance), and ES6 classes. You should be able to compare and contrast the different ways of creating objects.
 - You should understand encapsulation, polymorphism, and inheritance in a JavaScript context. In particular, you should understand prototypal inheritance.
 - You should understand the difference between inheritance, collaboration, and mix-ins.
+  - A collaborator object is an object that helps provide state for another object. 
+  - Inheritance is when a constructor inherits the properties and methods of another constructor. 
+  - Mix-ins are a way to share common behaviors between classes. When two more more classes share common behavior, you can move that behavior into a mix-in object. 
+    - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes. 
+    -  It addresses the limitation of single inheritance: objects can only have one prototype object. 
+    - A mix-in is a collaborator object. It provides state for classes. 
 - You should understand the execution context in JavaScript. In particular, you should be intimately familiar with how JavaScript determines execution context, how it can lose that context, and how you can prevent context loss.
 - You should understand both the syntactical and behavioral differences between function declarations, function expressions, arrow functions, and the compact method syntax used in classes and objects.
 - You should know how to use both instance and static properties and methods.
@@ -5410,7 +5678,9 @@ Before you begin the assessments, you should complete all of the [Object Oriente
 
 ##### **Object Creation Patterns**
 
-1. Implement an `ancestors` method that returns the prototype chain (ancestors) of a calling object as an array of object names. Here's an example output:
+1. Prototypal inhertiance
+
+   Implement an `ancestors` method that returns the prototype chain (ancestors) of a calling object as an array of object names. Here's an example output:
 
    ```js
    // name property added to make objects easier to identify
@@ -5463,12 +5733,15 @@ Before you begin the assessments, you should complete all of the [Object Oriente
    };
    ```
 
-2. ```js
-   
+2. Pseudo classical
+
+   ```js
    
    ```
 
-3. ```js
+3. Class pattern
+
+   ```js
    // solution 1
    class CircularQueue {
      constructor(bufferSize) {

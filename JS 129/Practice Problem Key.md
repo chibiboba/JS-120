@@ -20,6 +20,132 @@ console.log(obj.num);
 
 ------
 
+## Lesson 1
+
+#### OOP and Encapsulation
+
+1. In your own words, what is Object Oriented Programming?
+
+   Solution
+
+   Object-Oriented Programming is a programming paradigm in which we think about a problem in terms of objects. In particular, it uses those objects to organize your program.
+
+2. Describe some advantages and disadvantages of OOP.
+
+   Solution
+
+   **Advantages**
+
+   - It lets programmers think about a problem at a higher-level of abstraction, which helps them break down and solve the problem.
+   - OOP helps programmers write programs that reduce the dependencies in a program, which makes maintenance easier.
+   - Done right, OOP makes code flexible, easy to understand, and easy to change.
+
+   **Disadvantages**
+
+   - OOP programs are often much larger than the equivalent procedural program.
+   - OOP may lead to less efficient code; OO programs may require more memory, disk space, and computing power.
+
+3. In your own words, what does encapsulation refer to in JavaScript?
+
+   Solution
+
+   In JavaScript, encapsulation is the idea of bundling data and operations associated with that data in a single entity; that is, it's the grouping of related properties and methods in a single object.
+
+4. In JavaScript, how does encapsulation differ from encapsulation in most other OO languages?
+
+   Solution
+
+   In other languages, encapsulation concerns hiding details of an object from code that uses the object. An object should only expose the methods and properties that other objects need to use the encapsulated object. However, JavaScript does not directly provide the means to limit exposure of methods and properties. There are ways to achieve a degree of access restriction, but they're not perfect.
+
+#### Objects and Factories
+
+In these problems, we will develop a factory function for objects that represent books.
+
+The following three books should give you an idea of what our first book object should look like:
+
+Copy Code
+
+```plaintext
+Attributes
+  Title: Mythos
+  Author: Stephen Fry
+
+Behavior:
+  Get Description
+
+-----------------------------
+Attributes
+  Title: Me Talk Pretty One Day
+  Author: David Sedaris
+
+Behavior:
+  Get Description
+
+-----------------------------
+Attributes
+ Title: Aunts aren't Gentlemen
+ Author: PG Wodehouse
+
+ Behavior:
+   Get Description
+```
+
+1. Create three objects that represent the three books shown above. The method for the "Get Description" behavior should return a string like the following:
+
+   Copy Code
+
+   ```js
+   "Me Talk Pretty one day was written by David Sedaris."
+   ```
+
+   Solution
+
+2. Think about the code you wrote for problem #1. Is there any unnecessary code? Does it have duplication?
+
+   Solution
+
+3. Given our observations about the code so far, implement a factory function for our book objects that we can use with the following code:
+
+   Copy Code
+
+   ```js
+   let book1 = createBook('Mythos', 'Stephen Fry');
+   let book2 = createBook('Me Talk Pretty One Day', 'David Sedaris');
+   let book3 = createBook("Aunts aren't Gentlemen", 'PG Wodehouse');
+   
+   book1.getDescription();  // "Mythos was written by Stephen Fry."
+   book2.getDescription();  // "Me Talk Pretty One Day was written by David Sedaris."
+   book3.getDescription();  // "Aunts aren't Gentlemen was written by PG Wodehouse"
+   ```
+
+   Solution
+
+4. We now want to track which books we have and haven't read. Update the factory function so that it returns a book object that includes a property `read` that has an initial value of `false`.
+
+   Solution
+
+5. Suppose that we want to add a book that we've already read. Modify the factory function to use an optional `read` parameter with a default value of `false`.
+
+   Solution
+
+6. Let's add a method, `readBook`, that marks a book object as read by setting the `read` property to `true`:
+
+   Solution
+
+7. Finally, let's update `getDescription` function to reflect the `read` state directly, For instance:
+
+   Copy Code
+
+   ```js
+   book1.getDescription(); // Mythos was written by David Fry. I haven't read it.
+   book1.readBook();
+   book1.getDescription(); // Mythos was written by David Fry. I have read it.
+   ```
+
+   Solution
+
+------
+
 ## Lesson 2
 
 #### Object Prototypes 

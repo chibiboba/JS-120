@@ -1,5 +1,7 @@
 ## My Own
 
+1. 
+
 ```js
 // Create a function that returns the sum of obj.num and a number passed to the function as argument, and then use call() to log that sum as obj.num. 
 let obj = {
@@ -18,7 +20,95 @@ obj.num = sum.call(obj);
 console.log(obj.num);
 ```
 
+2. Practice OLOO. Rewrite this program by using the OLOO pattern.
+
+   ```js
+   function Person (firstName, lastName, age, gender) {
+     this.firstName = firstName;
+     this.lastName = lastName;
+     this.age = age;
+     this.gender = gender;
+   }
+   
+   Person.prototype.fullName = function () {
+     return `${this.firstName} ${this.lastName}`;
+   };
+   
+   Person.prototype.eat = function() {
+     console.log('Eating');
+   };
+   
+   Person.prototype.communicate = function() {
+     console.log('Communicating');
+   };
+   
+   Person.prototype.sleep = function() {
+     console.log('Sleeping');
+   };
+   
+   function Doctor (firstName, lastName, age, gender, specialty) {
+     Person.call(this, firstName, lastName, age, gender);
+     this.specialty = specialty;
+   }
+   
+   Doctor.prototype = Object.create(Person.prototype);
+   Doctor.prototype.constructor = Doctor;
+   
+   Doctor.prototype.diagnose = function() {
+     console.log(`Diagnosing`);
+   };
+   
+   
+   function Professor (firstName, lastName, age, gender, subject) {
+     Person.call(this, firstName, lastName, age, gender);
+     this.subject = subject;
+   }
+   
+   Professor.prototype = Object.create(Person.prototype);
+   Professor.prototype.constructor = Professor;
+   
+   Professor.prototype.subject = function() {
+     console.log(`Teaches ${this.subject}`);
+   };
+   
+   Professor.prototype.teach = function() {
+     console.log(`Teaching`);
+   };
+   
+   
+   function Student(firstName, lastName, age, gender, undergradSubject) {
+     Person.call(this, firstName, lastName, age, gender);
+     this.undergradSubject = undergradSubject;
+   }
+   
+   Student.prototype = Object.create(Person.prototype);
+   Student.prototype.constructor = Student;
+   
+   Student.prototype.study = function() {
+     console.log(`Studying`);
+   };
+   
+   
+   // eslint-disable-next-line max-len
+   function GraduateStudent(firstName, lastName, age, gender, undergradSubject, gradSubject) {
+     Student.call(this, firstName, lastName, age, gender, undergradSubject);
+     this.gradSubject = gradSubject;
+   }
+   GraduateStudent.prototype = Object.create(Student.prototype);
+   GraduateStudent.prototype.constructor = GraduateStudent;
+   
+   GraduateStudent.prototype.research = function() {
+     console.log(`Researching`);
+   };
+   ```
+
+   
+
 ------
+
+## Lesson 1
+
+
 
 ## Lesson 2
 
