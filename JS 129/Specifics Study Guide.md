@@ -2552,19 +2552,19 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 - ##### What is prototype chain (summary)
 
-  - The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-  - The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
-    - (Prototypal inheritance uses the prototype chain for prototypal delegation: to find a method and delegate the call.)
-  - If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in the object's prototype, which is the object pointed to by the internal `[[prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+  - The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
+  - The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
+  - If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain. 
+    - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
   - The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
-  
+
   ##### What it's used for. 
-  
+
   - The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
   - **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
-  
+
   ##### Property Access
-  
+
   - When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
   - If we try to access a property on an object and it's not a property directly owned by that object, the next port of call is the object pointed to by the __proto__ property. 
     - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype(the object pointed to by the internal `[[prototype]]` or dunder proto property) then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
@@ -2572,18 +2572,18 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
     - A downstream object overrides an inherited property if it has a property with the same name. 
     - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
   - What happens when you set a property to a different value? 
-  
+
     - Property assignment creates a new "own " property in the object.
       - It assumes that the property belongs to the object named to the left of the property name. 
       - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
-  
+
   ##### Usefulness
-  
+
   - This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
   - Looking up a property in the prototype chain is the basis for prototypal inheritance. 
-  
+
   ##### Implications
-  
+
   - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
 
 ------
@@ -2881,7 +2881,7 @@ console.log(dog.says); // woof
 | ES6 classes                                            | 1) JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. 2) Subclasses inherit ALL methods and properties from parent class. | 1) JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together. |
 
 - **Difference between prototypal inheritance and psuedo-classical inheritance**
-  - Prototypal inheritance works with objects. Uses prototypal delegation. 
+  - Prototypal inheritance works with objects(one object at a time. Uses prototypal delegation. 
   - Pseudo-classical inheritance involves functions. Also uses prototypal delegation. 
 - **Difference between class and pseudo-classical inheritance**
   - subclass inherits <u>all the methods and properties</u> from parent class. 
@@ -4207,7 +4207,7 @@ let subTypeObj = Object.create(SubType).init(property1, property2);
 
 ## Prototypal Inheritance vs pseudo-classical inheritance (4)
 
-##### Similarities
+#### Similarities
 
 - Both use prototypal delegation under the hood. 
   -  If the requested property isn't found, the object delegates the request to the object's prototype object.
@@ -6022,7 +6022,7 @@ let item = {
 
 ## Problems about prototypes
 
-##### Searching prototype chain
+#### Searching prototype chain
 
 (from practice problems: lesson 2)
 
@@ -6057,7 +6057,7 @@ function assignProperty(obj, property, value) {
 }
 ```
 
-##### Prototypal inheritance
+#### Prototypal inheritance
 
 (from exercise sets: Object creation patterns)
 
@@ -6100,13 +6100,13 @@ Object.prototype.ancestors = function() {
 };
 ```
 
-##### **Q: How do you create an object that doesn't have a prototype?** 
+#### **Q: How do you create an object that doesn't have a prototype?** 
 
 ```js
 let bareObj = Object.create(null);
 ```
 
-##### **Q: How can you determine whether an object has a prototype?**
+#### **Q: How can you determine whether an object has a prototype?**
 
 ```js
 if (Object.getPrototypeOf(obj)) {
@@ -6116,7 +6116,7 @@ if (Object.getPrototypeOf(obj)) {
 }
 ```
 
-#####  **Q: What value does `Object.getPrototypeOf({})` return?**
+####  **Q: What value does `Object.getPrototypeOf({})` return?**
 
 The default prototype object.
 
