@@ -1441,6 +1441,10 @@ Give us your feedback
 
    solution
    
+   OLOO is more memory effieicnt. 
+   
+   factory functions can create objects with private state. 
+   
    
 
 ------
@@ -1534,6 +1538,8 @@ Hello.hi();
    What would happen if we added a `play` method to the `Bingo` class, keeping in mind that there is already a method of this name in the `Game` class from which the `Bingo` class inherits? Explain your answer. What do we call it when we define a method like this?
 
    Solution
+
+   When a class redefines a method that a superclass defines, we call this "**method overriding**." When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
 
 2. Let's practice creating a class hierarchy.
 

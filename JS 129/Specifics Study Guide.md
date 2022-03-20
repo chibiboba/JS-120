@@ -1755,8 +1755,8 @@ obj.foo();
 Why would somebody need to do that? It seems silly to create an object that looks like an array but isn't an array. Why bother?
 - The use case shown isn't particularly useful, but there are other use cases for `Array.from`. In particular, some functions and methods return objects that resemble arrays in some ways but serve some other purpose. 
 - For instance, if you use JavaScript to request a list of elements from your browser, the *DOM* (more on that much later) may return an array-like object called a *node list*. Such objects can store *live* data -- dynamic data that can change without intervention by your code. A simple array wouldn't do the trick here, but a node list does. Better yet, the node list is an array-like object, so `Array.from` can create an array based on its content.
-
 - In the degenerate(??) case, all arrays are themselves array-like objects.
+  - **Degenerate**: in the `simplest case`
 
 #### The `Object` constructor
 
@@ -6194,8 +6194,6 @@ class Truck extends Vehicle {
   }
 }
 ```
-
-
 
 Lesson 4 Quiz Question 8 Discussion 
 
