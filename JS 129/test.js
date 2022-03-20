@@ -1,5 +1,13 @@
-(function sum(number1, number2) {
-  return number1 + number2;
-});
+// ~/'My Documents'/'Launch School'/'JS 120'/'JS 129'
 
-console.log(sum(3, 4));
+const TESgames = {
+  titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
+  seriesTitle: 'The Elder Scrolls',
+  listGames: function () {
+    this.titles.forEach(function (title) {
+      console.log(this.seriesTitle + ': ' + title);
+    });
+  }
+};
+
+TESgames.listGames();

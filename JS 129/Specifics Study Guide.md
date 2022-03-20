@@ -1,4 +1,8 @@
-## Specific Topics of Interest
+## Miscellaneous
+
+- Pi is `Math.PI` 
+- Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
+- Javascript can't find __ in the prototype chain of ___ 
 
 ## Lesson 1 Stuff
 
@@ -131,7 +135,7 @@ const cat = {
 
 - JavaScript runs programs in two passes; the first pass performs hoisting, and the second executes the code.
 
-##### 3 ways to define a function (review + new)
+#### 3 ways to define a function (review + new)
 
 1. **Function declaration**: Function definitions that begin with `function` keyword.
 
@@ -291,7 +295,7 @@ let name = () => console.log('My name is'); // arrow function
 
 ------
 
-##### Function Declarations vs Function Expressions
+#### Function Declarations vs Function Expressions
 
 - Functions defined with function declaration syntax can be invoked before the declaration in the program. 
 
@@ -359,7 +363,7 @@ let name = () => console.log('My name is'); // arrow function
   - Don't invoke functions when you want to use them as values. Use invocation only when you need to run the code in the function. 
   - Treat any function as any other JS value: remove the invocation syntax, and you got an expression whose value is a function. 
 
-##### Type of a Function Value
+#### Type of a Function Value
 
 ```js
 let myFunc = function() {};
@@ -369,7 +373,7 @@ typeof myFunc; // => "function"
 - Functions are a kind of object: they are a compound type that has its own properties and methods. 
 - Definition of **function**: a kind of object with properties and methods.
 
-##### Summary
+#### Summary
 
 - Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
 - To use a function as an expression, write its name without the parentheses of invocation. 
@@ -388,7 +392,7 @@ typeof myFunc; // => "function"
 - Function factories are higher- order functions
 - All higher-order functions are first class functions. 
 
-##### First Class Functions
+#### First Class Functions
 
 - Have these charactersitics ( from summary)
 
@@ -403,7 +407,7 @@ typeof myFunc; // => "function"
 
 ## Method and property lookup sequence 2
 
- ##### Methods
+ #### Methods
 
 - **Methods**  are object properties that have function values. 
 - You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
@@ -423,7 +427,7 @@ const cat = {
 
 - If you access the method property without (), it will return the function definition.  
 
-##### What is prototype chain
+#### What is prototype chain
 
 - The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
@@ -481,7 +485,7 @@ Object.getPrototypeOf(baz) // foo
 
 ## Methods and properties; instance and static methods and properties 1, 3
 
-##### Overriding
+#### Overriding
 
 - If we add a new `play` method to the `Bingo` class, objects created by `Bingo` will use that method instead of looking up the prototype chain and finding it in the `Game` class. 
 
@@ -501,6 +505,8 @@ Object.getPrototypeOf(baz) // foo
 
 - As soon as JavaScript finds a method, it calls it. When a class redefines a method that a superclass defines, we call this "**method overriding**."
 
+  - When method overriding occurs, instance object created by sub-type class will use that method instead of looking up the prototype chain and finding it in the super-type class.
+
 - When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
 
   - An object can override a property of its parent by setting the property on itself.
@@ -509,7 +515,7 @@ Object.getPrototypeOf(baz) // foo
 
 - Method overriding can be prevented in class syntax by calling `Super` 
 
-##### Property syntax : defining properties
+#### Property syntax : defining properties
 
 - Syntax errors when trying to define properties in an object. 
 
@@ -576,14 +582,14 @@ Object.getPrototypeOf(baz) // foo
   }
   ```
 
-##### Add property 
+#### Add property 
 
 - The correct terminology is **add** new properties to object by giving it a value 
   - not "declare" or "assign" new properties. 
   - assignment is when you assigns a value to a variable's left operand based on the value of its right operand. `this.property = value` 
 - The `delete` keyword deletes a property from an object
 
-##### Accessing Properties
+#### Accessing Properties
 
 - **member access notation** (**dot notation**)
 
@@ -601,7 +607,7 @@ Object.getPrototypeOf(baz) // foo
   obj['a' + '-' + 'key'] // 'four'
   ```
 
-##### Property Existence
+#### Property Existence
 
 - We get `undefined` when accessing a non-existent property. However we also get same value if we try to access a property set to `undefined`. 
 
@@ -659,7 +665,7 @@ Object.getPrototypeOf(baz) // foo
 - All properties created by simple assignment or property initializer are enumerable by default. 
 - Ownership of properties is determined by whether the property belongs to the object directly and not to its prototype chain. 
 
-##### Instance 
+#### Instance 
 
 - **Instance **: objects created using any means of defining multiple objects of the same kind. 
 
@@ -725,7 +731,7 @@ Object.getPrototypeOf(baz) // foo
   console.log(rect.getArea());
   ```
 
-##### Static 
+#### Static 
 
 - Must use constructor name to invoke static properties and methods. 
 
@@ -866,7 +872,7 @@ Object.getPrototypeOf(baz) // foo
 - Every JavaScript call has an execution context. 
 - Regular function invocations use the global object as its implicit execution context. 
 
-##### Global object
+#### Global object
 
 - JS creates a global object when it starts running. 
 - in Node.js global object name is `global`. In the window, global object is named `Window`. 
@@ -883,7 +889,7 @@ Object.getPrototypeOf(baz) // foo
   - console
   - log
 
-##### What is **this**?
+#### What is **this**?
 
 - In JavaScript, the `this` keyword refers to an **object**.
 
@@ -899,7 +905,7 @@ Object.getPrototypeOf(baz) // foo
 | In an event, `this` refers to the **element** that received the event. |
 | Methods like `call()`, `apply()`, and `bind()` can refer `this` to **any object**. |
 
-##### This
+#### This
 
 Definition
 
@@ -949,7 +955,7 @@ Clarifications about `this`
   console.log(person.fullName()); // invoked as a method
   ```
 
-##### Execution Context Rules
+#### Execution Context Rules
 
 - **Execution context**: the environment (an object) in which a function executes. 
 
@@ -987,7 +993,7 @@ Clarifications about `this`
   // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
   ```
 
-##### Context Loss & their solutions
+#### Context Loss & their solutions
 
 - Method is copied out of an object and used elsewhere. 
 
@@ -1274,7 +1280,7 @@ obj.foo(); // => undefined
 
 #### Context Loss 3: Function as argument losing surrounding context
 
-- Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
+- When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. 
 
 ```js
 let obj = {
@@ -1325,7 +1331,53 @@ obj.foo();
 
 ##### Solution 2 : Use `bind`
 
+- Passing a function as an argument to another function also strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
+
+- `Bind` needs to be used on an outer function, it won't work if you use `bind` on a function that is being passed as argument. That function will lose its context and `this` will refer to the global object. 
+
 ```js
+// this solution doesn't work
+// It doesn't work because the function that is bound to `this` gets passed as an argument itself. 
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription: function() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }.bind(this) 
+};
+
+function logReturnVal(func) {
+  let returnVal = func();
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription); // undefined undefined is a undefined. 
+```
+
+```js
+// This works
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }
+};
+
+function logReturnVal(func, context) {
+  let returnVal = func.call(context);
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription.bind(turk));
+```
+
+```js
+// This example demonstrates a solution for callback functions to retain its surrounding context when it is passed to `forEach`. This solution binds the outer function to a permanent execution context. 
 let obj = {
   a: 'hello',
   b: 'world',
@@ -1367,7 +1419,8 @@ obj.foo();
 
 ##### Solution 4: Use the optional `thisArg` argument
 
-- Some methods that take function arguments allow an optional argument that specifies the context to use when invoking the function. 
+- Some methods that take function arguments allow an optional argument that specifies the execution context to use for the callback function. 
+  - provides an alternative way to supply the execution context for the callback function. 
 - For example `Array.prototype.forEach` has an optional `thisArg` argument for the context. 
 - `map`, `every`, `some`, and others take this optional argument. 
 
@@ -1393,13 +1446,13 @@ obj.foo();
 
 ## `call`, `apply`, and `bind` 2
 
-##### `call`
+#### `call`
 
-- Definition: invokes a function or method with an explicit execution context - the first argument passed to it 
+- Definition: `call` invokes a function or method with an explicit execution context - the first argument passed to it 
 
 - Syntax
 
-  ```
+  ```js
   someObject.someMethod.call(context, arg1, arg2 …)
   someObject.someMethod.call(context, ...args);
   function.call(context)
@@ -1411,9 +1464,9 @@ obj.foo();
   function.call(context, ...args);
   ```
 
-##### `apply`
+#### `apply`
 
-- Definition: Calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
+- Definition: `apply` calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
 
   - Arguments are passed as an array, whereas in `call`, arguments are passed separately. 
 
@@ -1424,8 +1477,12 @@ obj.foo();
   function.apply(context)
   ```
 
-##### `bind`
+#### `bind`
 
+- Summary: 
+
+  - `bind` returns a function that is permanently bound to the execution context passed to it as argument. Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`.
+  
 - Definition: **Bind** returns a new function that is permanently bound to the context passed to **bind**  as first argument. 
 
   - Hard binds a function to an explicit execution context. 
@@ -1524,7 +1581,7 @@ obj.foo();
 
 ## Built-in constructors like `Array`, `Object`, `String` and `Number` 3
 
-##### The `Array` constructor
+#### The `Array` constructor
 
 - Simplest way to create an array object uses the bracket syntax:
 
@@ -1598,7 +1655,7 @@ obj.foo();
 
 - Stay consistent and use `new` unless there's a good reason to omit it.
 
-##### `Array.prototype` property
+#### `Array.prototype` property
 
 - `Array.prototype` property references the prototype object that the `Array` constructor uses to create array objects. 
 
@@ -1625,13 +1682,13 @@ obj.foo();
   true
   ```
 
-##### Static Array Methods
+#### Static Array Methods
 
 - Remember: static methods belong directly to the constructor function; they aren't part of the prototype used to create new objects. 
 - As a result, their names don't include `.prototype`. 
 - Moreover, you usually use the constructor to invoke the static methods, not the object created by that constructor. 
 
-###### **`Array.isArray`**
+##### **`Array.isArray`**
 
 - The `Array.isArray` method takes one argument and returns `true` if the argument is an array object, and `false` if it is not:
 
@@ -1656,7 +1713,7 @@ obj.foo();
   - `Array.isArray` helps distinguish between arrays and other objects.
   - It helps improve readability and show intent.
 
-###### `Array.from`
+##### `Array.from`
 
 - The `Array.from` method takes an **array-like object** as an argument and returns a new array with the equivalent element values. 
 
@@ -1701,7 +1758,7 @@ Why would somebody need to do that? It seems silly to create an object that look
 
 - In the degenerate(??) case, all arrays are themselves array-like objects.
 
-##### The `Object` constructor
+#### The `Object` constructor
 
 - As with the `Array` constructor, the `Object` constructor creates new objects:
 
@@ -1767,7 +1824,7 @@ Why would somebody need to do that? It seems silly to create an object that look
     'function hello() {}'
     ```
 
-##### Static `Object` Methods
+#### Static `Object` Methods
 
 - The list below shows some commonly used static `Object` methods. You've already seen and used several. Feel free to follow the links and read more about these methods, but you don't have to memorize them. Instead, learn what's available. You can look them up later when you need to use them:
 
@@ -1779,7 +1836,7 @@ Why would somebody need to do that? It seems silly to create an object that look
   - [`Object.keys`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
   - [`Object.values`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
 
-##### The Date Constructor
+#### The Date Constructor
 
 - The `Date` constructor creates objects, commonly called a **date object**, that represent a specific date and time. 
 
@@ -1811,7 +1868,7 @@ Why would somebody need to do that? It seems silly to create an object that look
 
   - There are several other ways to specify the date and time, including variations on the date strings shown above, and by providing other arguments to the `Date` constructor. Check the [MDN documentation for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) to learn more.
 
-##### `Date.prototype` 
+#### `Date.prototype` 
 
 - The `Date` prototype object provides a variety of convenient methods for working with dates. We'll mention a few here.
 
@@ -1847,7 +1904,7 @@ Why would somebody need to do that? It seems silly to create an object that look
 
   The `Date` prototype has a bunch of useful methods for working with dates and times. Be sure to check the [MDN documentation page for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) and explore a few more methods.
 
-##### The `String` constructor
+#### The `String` constructor
 
 - Why do we need a constructor for strings? Aren't JavaScript strings a primitive type? We know they are since the strict equality operator compares strings by value rather than identity:
 
@@ -1880,7 +1937,7 @@ How is that possible given that strings are primitive values? Primitive values a
 
 We'll return to those questions shortly. 
 
-###### String primitive vs `String` object
+##### String primitive vs `String` object
 
 - First, though, we need to learn that JavaScript has two kinds of strings: string primitives and `String` objects. 
 - Thus far, all the strings we've created and used have been string primitives. We create string primitives by using quotes (single or double) or back-tick characters to define a string's value. To create a `String` object, on the other hand, we must use the `String` constructor:
@@ -1909,7 +1966,7 @@ Wow! Two string primitives that have the same value are equal, but not two `Stri
 
 That still leaves us with a big question: why in the world do we need a `String` object? That goes back to our original question: 
 
-###### How can we call methods on string primitives?
+##### How can we call methods on string primitives?
 
 - Functionally, both string primitive and string object act like objects when you call a method on it such as `'abc'.toLowerCase()` or `(new String('abc')).toLowerCase()`. 
 
@@ -1921,7 +1978,7 @@ That still leaves us with a big question: why in the world do we need a `String`
   - However, if you're writing code where you may have to operate on `String` objects, you can use `String.prototype.valueOf()` to retrieve the value of the `String` object as a primitive.
 - We are able to call non-mutating array methods on string primitives using `call` or `apply`. 
 
-##### `String` without `new` 
+#### `String` without `new` 
 
 - As with most constructors, with the notable exception of `Array` and `Object`, calling the constructor without the `new` keyword does *not* create an object. In the case of `String`, it simply returns a new string primitive, not an object, when you omit the `new` keyword:
 
@@ -1951,7 +2008,7 @@ That still leaves us with a big question: why in the world do we need a `String`
 ```
 
 
-##### The `Number` and `Boolean` Constructors
+#### The `Number` and `Boolean` Constructors
 
 - The `Number` and `Boolean` constructors work in much the same way as the `String` constructor (if called with `new`, an object is created, otherwise, it returns the same type as the constructor)
 
@@ -1973,7 +2030,7 @@ That still leaves us with a big question: why in the world do we need a `String`
 
 - You should also avoid creating `Number` and `Boolean` objects explicitly.
 
-##### Extending Built-in Prototypes
+#### Extending Built-in Prototypes
 
 - Change prototypes to add new capabilities to our built-in objects. Best to avoid this though. 
 
@@ -1993,9 +2050,9 @@ That still leaves us with a big question: why in the world do we need a `String`
 
   - Extending built-in objects is interesting to study, but it's best to avoid doing so. Adding a method like `first` to an array object can confuse other developers working on your project. It can lead to errors when other developers forget or don't realize that your array has an unexpected bonus.
 
-##### Borrowing Array Methods for Strings
+#### Borrowing Array Methods for Strings
 
-###### Summary
+##### Summary
 
 - Definition: Can use non-mutating array methods on strings by using `call` or `apply`. 
 
@@ -2055,7 +2112,7 @@ That still leaves us with a big question: why in the world do we need a `String`
   // invoking every() with string as its context 
   ```
 
-###### Why does method borrowing work? 
+##### Why does method borrowing work? 
 
 - Array method borrowing works because `String` objects also have a `length` property and use index-based element access. `this` inside array methods refers to the context, which now is a string. 
 
@@ -2102,7 +2159,7 @@ Let's see another example:
 
 ## `Object.assign` and `Object.create`
 
-##### Object.assign
+#### Object.assign
 
 - Definition: 
 
@@ -2184,7 +2241,7 @@ Uses
   Object.assign(Duck.prototype, Swimmable, Flyable); // both traits.
   ```
 
-##### Object.create
+#### Object.create
 
 - Is a static method of the Object Function
 
@@ -2300,7 +2357,7 @@ Uses
 - Advantage of function factory
   - An advantage of the factory pattern is that it lets us create objects with private state. If that doesn't make sense to you yet, don't worry. We'll return to this topic in a later course when we discuss closures.
 
-##### Prototypes
+### Prototypes
 
 - All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits. 
 - **prototype**: the object that you inherit properties and methods from.
@@ -2646,6 +2703,8 @@ console.log(b.foo);
 
 ##### Implications
 
+-  Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well. 
+
 - This means that inherited objects can never alter prototype properties ( downstream objects can't alter upstream properties)
 - But altering a prototype object's property alters the property of an inherited object, because inherited objects are using prototype chain to look up the value of property. 
 - Property assignment creates a new "own" property in the object. 
@@ -2805,14 +2864,343 @@ console.log(cat.says); // meow
 console.log(dog.says); // woof
 ```
 
-### Constructors (3)
+------
+
+## Object Creation Patterns
+
+- object literals, object factories, constructors and prototypes (the pseudo-classical approach), the OLOO pattern (prototypal inheritance), and ES6 classes.
+
+### Compare and Contrast
+
+| Object creation patterns                               | Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Object literals                                        | 1) simple, works with one object as a type.                  |                                                              |
+| Factory Function                                       | 1) create objects with private state                         | memory inefficient                                           |
+| pseudo-classical approach(constructors and prototypes) | 1) Like prototypal inheritance, uses prototypal delegation under the hood. 2) memory efficient | 1) only inherit properties and methods from parent constructor function's `prototype` object |
+| prototypal inheritance (OLOO)                          | 1) simpler, work with one object at time 2) memory efficient 3) uses prototypal delegation |                                                              |
+| ES6 classes                                            | 1) JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. 2) Subclasses inherit ALL methods and properties from parent class. | 1) JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together. |
+
+- **Difference between prototypal inheritance and psuedo-classical inheritance**
+  - Prototypal inheritance works with objects. Uses prototypal delegation. 
+  - Pseudo-classical inheritance involves functions. Also uses prototypal delegation. 
+- **Difference between class and pseudo-classical inheritance**
+  - subclass inherits <u>all the methods and properties</u> from parent class. 
+  - pseudo-classical inheritance lets us inherit only the properties that have been defined on the parent constructor function’s `prototype` object. 
+  - JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together.
+- **OLOO vs factory functions**
+  - Objects created with the OLOO have a prototype object that contains the methods associated with the created objects. Since all pets created from the prototype share a single prototype object, they all share the same methods. With the factory function, each object has a copy of all the methods. Thus, objects created by OLOO are more efficient in terms of memory use.
+  - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+- **Factory functions vs pseudoclassical inheritance**
+  - An advantage of the factory pattern is that it lets us create objects with private state. 
+    - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+  - Disadvantage of object factory
+
+    - Wastes memory: Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
+    - Can't identify which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
+      - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
+      - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
+  - Advantage of constructor 
+    - Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
+    - Memory efficiency: Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+      - constructors have a prototype property that references an object that instance objects inherit from. So properties defined on the constructor `prototype` property are shared through the prototype chain. 
+      - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
+    - Prototypes can be overridden by assigning inheriting objects their own properties
+
+### Object Literals
+
+```js
+// object literal syntax
+function makeObj() {
+  return {
+    propA: 10, 
+    propB: 20
+  }
+}
+```
+
+```js
+// not object literal syntax
+function makeObj() {
+  let obj = {};
+  obj.propA = 10;
+  obj.propB = 20;
+  return obj;
+}
+```
+
+- Incorrect syntax to define property in object literals
+
+  - All of these cause syntax error when trying to define the properties in the object. 
+
+  ```js
+  let cat = {
+    this.name: "Butterscotch", // 'this' cannot be used for property names.
+    this.age: 13,
+  };
+  ```
+
+  ```js
+  let cat = {
+    name = "Butterscotch", // incorrect syntax to define property in an object.
+    age = 13
+  };
+  ```
+
+  ```js
+  function createPet(animal, name) {
+    return {
+    	this.animal = animal, //  'this' can't be used for property names.
+      this.name : name, // incorrect syntax
+      
+      sleep() {
+        console.log('I am sleeping');
+      }, 
+        
+      wake() {
+        console.log('I am awake');
+      }
+    };
+  }
+  ```
+
+### Factory functions 
+
+Object Factory
+
+- Definition:  A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. 
+
+  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to automate the creation related objects based on a predefined template. 
+  - are functions that create and return objects of a particular type. 
+    - **Type** means an object with a particular set of methods and properties. 
+  - Each invocation of the factory function specifies the differences between the objects with arguments. 
+
+- Advantages of factory function
+
+  - Create multiple objects of same "type" with a predefined "template". 
+  - Lets you automate the creation of objects. 
+  - Reuses code. 
+  - Create objects with private state. 
+    - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+
+- Disadvantage of object factory
+
+  - Wastes memory: Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
+  - Can't identify which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
+    - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
+    - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
+
+- Code example:
+
+  ```js
+  function createPet(animal, name) {
+    return {
+      animal: animal, 
+      name: name, 
+      
+      sleep() {
+        console.log('I am sleeping');
+      }, 
+        
+      wake() {
+        console.log('I am awake');
+      },
+    };
+  }
+  ```
+
+### OLOO (prototypal inheritance)
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
+
+Definitions
+
+- Summary :  Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
+
+  - Shared properties are defined on a parent object. Other objects can then be created from this parent object using `Object.create(obj)` .
+  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties.
+
+- Details:
+
+  - OLOO uses prototypes and extracts the properties common to all objects of the same type (e.g., car objects) to a prototype object. All objects of the same type then inherit from that prototype.
+  - Does not use a function. It uses an object as the prototype, then `Object.create` to create new objects that inherit from the prototype. It uses a `init` method to customize the state of each object. `init` returns `this`, a reference to the calling object. 
+
+- Create new objects using that object prototype with this code
+
+  ```js
+  let newObj = Object.create(obj).init(state)
+  ```
+
+- Compare the two creation patterns
+
+  ```js
+  // OLOO
+  let newObj = Object.create(obj).init();
+  
+  // pseudo-classical(constructor inheritance)
+  let newObj = new Obj(); // newObj is an instance of Obj
+  ```
+
+Example
+
+- Let's do that with car objects. What properties are common to all car objects? Here, those properties are the `start` and `stop` methods. All cars have `make`, `model`, `year`, and `started` properties as well, but each object has different values for those properties. Thus, we don't count them as being common to all cars.
+  - We can extract the `start` and `stop` methods to a prototype object.
+
+```js
+let carPrototype = {
+  start: function() {
+    this.started = true;
+  },
+
+  stop: function() {
+    this.started = false;
+  },
+};
+```
+
+- Now that we have a car prototype object, all car objects can inherit from it:
+
+```js
+let car1 = Object.create(carPrototype);
+car1.make = 'Toyota';
+car1.model = 'Corolla';
+car1.year = 2016;
+```
+
+- We can now call `start` and `stop` on the `car1` object since both are accessible through its prototype, `carPrototype`.
+
+```js
+car1.start();
+car1.started; // => true
+
+car1.stop();
+car1.started; // => false
+```
+
+- Calling `start` and `stop` on the `car1` object changes the state of `car1` even though those methods don't belong to `car1`. That shouldn't come as a surprise since we're using `car1` as the execution context for the calls. When we call these methods, `this` is set to `car1`, so the methods change the `started` property in `car1`.
+
+- That's all well and good. We've set up a car prototype that all our car objects can inherit.
+
+- However, we still have a small problem: we must set the `make`, `model`, and `year` properties manually every time we create a car object. Can we automate that? Fortunately, yes; there's more than one way. The most common technique uses an `init` method on the prototype object:
+
+##### Init 
+
+- The initializer method customizes the state for each object. 
+  - `init` is a function that initializes values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
+    - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
+  - Similar to the constructor method in classes
+
+
+```js
+let carPrototype = { // is an object, not a function. 
+  start: function() {
+    this.started = true;
+  },
+
+  stop: function() {
+    this.started = false;
+  },
+
+  init(make, model, year) { // customzies state of object, the state is the new object's 'own' properties.
+    this.make = make;
+    this.model = model;
+    this.year = year;
+    return this; // remember to return a reference to the calling object
+  },
+};
+```
+
+- Since `init` now returns a reference to the car object it was called on, we can chain `create` and `init` and assign the result to the `car1` variable:
+
+  ```js
+  let car1 = Object.create(carPrototype).init('Toyota', 'Corolla', 2016);
+  ```
+
+##### Advantage of OLOO over Factory Function
+
+- You can use both factory functions and the OLOO pattern to bulk create objects of the same type. 
+- OLOO pattern has one significant advantage over factory functions: memory efficiency. 
+  - Since all objects created with the OLOO pattern inherit methods from a single prototype object, the objects that inherit from that prototype object share the same methods. 
+  - Factory functions, on the other hand, create copies of all the methods for each new object. That can have a significant performance impact, especially on smaller devices with limited memory.
+
+- An advantage of the factory pattern is that it lets us create objects with private state. 
+  - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+
+##### Subtyping with OLOO
+
+#### Subtyping with OLOO
+
+- Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
+- Think of `init` as the `constructor` method. 
+- See Practice.js 
+
+```js
+let SuperType = {
+  initialize(property) {
+    this.property = property;
+    return this;
+  }
+}
+
+let SubType = Object.create(superType);
+
+SubType.init = function() {
+  return this.initialize(property); // think of this as super, we are calling on parent method
+  // use different initializer method names to prevent infinite loop here
+}
+
+// creating a subType object
+// code essentially does what super() does in class syntax
+let subTypeObj = Object.create(SubType).init(property);
+```
+
+- Syntax 2:  If SubType has its own properties to be set
+  - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
+
+```js
+let SuperType = {
+  initialize(property1) {
+    this.property1 = property1;
+    return this;
+  }
+}
+
+let SubType = Object.create(superType);
+
+SubType.init = function(property1, property2) {
+  let copyOfSuperType = this.initialize(property1); 
+  this.property2 = property2;
+  let newObj = Object.assign(copyOfSuperType, this);
+  return newObj;
+}
+
+// creating a subType object
+// code essentially does what super() does in class syntax
+let subTypeObj = Object.create(SubType).init(property1, property2);
+```
+
+
+
+### Constructors and Prototypes (**Pseudo-classical** object creation pattern) 
+
+#### Constructors (3)
+
+##### Summary: 
+
+- Definition: generates objects using a constructor function that defines state and a prototype object that defines shared behaviors.
+- If the function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's `prototype` property
+- This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. 
+- New objects are created from constructor functions using the keyword `new` .
+- Calling `new` on a function creates a new object. The code within the function executes with the execution context (`this`) set to the new object. The newly created object’s `__proto__` property is set to point at the object referenced by the functions `prototype` property. The newly created object is then implicitly returned.
+- `obj.constructor` can be used to find out the name of the constructor function that created an object.
+
+- Inheritance can be emulated by changing where a functions `.prototype` property points to (Just remember to restore where the `.constructor` property points to).
 
 ##### Main Points
 
 - 1st definition: **Constructors** is a function that creates and returns an object (**the instance**) of the constructor function.
   - Second definition: are an <u>object form of functions</u> used to create objects in JavaScript. 
   - Acts like a factory function: define a constructor once and invoke it each time you want to create an object of that type. 
-  - Capitalizing name of constructor is a convention. 
+  - use **PascalCase** for constructor functions and classes: Capitalizing name of constructor is a naming convention. 
   - Use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
 - Constructors vs ordinary functions
   - `new` keyword turns a function call into a constructor call. 
@@ -2876,12 +3264,29 @@ console.log(dog.says); // woof
   - Function acts like ordinary function
   - Since functions that don't return an explicit value return `undefined`, calling constructor without `new` also returns undefined. 
 
+- Creating a Constructor function that you can use with or without `new` operator
+
+  ```js
+  function Constructor(parameter) {
+    if (!this isntanceOf Constructor) {
+      return new Constructor(paramter); // need return statement to avoid side effects 
+    }
+    this.parameter = parameter;
+  }
+  ```
+
 - Who can be a constructor
 
   - almost every JavaScript function that you create. 
   - Exception: arrow functions cannot be called with `new` since they lose their surrounding context as the value of `this`. 
   - Exception: Calling a method defined with concise syntax won't work.  
   - Many (but not all) built-in objects and methods are incompatible with `new`
+
+- **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
+
+  - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe. `String`, `Number` and `Boolean` is not:
+
+##### Properties & operators 
 
 - The **`typeof`** operator returns a string indicating the type of the unevaluated operand.
 
@@ -2912,10 +3317,6 @@ console.log(dog.says); // woof
     console.log([1, 2, 3].constructor.name); // Array
     console.log({ name: 'Srdjan' }.constructor.name); // Object
     ```
-
-- **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
-
-  - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe. `String`, `Number` and `Boolean` is not:
 
 ##### Advantage of constructor 
 
@@ -2960,26 +3361,7 @@ console.log(dog.says); // woof
   - Object's `__proto__` or hidden `[[prototype]]` references an object's prototype. It also references `constructor.prototype`.
 - A constructor's `[[prototype]]` !== `constructor.prototype` , but the inheriting object's `[[prototype]]` references `constructor.prototype`. 
 
-### ES6 Classes (4)
-
-##### Definition
-
-- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
-
-  ```js
-  typeof Class // function
-  ```
-
-- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
-
-- classes act like **syntactic sugar** -- syntax designed to be easier to read or use. 
-  - In essence, they provide little more than a more natural and possibly familiar way to create constructors and prototypes.
-  - Cleaner, more compact alternative to constructors and prototypes.
-  - Similar to functions that they are first-class citizens and come in in the form of declarations and expressions. 
-  - Behave similar to constructors and prototypes.
-  - Classes allow for static methods by using the `static` modifier. 
-
-##### Constructor and prototype pattern
+#### Constructor and prototype pattern
 
 - Constructors
 
@@ -3007,12 +3389,161 @@ console.log(dog.says); // woof
 
 - This code is straightforward and easy to follow, and the outputs should be exactly what you expect. In particular, the object created by the `Rectangle` constructor, `rec`, is an instance of the `Rectangle` type, and we can call the `getArea` method from its prototype to calculate the area.
 
+#### **pseudo-classical inheritance**
+
+- We are creating a link without executing code in the parent constructor function. 
+- This lets us inherit only the properties that have been defined on the parent constructor function's `prototype` object, not instance methods or properties on the parent constructor. 
+
+- Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then restore the `constructor` property of the **sub-type**'s prototype object back to the **sub-type** function. 
+  - This must be done before you add new methods to the `subtype.prototype` 
+
+```js
+SubType.prototype = Object.create(SuperType.prototype);
+SubType.prototype.constructor = SubType; // restoring constructor property
+```
+
+- Use `call` to use the super-type constructor inside subtype. 
+
+```js
+function SubType(parameter1) {
+  SuperType.call(this, parameter1, parameter2);
+}
+```
+
+Example
+
+- `Square` is a kind of rectangle where the length and width are the same, so `Square` is a **sub-type** of `Rectangle`, and `Rectangle` is a **super-type** of `Square`. 
+
+```js
+function Rectangle(length, width) {
+  this.length = length;
+  this.width = width;
+}
+
+Rectangle.prototype.getArea = function() {
+  return this.length * this.width;
+};
+
+Rectangle.prototype.toString = function() {
+  return `[Rectangle ${this.length} x ${this.width}]`;
+};
+
+let rect = new Rectangle(10, 5);
+rect.getArea();     // => 50
+rect.toString();    // => "[Rectangle 10 x 5]"
+```
+
+```js
+function Square(size) {
+  this.length = size;
+  this.width = size;
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+};
+
+let sqr = new Square(5);
+sqr.getArea();     // => 25
+sqr.toString();    // => "[Square 5 x 5]"
+```
+
+##### Restoring the `constructor` property
+
+- One side-effect of this approach is that the `constructor` property on square objects points to `Rectangle` when it should point to `Square` instead, so we need to reassign the `constructor` property to the subtype.
+
+```js
+function Square(size) {
+  this.length = size;
+  this.width = size;
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+Square.prototype.constructor = Square;
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+}
+
+let sqr = new Square(5);
+sqr.getArea();              // => 25
+sqr.toString();             // => "[Square 5 x 5]"
+sqr.constructor === Square; // => true
+```
+
+##### Constructor Reuse
+
+- Using the super-type constructor inside subtype
+- Example: invoke `Rectangle` with its execution context explicitly set to the execution context of `Square`. 
+
+```js
+function Square(size) {
+  Rectangle.call(this, size, size);
+}
+```
+
+Code now looks like this. 
+
+```js
+function Rectangle(length, width) {
+  this.length = length;
+  this.width = width;
+}
+
+Rectangle.prototype.getArea = function() {
+  return this.length * this.width;
+};
+
+Rectangle.prototype.toString = function() {
+  return `[Rectangle ${this.length} x ${this.width}]`;
+};
+
+// rect test code omitted
+
+function Square(size) {
+  Rectangle.call(this, size, size);
+}
+
+Square.prototype = Object.create(Rectangle.prototype);
+Square.prototype.constructor = Square;
+
+Square.prototype.toString = function() {
+  return `[Square ${this.length} x ${this.width}]`;
+};
+
+// sqr test code omitted
+```
+
+### ES6 Classes (4)
+
+##### Definition
+
+- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
+
+  ```js
+  typeof Class // function
+  ```
+
+- Naming convention: use **PascalCase** for constructor functions and classes. 
+
+- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
+
+- classes act like **syntactic sugar** -- syntax designed to be easier to read or use. 
+
+  - In essence, they provide little more than a more natural and possibly familiar way to create constructors and prototypes.
+  - Cleaner, more compact alternative to constructors and prototypes.
+  - Similar to functions that they are first-class citizens and come in in the form of declarations and expressions. 
+  - Behave similar to constructors and prototypes.
+  - Classes allow for static methods by using the `static` modifier. 
+
 ##### Class Declarations
 
 - Class declarations begin with the `class` keyword, followed by the name of the class. The rest of the syntax looks similar to the simplified (concise) method definition that you can use in object literals.
   - Constructor method is invoked when the class is invoked.
   - Class names are capitalized. Use **PascalCase**. 
-  
+
 - Remember that : you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
 
 ```js
@@ -3089,7 +3620,7 @@ let Rectangle = class {
 
 - Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
   - This means <u>class expressions are hoisted</u>, unlike function expressions.
-  - However even though class expressions & class declarations are hoisted,  their values aren't initialized, so classes need to be defined before they are constructed. 
+  - **<u>However</u>** even though class expressions & class declarations are hoisted,  their values aren't initialized, so classes need to be defined before they are constructed. 
 
 ##### Classes as First-Class Citizens
 
@@ -3242,431 +3773,6 @@ Rectangle.description = 'A rectangle is a shape with 4 sides';
 
 Yes, that code is identical to what we would write if we were using the constructor/prototype pattern.
 
-------
-
-## Object Creation Patterns
-
-- object literals, object factories, constructors and prototypes (the pseudo-classical approach), the OLOO pattern (prototypal inheritance), and ES6 classes.
-
-Compare and Contrast
-
-| Object creation patterns                                    | Advantages                                                   | Disadvantages      |
-| ----------------------------------------------------------- | ------------------------------------------------------------ | ------------------ |
-| Object literals                                             | simple                                                       |                    |
-| Factory Function                                            | create objects with private state                            | memory inefficient |
-| constructors and prototypes (the pseudo-classical approach) | Like prototypal inheritance, uses prototypal delegation under the hood. |                    |
-| OLOO pattern (prototypal inheritance)                       | simpler, work with one object at time.                       |                    |
-| ES6 classes                                                 | JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. |                    |
-
-### Object Literals
-
-### Factory functions 
-
-Object Factory
-
-- Definition:  A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. 
-
-  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to automate the creation related objects based on a predefined template. 
-  - are functions that create and return objects of a particular type. 
-    - **Type** means an object with a particular set of methods and properties. 
-  - Each invocation of the factory function specifies the differences between the objects with arguments. 
-
-- Advantages of factory function
-
-  - Create multiple objects of same "type" with a predefined "template". 
-  - Lets you automate the creation of objects. 
-  - Reuses code. 
-  - Create objects with private state. 
-    - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
-
-- Disadvantage of object factory
-
-  - Wastes memory: Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
-  - Can't identify which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
-    - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
-    - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
-
-- Code example:
-
-  ```js
-  function createPet(animal, name) {
-    return {
-      animal: animal, 
-      name: name, 
-      
-      sleep() {
-        console.log('I am sleeping');
-      }, 
-        
-      wake() {
-        console.log('I am awake');
-      },
-    };
-  }
-  ```
-
-- Incorrect syntax to define property in factory function object
-
-  ```js
-  // All of these cause syntax error when trying to define the properties in the object. 
-  
-  function createPet(animal, name) {
-    return {
-    	this.animal = animal, //  'this' can only be used inside a function or method, to refer to the object that contains the method.
-      this.name : name, // incorrect syntax
-      
-      sleep() {
-        console.log('I am sleeping');
-      }, 
-        
-      wake() {
-        console.log('I am awake');
-      }
-    };
-  }
-  
-  let cat = {
-    this.name: "Butterscotch", // 'this' can only be used inside a function or method, to refer to the object that contains the method.
-    this.age: 13,
-  };
-  
-  let cat = {
-    name = "Butterscotch", // incorrect syntax to define property in an object.
-    age = 13
-  };
-  ```
-
-### OLOO (prototypal inheritance)
-
-[reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
-
-Definitions
-
-- Summary :  Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
-
-  - Shared properties are defined on a parent object. Other objects can then be created from this parent object using `Object.create(obj)` .
-  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties.
-
-- Details:
-
-  - OLOO uses prototypes and extracts the properties common to all objects of the same type (e.g., car objects) to a prototype object. All objects of the same type then inherit from that prototype.
-  - Does not use a function. It uses an object as the prototype, then `Object.create` to create new objects that inherit from the prototype. It uses a `init` method to customize the state of each object. `init` returns `this`, a reference to the calling object. 
-
-- Create new objects using that object prototype with this code
-
-  ```js
-  let newObj = Object.create(obj).init(state)
-  ```
-
-- Compare the two creation patterns
-
-  ```js
-  // OLOO
-  let newObj = Object.create(obj).init();
-  
-  // pseudo-classical(constructor inheritance)
-  let newObj = new Obj(); // newObj is an instance of Obj
-  ```
-
-Example
-
-- Let's do that with car objects. What properties are common to all car objects? Here, those properties are the `start` and `stop` methods. All cars have `make`, `model`, `year`, and `started` properties as well, but each object has different values for those properties. Thus, we don't count them as being common to all cars.
-  - We can extract the `start` and `stop` methods to a prototype object.
-
-```js
-let carPrototype = {
-  start: function() {
-    this.started = true;
-  },
-
-  stop: function() {
-    this.started = false;
-  },
-};
-```
-
-- Now that we have a car prototype object, all car objects can inherit from it:
-
-```js
-let car1 = Object.create(carPrototype);
-car1.make = 'Toyota';
-car1.model = 'Corolla';
-car1.year = 2016;
-```
-
-- We can now call `start` and `stop` on the `car1` object since both are accessible through its prototype, `carPrototype`.
-
-```js
-car1.start();
-car1.started; // => true
-
-car1.stop();
-car1.started; // => false
-```
-
-- Calling `start` and `stop` on the `car1` object changes the state of `car1` even though those methods don't belong to `car1`. That shouldn't come as a surprise since we're using `car1` as the execution context for the calls. When we call these methods, `this` is set to `car1`, so the methods change the `started` property in `car1`.
-
-- That's all well and good. We've set up a car prototype that all our car objects can inherit.
-
-- However, we still have a small problem: we must set the `make`, `model`, and `year` properties manually every time we create a car object. Can we automate that? Fortunately, yes; there's more than one way. The most common technique uses an `init` method on the prototype object:
-
-##### Init 
-
-- The initializer method customizes the state for each object. 
-  - `init` is a function that initializes values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
-    - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
-  - Similar to the constructor method in classes
-
-
-```js
-let carPrototype = { // is an object, not a function. 
-  start: function() {
-    this.started = true;
-  },
-
-  stop: function() {
-    this.started = false;
-  },
-
-  init(make, model, year) { // customzies state of object, the state is the new object's 'own' properties.
-    this.make = make;
-    this.model = model;
-    this.year = year;
-    return this; // remember to return a reference to the calling object
-  },
-};
-```
-
-- Since `init` now returns a reference to the car object it was called on, we can chain `create` and `init` and assign the result to the `car1` variable:
-
-  ```js
-  let car1 = Object.create(carPrototype).init('Toyota', 'Corolla', 2016);
-  ```
-
-##### Advantage of OLOO over Factory Function
-
-- You can use both factory functions and the OLOO pattern to bulk create objects of the same type. 
-- OLOO pattern has one significant advantage over factory functions: memory efficiency. 
-  - Since all objects created with the OLOO pattern inherit methods from a single prototype object, the objects that inherit from that prototype object share the same methods. 
-  - Factory functions, on the other hand, create copies of all the methods for each new object. That can have a significant performance impact, especially on smaller devices with limited memory.
-
-- An advantage of the factory pattern is that it lets us create objects with private state. 
-  - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
-
-##### Subtyping with OLOO
-
-- see oloo21.js
-
-```js
-let SuperType = {
-  initialize(variable) {
-    this.variable = variable;
-    return this;
-  }
-}
-
-let SubType = Object.create(superType);
-
-SubType.init = function() {
-  return this.initialize(variable); // use different initializer method names to prevent infinite loop here
-  // variable is usualy a set property of the subType. 
-}
-
-// creating a subType object
-// code essentially does what super() does in class syntax
-let subTypeObj = Object.create(SubType).init(variable);
-```
-
-### Constructors and Prototypes (**Pseudo-classical** object creation pattern) 
-
-- Definition: generates objects using a constructor function that defines state and a prototype object that defines shared behaviors.
-  - If the function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's `prototype` property
-  - This lets us set properties on the constructor's prototype object so that all objects created by the constructor will share them. 
-  - New objects are created from constructor functions using the keyword `new` .
-  - Calling `new` on a function creates a new object. The code within the function executes with the execution context (`this`) set to the new object. The newly created object’s `__proto__` property is set to point at the object referenced by the functions `prototype` property. The newly created object is then implicitly returned.
-  - `obj.constructor` can be used to find out the name of the constructor function that created an object.
-- Inheritance can be emulated by changing where a functions `.prototype` property points to (Just remember to restore where the `.constructor` property points to).
-
-##### **pseudo-classical inheritance**
-
-- We are creating a link without executing code in the parent constructor function. 
-- This lets us inherit only the properties that have been defined on the parent constructor function's `prototype` object, not instance methods or properties on the parent constructor. 
-
-- Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then restore the `constructor` property of the **sub-type**'s prototype object back to the **sub-type** function. 
-  - This must be done before you add new methods to the `subtype.prototype` 
-
-```js
-SubType.prototype = Object.create(SuperType.prototype);
-SubType.prototype.constructor = SubType; // restoring constructor property
-```
-
-- Use `call` to use the super-type constructor inside subtype. 
-
-```js
-function SubType(parameter1) {
-  SuperType.call(this, parameter1, parameter2);
-}
-```
-
-Example
-
-- `Square` is a kind of rectangle where the length and width are the same, so `Square` is a **sub-type** of `Rectangle`, and `Rectangle` is a **super-type** of `Square`. 
-
-```js
-function Rectangle(length, width) {
-  this.length = length;
-  this.width = width;
-}
-
-Rectangle.prototype.getArea = function() {
-  return this.length * this.width;
-};
-
-Rectangle.prototype.toString = function() {
-  return `[Rectangle ${this.length} x ${this.width}]`;
-};
-
-let rect = new Rectangle(10, 5);
-rect.getArea();     // => 50
-rect.toString();    // => "[Rectangle 10 x 5]"
-```
-
-```js
-function Square(size) {
-  this.length = size;
-  this.width = size;
-}
-
-Square.prototype = Object.create(Rectangle.prototype);
-
-Square.prototype.toString = function() {
-  return `[Square ${this.length} x ${this.width}]`;
-};
-
-let sqr = new Square(5);
-sqr.getArea();     // => 25
-sqr.toString();    // => "[Square 5 x 5]"
-```
-
-##### Restoring the `constructor` property
-
-- One side-effect of this approach is that the `constructor` property on square objects points to `Rectangle` when it should point to `Square` instead, so we need to reassign the `constructor` property to the subtype.
-
-```js
-function Square(size) {
-  this.length = size;
-  this.width = size;
-}
-
-Square.prototype = Object.create(Rectangle.prototype);
-Square.prototype.constructor = Square;
-
-Square.prototype.toString = function() {
-  return `[Square ${this.length} x ${this.width}]`;
-}
-
-let sqr = new Square(5);
-sqr.getArea();              // => 25
-sqr.toString();             // => "[Square 5 x 5]"
-sqr.constructor === Square; // => true
-```
-
-##### Constructor Reuse
-
-- Using the super-type constructor inside subtype
-- Example: invoke `Rectangle` with its execution context explicitly set to the execution context of `Square`. 
-
-```js
-function Square(size) {
-  Rectangle.call(this, size, size);
-}
-```
-
-Code now looks like this. 
-
-```js
-function Rectangle(length, width) {
-  this.length = length;
-  this.width = width;
-}
-
-Rectangle.prototype.getArea = function() {
-  return this.length * this.width;
-};
-
-Rectangle.prototype.toString = function() {
-  return `[Rectangle ${this.length} x ${this.width}]`;
-};
-
-// rect test code omitted
-
-function Square(size) {
-  Rectangle.call(this, size, size);
-}
-
-Square.prototype = Object.create(Rectangle.prototype);
-Square.prototype.constructor = Square;
-
-Square.prototype.toString = function() {
-  return `[Square ${this.length} x ${this.width}]`;
-};
-
-// sqr test code omitted
-```
-
-### ES6 Classes
-
-- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
-- JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
-
-##### Class Declarations
-
-- Class declarations begin with the `class` keyword, followed by the name of the class. The rest of the syntax looks similar to the simplified (concise) method definition that you can use in object literals.
-  - Constructor method is invoked when the class is invoked.
-  - Class names are capitalized. Use **PascalCase**. 
-
-- Remember that : you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
-
-```js
-class Rectangle {
-  constructor(length, width) { // constructor method 
-    this.length = length;
-    this.width = width;
-  }
-
-  getArea() { // is a prototype method / instance method
-    return this.length * this.width; 
-  }
-}
-
-let rec = new Rectangle(10, 5);
-console.log(typeof Rectangle);         // function
-console.log(rec instanceof Rectangle); // true
-console.log(rec.constructor);          // [class Rectangle]
-console.log(rec.getArea());            // 50
-```
-
-##### Class Expressions
-
-- Functions have an expression form that does not require a name after the `function` keyword. Classes have a similar expression form. 
-
-```js
-let Rectangle = class {
-  constructor(length, width) {
-    this.length = length;
-    this.width = width;
-  }
-
-  getArea() { // prototype method / instance method
-    return this.length * this.width;
-  }
-};
-```
-
-- Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
-  - This means <u>class expressions are hoisted</u>, unlike function expressions.
-  - **<u>However</u>** even though class expressions & class declarations are hoisted,  their values aren't initialized, so classes need to be defined before they are constructed. 
-
 
 ------
 
@@ -3674,7 +3780,7 @@ let Rectangle = class {
 
 - Subtyping is a form of inheritance.
 
-#### Subtyping with constructors and prototypes
+### Subtyping with constructors and prototypes
 
 - **pseudo-classical inheritance**
   - We are creating a link without executing code in the parent constructor function. 
@@ -3801,7 +3907,7 @@ Square.prototype.toString = function() {
 // sqr test code omitted
 ```
 
-#### Subtyping with classes
+### Subtyping with classes
 
 ##### Definition
 
@@ -3988,14 +4094,16 @@ In this example, the `Student` class inherits from the `Person` class. That give
 
 Note that this most recent example uses class expressions instead of class declarations.
 
-#### Subtyping with OLOO
+### Subtyping with OLOO
 
 - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
+- Think of `init` as the `constructor` method. 
+- See Practice.js 
 
 ```js
 let SuperType = {
-  initialize(variable) {
-    this.variable = variable;
+  initialize(property) {
+    this.property = property;
     return this;
   }
 }
@@ -4003,16 +4111,43 @@ let SuperType = {
 let SubType = Object.create(superType);
 
 SubType.init = function() {
-  return this.initialize(variable); // use different initializer method names to prevent infinite loop here
-  // variable is usualy a set property of the subType. 
+  return this.initialize(property); // think of this as super, we are calling on parent method
+  // use different initializer method names to prevent infinite loop here
 }
 
 // creating a subType object
 // code essentially does what super() does in class syntax
-let subTypeObj = Object.create(SubType).init(variable);
+let subTypeObj = Object.create(SubType).init(property);
 ```
 
-#### Compare 3
+- Syntax 2:  If SubType has its own properties to be set
+  - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
+
+```js
+let SuperType = {
+  initialize(property1) {
+    this.property1 = property1;
+    return this;
+  }
+}
+
+let SubType = Object.create(superType);
+
+SubType.init = function(property1, property2) {
+  let copyOfSuperType = this.initialize(property1); 
+  this.property2 = property2;
+  let newObj = Object.assign(copyOfSuperType, this);
+  return newObj;
+}
+
+// creating a subType object
+// code essentially does what super() does in class syntax
+let subTypeObj = Object.create(SubType).init(property1, property2);
+```
+
+
+
+### Compare 3
 
 - Class Syntax
 
@@ -4064,7 +4199,7 @@ let subTypeObj = Object.create(SubType).init(variable);
   Square.prototype.constructor = Square;
   ```
 
-#### Forms of inheritance
+### Forms of inheritance
 
 - Class inheritance, prototypal inheritance, pseudo-classical inheritance, OLOO, etc.
 
@@ -4265,10 +4400,12 @@ will.toString(); // => My name is William and I'm 28 years old.
 #### Mix-ins
 
 - Summary: Mix-ins are a way to share common behaviors between classes. When two more more classes share common behavior, you can move that behavior into a mix-in object. 
+  
+  -  Use mix-ins to enhance a commonality that multiple classes share. 
   - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes. 
   - It addresses the limitation single inheritance: limitation that objects can only have one prototype object - can only directly 'inherit' from one super-type object.
   - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix* that object *into* another object. 
-
+  
 - Syntax 
 
   ```js
@@ -4279,10 +4416,7 @@ will.toString(); // => My name is William and I'm 28 years old.
 
   - JavaScript objects can only inherit from one other object. This limitation makes it difficult to model certain domains using class or constructor-based inheritance. You can use mix-ins to share behavior between otherwise unrelated classes.
 
-  - Is a way to share common behaviors between classes. 
-  - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes.
   - It's the only real workaround for the lack of multiple inheritance short of duplication. 
-  - Addresses the limitation that objects can only have one prototype object
   - pattern that adds methods and properties from one object to another. 
   - It's not  inheritance / delegation with prototypes; the mix-in pattern copies the properties of one object to another with `Object.assign` or some similar technique. 
 
@@ -5155,52 +5289,7 @@ console.log(func.constructor.constructor); // [Function: Function]
 
 ```
 
-
-
 ------
-
-## Describing Code
-
-```js
-let foo = {
-  bar: 42,
-  qux() {
-    console.log("Pudding");
-  },
-};
-
-let baz = Object.create(foo);
-baz.qux()
-```
-
-- On line 9, `baz` object delegates the invocation of `qux` to the `foo` object. 
-
-- `Object.create` creates a new object that inherits properties from an existing object (the prototype object).
-  - `baz` inherits from `foo`. 
-
-```js
-let item = {
-  name: 'Foo',
-  description: 'Fusce consequat dui est, semper.',
-  price: 50,
-  quantity: 100,
-  discount: function(percent) {
-    let discount = this.price * percent / 100;
-    this.price -= discount;
-    
-    return this.price;
-  },
-};
-```
-
-- Problem is that the `discount` method is mutating the `item` object. Objects are mutable and changes made to the property `price` of the `item` object is compounded every time the `discount` method is called. To resolve this, the `discount` method should be modified so it doesn't mutate the original object. Here's one approach:
-
-  ```js
-  function discountItem(item, percent) {
-    let discount = item.price * percent / 100;
-    return item.price - discount;
-  }
-  ```
 
 ------
 
@@ -5217,6 +5306,8 @@ let item = {
 - Use mix-ins to enhance a commonality that multiple classes share 
 
 - Careful to use `.constructor` or `.constructor.name`. 
+
+- **Refering** to an object or function vs is a !!
 
 - Default parameters
 
@@ -5791,6 +5882,243 @@ Before you begin the assessments, you should complete all of the [Object Oriente
    
 
 ------
+
+## Describing Code
+
+### Lesson 2
+
+##### Property and method delegation
+
+```js
+let foo = {
+  bar: 42,
+  qux() {
+    console.log("Pudding");
+  },
+};
+
+let baz = Object.create(foo);
+baz.qux()
+```
+
+- On line 9, `baz` object delegates the invocation of `qux` to the `foo` object. `baz` doesn't have it's own copy of the `qux` method, so JavaScript searches the prototype chain for a `qux` property and finds the property in `foo`. 
+- `Object.create` creates a new object that inherits properties from an existing object (the prototype object).
+  - `baz` inherits from `foo`. 
+
+```js
+let qux = { foo: 1 };
+let baz = Object.create(qux);
+console.log(baz.foo + qux.foo);
+```
+
+- Line line 3, `baz` object delegates the property access of `foo` to the `qux` object.  `baz` doesn't have its "own" copy of the `foo` property, so JavaScript searches the prototype chain for a `foo` property and finds the property in `qux`. 
+
+##### Overriding
+
+```js
+let qux = { foo: 1 };
+let baz = Object.create(qux);
+baz.foo = 2;
+
+console.log(baz.foo + qux.foo);
+```
+
+- On line 5, `baz.foo` returns 2 because on line 3, a property `foo` is created in the `baz` object and assigned the value `2`, which overrides `baz` object's inherited `foo` property from `qux`. Property assignment doesn't use the prototype chain; instead, it creates a new property in the `baz` object named `foo`. `qux.foo` returns 1 because there is a `foo` property in `qux` with that value. This means that `baz.foo` returns the value of its "own" `foo` property and `qux.foo` returns the value of its "own" `foo` property. When added together the result is 3. 
+
+##### Objects hold a reference to their prototype objects
+
+```js
+let qux = { foo: 1 };
+let baz = Object.create(qux);
+qux.foo = 2;
+
+console.log(baz.foo + qux.foo);
+```
+
+- This logs 4 to the console. `baz` inherits from object `qux`.  On line 5, `baz.foo` returns 2. `baz` doesn't have an own property `foo`, so it delegates the property access to `qux`. That means  JavaScript searches the prototype chain for `foo` and finds it on `qux`. On line 3, property `foo` is reassigned to value of 2 in object `qux`. `qux.foo` returns 2 because `qux` has an own `foo` property with value of 2. 
+
+- **<u>Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.</u>** 
+
+```js
+function Ninja() {
+  this.swung = true;
+}
+
+let ninja = new Ninja();
+
+Ninja.prototype.swingSword = function() {
+  return this.swung;
+};
+
+console.log(ninja.swingSword());
+```
+
+- Even though we define the `swingSword` method on the prototype after we create the `ninja`, all objects created by the `Ninja` constructor share the same prototype object. Thus, when we define `swingSword`, it immediately becomes available to the `ninja` object.
+- Objects hold a reference to their prototype objects. `ninja` holds a reference to its prototype object which is referenced by  `Ninja.prototype`. When `swingSword` is defined on that prototype object, it becomes available to the `ninja` object
+
+#####  Execution Contexts
+
+- 'The first log operation is generated by `function` or `method` on line __'
+- Careful to use **refers to** or **references ** object or function rather than "is a". 
+- The return value of `bind` invocation on line __ is the new function which is bound to `obj`. 
+- `bind` returns a function that is permanently bound to the execution context passed to it as argument. Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`.
+-  Since the global object doesn't have properties defined for `firstName`, `lastName`, or `occupation`, the output isn't what we expect.
+
+##### Constructors and Prototypes
+
+What does the following code output and why? 
+
+```js
+function Ninja() {
+  this.swung = true;
+}
+
+let ninja = new Ninja();
+
+Ninja.prototype = {
+  swingSword: function() {
+    return this.swung;
+  },
+};
+
+console.log(ninja.swingSword());
+```
+
+```js
+Uncaught TypeError: ninja.swingSword is not a function
+```
+
+- We reassigned `Ninja.prototype` to an entirely new object instead of mutating the original prototype object. The prototype for the `ninja` object doesn't change; it's still the original prototype defined during the constructor's invocation. Thus, JavaScript can't find the `swingSword` method in the prototype chain of `ninja`. 
+
+------
+
+
+
+```js
+let item = {
+  name: 'Foo',
+  description: 'Fusce consequat dui est, semper.',
+  price: 50,
+  quantity: 100,
+  discount: function(percent) {
+    let discount = this.price * percent / 100;
+    this.price -= discount;
+    
+    return this.price;
+  },
+};
+```
+
+- Problem is that the `discount` method is mutating the `item` object. Objects are mutable and changes made to the property `price` of the `item` object is compounded every time the `discount` method is called. To resolve this, the `discount` method should be modified so it doesn't mutate the original object. Here's one approach:
+
+  ```js
+  function discountItem(item, percent) {
+    let discount = item.price * percent / 100;
+    return item.price - discount;
+  }
+  ```
+
+------
+
+## Problems about prototypes
+
+##### Searching prototype chain
+
+(from practice problems: lesson 2)
+
+Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
+
+```js
+let fooA = { bar: 1 };
+let fooB = Object.create(fooA);
+let fooC = Object.create(fooB);
+
+assignProperty(fooC, "bar", 2);
+console.log(fooA.bar); // 2
+console.log(fooC.bar); // 2
+
+assignProperty(fooC, "qux", 3);
+console.log(fooA.qux); // undefined
+console.log(fooC.qux); // undefined
+console.log(fooA.hasOwnProperty("qux")); // false
+console.log(fooC.hasOwnProperty("qux")); // false
+```
+
+```js
+function assignProperty(obj, property, value) {
+  while (obj !== null) { // loops until obj reaches the null prototype
+    if (obj.hasOwnProperty(property)) { 
+      obj[property] = value;
+      break; // don't need this, loop ends with object is not null.
+    }
+
+    obj = Object.getPrototypeOf(obj); // // if property is not "own property", then search next prototype. 
+  }
+}
+```
+
+##### Prototypal inheritance
+
+(from exercise sets: Object creation patterns)
+
+Implement an `ancestors` method that returns the prototype chain (ancestors) of a calling object as an array of object names. Here's an example output:
+
+```js
+// name property added to make objects easier to identify
+let foo = {name: 'foo'};
+let bar = Object.create(foo);
+bar.name = 'bar';
+let baz = Object.create(bar);
+baz.name = 'baz';
+let qux = Object.create(baz);
+qux.name = 'qux';
+
+qux.ancestors();  // returns ['baz', 'bar', 'foo', 'Object.prototype']
+baz.ancestors();  // returns ['bar', 'foo', 'Object.prototype']
+bar.ancestors();  // returns ['foo', 'Object.prototype']
+foo.ancestors();  // returns ['Object.prototype']
+```
+
+Solution
+
+```js
+// my solution: iterative
+Object.prototype.ancestors = function() {
+  let obj = this;
+  let ancestors = [];
+
+  while (Object.getPrototypeOf(obj)) {
+    let ancestor = Object.getPrototypeOf(obj);
+    if ('name' in ancestor) {
+      ancestors.push(ancestor.name);
+    } else {
+      ancestors.push('Object.prototype');
+    }
+    obj = ancestor;
+  }
+  console.log(ancestors);
+};
+```
+
+##### **Q: How do you create an object that doesn't have a prototype?** 
+
+```js
+let bareObj = Object.create(null);
+```
+
+##### **Q: How can you determine whether an object has a prototype?**
+
+```js
+if (Object.getPrototypeOf(obj)) {
+  // obj has a prototype
+} else {
+  // obj does not have a prototype
+}
+```
+
+#####  **Q: What value does `Object.getPrototypeOf({})` return?**
+
+The default prototype object.
 
 ## Question
 

@@ -1,5 +1,7 @@
 ### My Own
 
+1. 
+
 ```js
 // Create a function that returns the sum of obj.num and a number passed to the function as argument, and then use call() to log that sum as obj.num. 
 let obj = {
@@ -17,6 +19,195 @@ function sum (number) {
 obj.num = sum.call(obj);
 console.log(obj.num);
 ```
+
+2. Practice OLOO. Rewrite this program by using the OLOO pattern.
+
+   Practice.js
+
+```js
+function Person(firstName, lastName, age, gender) {
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.age = age;
+  this.gender = gender;
+}
+
+Person.prototype.fullName = function () {
+  return `${this.firstName} ${this.lastName}`;
+};
+
+Person.prototype.eat = function () {
+  console.log('Eating');
+};
+
+Person.prototype.communicate = function () {
+  console.log('Communicating');
+};
+
+Person.prototype.sleep = function () {
+  console.log('Sleeping');
+};
+
+function Doctor(firstName, lastName, age, gender, specialty) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.specialty = specialty;
+}
+
+Doctor.prototype = Object.create(Person.prototype);
+Doctor.prototype.constructor = Doctor;
+
+Doctor.prototype.diagnose = function () {
+  console.log(`Diagnosing`);
+};
+
+
+function Student(firstName, lastName, age, gender, undergradSubject) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.undergradSubject = undergradSubject;
+}
+
+Student.prototype = Object.create(Person.prototype);
+Student.prototype.constructor = Student;
+
+Student.prototype.study = function () {
+  console.log(`Studying`);
+};
+
+
+function GraduateStudent(firstName, lastName, age, gender, undergradSubject, gradSubject) {
+  Student.call(this, firstName, lastName, age, gender, undergradSubject);
+  this.gradSubject = gradSubject;
+}
+GraduateStudent.prototype = Object.create(Student.prototype);
+GraduateStudent.prototype.constructor = GraduateStudent;
+
+GraduateStudent.prototype.research = function () {
+  console.log(`Researching`);
+};
+
+let person = Person.initialize('foo', 'bar', 21, 'gender');
+person.eat();                              // logs 'Eating'
+person.communicate();                      // logs 'Communicating'
+person.sleep();                            // logs 'Sleeping'
+console.log(person.fullName());            // logs 'foo bar'
+
+let doctor = Doctor.init('foo', 'bar', 21, 'gender', 'Pediatrics');
+
+doctor.eat();                              // logs 'Eating'
+doctor.communicate();                      // logs 'Communicating'
+doctor.sleep();                            // logs 'Sleeping'
+console.log(doctor.fullName());            // logs 'foo bar'
+doctor.diagnose();                         // logs 'Diagnosing'
+
+let graduateStudent = GraduateStudent.init2('foo', 'bar', 21, 'gender', 'BS Industrial Engineering', 'MS Industrial Engineering');
+// logs true for next three statements
+
+graduateStudent.eat();                     // logs 'Eating'
+graduateStudent.communicate();             // logs 'Communicating'
+graduateStudent.sleep();                   // logs 'Sleeping'
+console.log(graduateStudent.fullName());   // logs 'foo bar'
+graduateStudent.study();                   // logs 'Studying'
+graduateStudent.research();                // logs 'Researching'
+```
+
+```js
+/* eslint-disable max-len */
+// solution
+// Practice.j
+let Person =  {
+  initialize(firstName, lastName, age, gender) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+    this.gender = gender;
+    return this;
+  },
+
+  fullName: function() {
+    return `${this.firstName} ${this.lastName}`;
+  },
+
+  eat: function() {
+    console.log('Eating');
+  },
+
+  communicate: function() {
+    console.log('Communicating');
+  },
+
+  sleep: function() {
+    console.log('Sleeping');
+  },
+
+};
+
+
+let Doctor = Object.create(Person);
+Doctor.init = function(firstName, lastName, age, gender, specialty) {
+  let copyOfParent = this.initialize(firstName, lastName, age, gender);
+  this.specialty = specialty;
+  let newObj = Object.assign(copyOfParent, this);
+  return newObj;
+};
+
+Doctor.diagnose = function () {
+  console.log(`Diagnosing`);
+};
+
+let Student = Object.create(Person);
+Student.init = function(firstName, lastName, age, gender, undergradSubject) {
+  let copyofParent = this.initialize(this, firstName, lastName, age, gender);
+  this.undergradSubject = undergradSubject;
+  let newObj = Object.assign(copyofParent, this);
+  return newObj;
+};
+
+
+Student.study = function () {
+  console.log(`Studying`);
+};
+
+
+let GraduateStudent = Object.create(Student);
+GraduateStudent.init2 = function (firstName, lastName, age, gender, undergradSubject, gradSubject) {
+  let copyOfStudent = this.init(firstName, lastName, age, gender, undergradSubject);
+  this.gradSubject = gradSubject;
+  let newObj = Object.assign(copyOfStudent, this);
+  return newObj;
+};
+
+GraduateStudent.research = function () {
+  console.log(`Researching`);
+};
+
+let person = Person.initialize('foo', 'bar', 21, 'gender');
+person.eat();                              // logs 'Eating'
+person.communicate();                      // logs 'Communicating'
+person.sleep();                            // logs 'Sleeping'
+console.log(person.fullName());            // logs 'foo bar'
+
+let doctor = Doctor.init('foo', 'bar', 21, 'gender', 'Pediatrics');
+
+doctor.eat();                              // logs 'Eating'
+doctor.communicate();                      // logs 'Communicating'
+doctor.sleep();                            // logs 'Sleeping'
+console.log(doctor.fullName());            // logs 'foo bar'
+doctor.diagnose();                         // logs 'Diagnosing'
+
+let graduateStudent = GraduateStudent.init2('foo', 'bar', 21, 'gender', 'BS Industrial Engineering', 'MS Industrial Engineering');
+// logs true for next three statements
+
+graduateStudent.eat();                     // logs 'Eating'
+graduateStudent.communicate();             // logs 'Communicating'
+graduateStudent.sleep();                   // logs 'Sleeping'
+console.log(graduateStudent.fullName());   // logs 'foo bar'
+graduateStudent.study();                   // logs 'Studying'
+graduateStudent.research();                // logs 'Researching'
+```
+
+
+
+
 
 ------
 
@@ -168,8 +359,6 @@ Attributes
 
    `qux.foo` returns 1 because `qux` has a `foo` property with that value. `baz` doesn't have its "own" copy of the `foo` property, so JavaScript searches the prototype chain for a `foo` property and finds the property in `qux`. 
 
-   
-
 2. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
 
    ```js
@@ -239,7 +428,7 @@ function assignProperty(obj, property, value) {
   while (obj !== null) { // loops until obj reaches the null prototype
     if (obj.hasOwnProperty(property)) { 
       obj[property] = value;
-      break; // need this to prevent infinite looping
+      break; // don't need this, loop ends with object is not null.
     }
 
     obj = Object.getPrototypeOf(obj); // // if property is not "own property", then search next prototype. 
@@ -515,7 +704,7 @@ if (Object.getPrototypeOf(obj)) {
 
    Their Solution
 
-   Since `bar` is bound to `positivity` as the return value of the `bind` invocation on line 13, `positivity`'s property `message` is logged by the function call on the last line, despite the fact that the function is invoked as a method on the `negativity` object
+   Since `bar` is bound to `positivity` as the return value of the `bind` invocation on line 13, `positivity`'s property `message` is logged by the function call on the last line, despite the fact that the function is invoked as a method on the `negativity` object. 
 
 5. What will the code below output?
 
@@ -1024,10 +1213,6 @@ if (Object.getPrototypeOf(obj)) {
 
 ------
 
-1. 
-
-------
-
 #### Constructors
 
 [reference](https://launchschool.com/lessons/e3c64e3f/assignments/5ca112a7)
@@ -1117,6 +1302,7 @@ if (Object.getPrototypeOf(obj)) {
    Solution
 
    ```js
+   // using call
    let RECTANGLE = {
      area: function() {
        return this.width * this.height; // this refers to RECTANGLE
@@ -1138,6 +1324,34 @@ if (Object.getPrototypeOf(obj)) {
    console.log(rect1.area);
    console.log(rect1.perimeter);
    ```
+
+   ```js
+   // using mixin
+   let RECTANGLE = {
+     area: function() {
+       return this.width * this.height;
+     },
+     perimeter: function() {
+       return 2 * (this.width + this.height);
+     },
+   };
+   
+   function Rectangle(width, height) {
+     this.width = width;
+     this.height = height;
+     this.area = this.area();
+     this.perimeter = this.perimeter();
+   }
+   
+   Object.assign(Rectangle.prototype, RECTANGLE);
+   let rect1 = new Rectangle(2, 3);
+   
+   
+   console.log(rect1.area); // 6
+   console.log(rect1.perimeter); // 10
+   ```
+
+   
 
 3. Write a constructor function called `Circle` that takes a radius as an argument. You should be able to call an `area` method on any objects created by the constructor to get the [circle's area](https://www.mathsisfun.com/geometry/circle-area.html). Test your implementation with the following code:
 
@@ -1318,9 +1532,9 @@ if (Object.getPrototypeOf(obj)) {
    Hint
 
    In the constructor function, check the value of `this` to see whether it is an instance created by the constructor function. If it is, then the function was called with the `new` operator; otherwise, the function was called without `new`. You can use this in your code; if you determine that `new` wasn't used, then you can have the constructor call itself with the `new` keyword and use its return value.
-   
+
    Solution
-   
+
    ```js
    function User(first, last) {
      if (!(this instanceof User)) {
@@ -1331,7 +1545,7 @@ if (Object.getPrototypeOf(obj)) {
      
    }
    ```
-   
+
 
 ------
 

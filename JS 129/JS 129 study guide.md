@@ -153,7 +153,9 @@ function cat() {
 
 ##### Collaborator Objects
 
-- Objects that help provide state within another object are called **collaborator objects**. Objects **collaborate** with other objects by using them as part of their state. 
+- Objects that help provide state within another object are called **collaborator objects**. 
+
+- Objects **collaborate** with other objects by using them as part of their state. 
 
   - We say that two objects have a collaborator relationship if one of them is part of the state of the other.
   - Collaborator objects represent the connections between various actors in your program.
