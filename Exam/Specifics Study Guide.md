@@ -3,6 +3,31 @@
 - Pi is `Math.PI` 
 - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
 - Javascript can't find __ in the prototype chain of ___ 
+- **Variable**:
+  - Variables declared with `let`, `const`
+  - Function parameters
+  - Function names
+  - Class names
+  - object property names **are not** variables.
+- `[[Prototype]]` not `[[prototype]]`
+
+## Precision of Language
+
+```js
+class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    console.log(`Woof! My name is ${this.name}.`)
+  }
+}
+```
+
+This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
+
+------
 
 ## Lesson 1 Stuff
 
@@ -733,6 +758,8 @@ Object.getPrototypeOf(baz) // foo
 
 #### Static 
 
+- static keyword defines static properties and methods. 
+
 - Must use constructor name to invoke static properties and methods. 
 
 - invoking static methods on an instance of a class results in a `TypeError`. 
@@ -910,8 +937,25 @@ Object.getPrototypeOf(baz) // foo
 Definition
 
 - The value of `this` is the current execution context (an object) of a function or method that is running. 
+
 - The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
-- When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object.
+
+- When **strict mode** is enabled,  implicit `this` is assigned to `undefined` instead of the global object.
+
+  - CoderPad runs JavaScript code in *strict mode*. The implicit execution context is `undefined`, **not** the global object. 
+
+  - If you wish to practice on your own system instead of on CoderPad, add `"use strict";` to the top of your JavaScript code:
+
+    ```js
+    "use strict"; // the quotes are required
+    
+    function foo() {
+      console.log(this);
+    }
+    
+    foo(); // undefined
+    ```
+
 - `this` is not a variable. It is a keyword.
 
 Implications
@@ -1445,6 +1489,8 @@ obj.foo();
 ------
 
 ## `call`, `apply`, and `bind` 2
+
+- In practice, you use the `call`, `apply`, and `bind` methods to set an explicit execution context. You can also set the execution context explicitly with functions that accept an argument that specifies the context for a callback function. For instance, `Array.prototype.forEach` (and several other `Array.prototype` methods) take a `thisArg` argument that lets you set the context for the callback explicitly.
 
 #### `call`
 
@@ -2180,6 +2226,51 @@ Uses
 
 - One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
 
+  - Example:  Humans have a name and age and they can also walk and talk. Using factory functions, write the code needed so that human objects can reuse the `walk` and `talk` methods that humanoids use. Both humanoids and humans should get the methods from the same source. 
+
+  ```js
+  function robots(intelligence, modelNumber, canSolveProblems) {
+    return {
+      intelligence: intelligence,
+      modelNumber: modelNumber,
+      canSolveProblems: canSolveProblems,
+    };
+  }
+  
+  let mixIn = {
+    walk() {
+      console.log('walk');
+    },
+    
+    talk() {
+      console.log('talk');
+    },
+  };
+  
+  function humanoids(intelligence, modelNumber, canSolveProblems) {
+    let robot = robots(intelligence, modelNumber, canSolveProblems);
+    let obj = {};
+    Object.assign(obj, robot, mixIn);
+    return obj;
+  }
+  
+  function humans(name, age) {
+    let obj = {};
+  	Object.assign(obj, mixIn)
+    
+    obj.name = name;
+    obj.age = age;
+  
+    return obj;
+  }
+  
+  console.log(humans('emily', 21)); // example humans object
+  ```
+
+  
+
+  
+
 - Can shorten arguments in a constructor by merging object argument with the instance object. 
 
   ```js
@@ -2550,21 +2641,36 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### The Prototype Chain (what is it, what is it used for)
 
+
+
 - ##### What is prototype chain (summary)
 
-  - The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
+  - The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. The object referenced by `Object.prototype` is at the top of all JavaScript prototype chains.
   - The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
   - If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain. 
-    - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+    - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[Prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches the default prototype object referenced by `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+    
+    - ```js
+      let a = {
+        prop1: 1,
+      }
+      
+      let b = Object.create(a);
+      b.prop2 = 2;
+      
+      console.log(b.prop1); // 1
+      ```
+    
+    - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
   - The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
-
+  
   ##### What it's used for. 
 
   - The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
   - **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
-
+  
   ##### Property Access
-
+  
   - When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
   - If we try to access a property on an object and it's not a property directly owned by that object, the next port of call is the object pointed to by the __proto__ property. 
     - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype(the object pointed to by the internal `[[prototype]]` or dunder proto property) then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
@@ -2572,21 +2678,23 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
     - A downstream object overrides an inherited property if it has a property with the same name. 
     - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
   - What happens when you set a property to a different value? 
-
+  
     - Property assignment creates a new "own " property in the object.
       - It assumes that the property belongs to the object named to the left of the property name. 
       - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
-
+  
   ##### Usefulness
-
+  
   - This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
   - Looking up a property in the prototype chain is the basis for prototypal inheritance. 
-
+  
   ##### Implications
-
+  
   - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
 
 ------
+
+##### Prototype Chain
 
 https://dev.to/aman_singh/an-easy-explanation-to-prototypal-delegation-in-javascript-3ok2
 
@@ -2668,6 +2776,10 @@ console.log(c.foo); // => 2;
 
 // A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
 ```
+
+##### Property Assignment
+
+- Property assignment creates an 'own' property on an object even if the prototype chain already has a property with the same name. 
 
 What happens when you set a property to a different value? 
 
@@ -2973,6 +3085,7 @@ Object Factory
   - are functions that create and return objects of a particular type. 
     - **Type** means an object with a particular set of methods and properties. 
   - Each invocation of the factory function specifies the differences between the objects with arguments. 
+  - One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
 
 - Advantages of factory function
 
@@ -2989,7 +3102,7 @@ Object Factory
     - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
     - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
 
-- Code example:
+- Code examples:
 
   ```js
   function createPet(animal, name) {
@@ -3006,6 +3119,48 @@ Object Factory
       },
     };
   }
+  ```
+
+- Reusing another factory function using `Object.assign`, and also a mix-in object
+
+  ```js
+  
+  function robots(intelligence, modelNumber, canSolveProblems) {
+    return {
+      intelligence: intelligence,
+      modelNumber: modelNumber,
+      canSolveProblems: canSolveProblems,
+    };
+  }
+  
+  let mixIn = {
+    walk() {
+      console.log('walk');
+    },
+    
+    talk() {
+      console.log('talk');
+    },
+  };
+  
+  function humanoids(intelligence, modelNumber, canSolveProblems) {
+    let robot = robots(intelligence, modelNumber, canSolveProblems);
+    let obj = {};
+    Object.assign(obj, robot, mixIn); 
+    return obj;
+  }
+  
+  function humans(name, age) {
+    let obj = {};
+  	Object.assign(obj, mixIn)
+    
+    obj.name = name;
+    obj.age = age;
+  
+    return obj;
+  }
+  
+  console.log(humans('emily', 21)); // example humans object
   ```
 
 ### OLOO (prototypal inheritance)
@@ -3346,9 +3501,9 @@ let subTypeObj = Object.create(SubType).init(property1, property2);
 
   - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
 
-  - Referenced by  dunder proto `__proto__` or hidden `[[prototype]]` property
+  - Referenced by  dunder proto `__proto__` or hidden `[[Prototype]]` property
 
-  - An **object's prototype**  is what an inheriting object's `[[prototype]]` or `__prototype__` property references. 
+  - An **object's prototype**  is what an inheriting object's `[[Prototype]]` or `__prototype__` property references. 
     - It is the object that the current object inherits from. 
     - If `bar` is an object, then the object from which `bar` inherits is the **object prototype**. 
     - By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
@@ -3538,6 +3693,26 @@ Square.prototype.toString = function() {
   - Behave similar to constructors and prototypes.
   - Classes allow for static methods by using the `static` modifier. 
 
+##### Precision of Language
+
+```js
+class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    console.log(`Woof! My name is ${this.name}.`)
+  }
+}
+```
+
+This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
+
+##### Constructor Method
+
+- The constructor method initializes a new `Constructor` object by assigning the instance property `this.__` to the argument. 
+
 ##### Class Declarations
 
 - Class declarations begin with the `class` keyword, followed by the name of the class. The rest of the syntax looks similar to the simplified (concise) method definition that you can use in object literals.
@@ -3616,6 +3791,7 @@ let Rectangle = class {
     return this.length * this.width;
   }
 };
+// This code defines a `Rectangle` class with two methods. The `constructor` method initializes a new `Rectangle` object by assigning `this.length` to the argument `length` and `this.width` to the argument `width`. The instance method `getArea()` returns the product of instance properties`this.length` and `this.width`.  
 ```
 
 - Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
@@ -5659,7 +5835,7 @@ console.log(func.constructor.constructor); // [Function: Function]
 
     
 
-------
+
 
 ## Exercise Sets
 
