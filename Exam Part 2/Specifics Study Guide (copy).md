@@ -29,13 +29,15 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
 
 ------
 
-# Lesson 1 
+## Lesson 1 Stuff
 
 #### OOP
 
-- **OOP** (object oriented programming) is a programming **paradigm** in which we think about a problem in terms of objects,  by using objects to organize a program. 
-  -  Strive to understand the core concepts of OO before focusing on finding optimal designs. In this course, the core concepts are far more crucial; learning how to find optimal designs and architectures may take years.
-  -  Choosing an approach for an OO problem always comes down to making tradeoffs.
+- OPP (object oriented programming) is a programming **paradigm** in which we think about a problem in terms of objects,  by using objects to organize a program. 
+
+- The idea is to model a program based on how objects in the real world interact. A real world object has **state** and **behavior**. State is properties related to the object, and Behavior is what that object can do in a verb sense.  
+- The way we think about a program changes from a *series of steps* to a *collection of objects* that interact with each other.
+- Choosing an approach for an OO problem always comes down to making tradeoffs.
 
 ------
 
@@ -67,133 +69,33 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
 
 ------
 
-#### Compact Method Syntax
+#### Collaborator objects - 1
 
-- Using functions as object values (methods) is so common that there's short hand syntax called compact syntax for it. 
-
-```js
-let raceCar = {
-  make: 'BMW',
-  fuelLevel: 0.5,
-  engineOn: false,
-
-  startEngine() {
-    raceCar.engineOn = true;
-  },
-
-  drive() {
-    raceCar.fuelLevel -= 0.1;
-  },
-
-  stopEngine() {
-    raceCar.engineOn = false;
-  },
-
-  refuel(percent) {
-    if ((raceCar.fuelLevel + (percent / 100)) <= 1) {
-      raceCar.fuelLevel += (percent / 100);
-    } else {
-      raceCar.fuelLevel = 1;
-    }
-  },
-};
-```
-
-- ------
-
- #### Methods
-
-- **Methods**  are object properties that have function values. 
-- You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
-
-
-```js
-const cat = {
-  name() { // property key is name, and value is the function. 
-    return "Butterscotch";
-  },
-
-  age() {
-    return 13;
-  },
-};
-```
-
-- **behavior** (method) change the **state** of an object. 
-  - **State** means data in an object. 
-
-------
-
-#### this
-
-- when you use **this** <u>inside a method</u>, it refers to the <u>object that contains the method.</u> 
-
-  - Typically 'this' is used inside a method, to refer to the object that contains the method. If outside a function, `this` refers to the global object. 
-  - You can access properties and methods of an object from within a method using `this` keyword. 
-
-
-```js
-let raceCar = {
-  make: 'BMW',
-  fuelLevel: 0.5,
-  engineOn: false,
-
-  startEngine() {
-    this.engineOn = true; // this refers to raceCar
-  },
-
-  drive() {
-    this.fuelLevel -= 0.1;
-  },
-
-  stopEngine() {
-    this.engineOn = false;
-  },
-
-  refuel(percent) {
-    if ((this.fuelLevel + (percent / 100)) <= 1) {
-      this.fuelLevel += (percent / 100);
-    } else {
-      this.fuelLevel = 1;
-    }
-  },
-};
-```
-
-```js
-// both of these cause syntax error when trying to define the properties in the object. 
-
-let cat = {
-  this.name: "Butterscotch", // 'this' can only be used inside a function or method, to refer to the object that contains the method.
-  this.age: 13,
-};
-
-let cat = {
-  name = "Butterscotch", // incorrect syntax to define property in an object.
-  age = 13
-};
-```
-
-```js
-// however this works
-function cat() {
-  this.name = 'Butterscotch';
-  this.age = 13;
-}
-```
-
-------
-
-#### Collaborator Objects
-
-- Objects that help provide state within another object are called **collaborator objects**. 
-
-- Objects **collaborate** with other objects by using them as part of their state. 
+- **Collaborator Objects**: objects that help provide state in another object. 
 
   - We say that two objects have a collaborator relationship if one of them is part of the state of the other.
   - Collaborator objects represent the connections between various actors in your program.
   - Collaborator objects let you chop up and modularize the problem domain into cohesive pieces. 
 
+  ```js
+  let cat = {};
+  
+  let dog = {};
+  
+  let pets = {
+    animals: [];
+  }
+  
+  pets.animals.push(cat, dog); // Note: cat and dog are added as elements into pets.animals
+  
+  
+  // cat and dog are collaborator objects of the pets object. That means they help provide state in the `animals` property of `pets`.
+  
+  // Note: cat and dog must be defined before they are used in pets.
+  ```
+  
+  
+  
   ```js
   // cat is collaborator object of pets. 
   let cat = {
@@ -212,696 +114,322 @@ function cat() {
       console.log(`My cat makes this noise: ${this.cat}`);
     },
   };
-  
-  pets.printInfo();
   ```
-
-  ```js
-  let cat = {
-    name: 'Fluffy',
-  
-    makeNoise() {
-      console.log('Meow! Meow!');
-    },
-  
-    eat() {
-      // implementation
-    },
-  };
-  
-  let pete = {
-    name: 'Pete',
-    pet: cat,
-  
-    printName() {
-      console.log(`My name is ${this.name}!`);
-      console.log(`My pet's name is ${this.pet.name}`); // can access collaborator object (cat) properties
-    },
-  };
-  ```
-
 
 ------
 
-#### Factory Functions (object factory)
+#### Compact Method Syntax
 
-- **Object factories **are functions that create and return objects of a particular type.
-  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to create related objects based on a predefined template. 
-  - **Type** means an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
-  - Each invocation of the factory function specifies the differences between the objects with arguments. 
+- Using functions as object values (methods) is so common that there's short hand syntax called compact syntax for it. 
+- You can omit the `:` and the `function` keyword and use parenthesis to denote a method. There is a subtle difference between these two syntaxes, however. We'll cover that later when we talk about prototypes. ?? 
 
-  - Lets you automate the creation of objects. 
-
-    - It reuses code. 
-- One **object factory** can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
-
-```js
-let raceCar = {
-  make: 'BMW',
-  fuelLevel: 0.5,
-  engineOn: false,
-
-  startEngine() {
-    this.engineOn = true;
-  },
-
-  drive() {
-    this.fuelLevel -= 0.1;
-  },
-
-  stopEngine() {
-    this.engineOn = false;
-  },
-
-  refuel(percent) {
-    if ((this.fuelLevel + (percent / 100)) <= 1) {
-      this.fuelLevel += (percent / 100);
-    } else {
-      this.fuelLevel = 1;
-    }
+```JS
+let obj = {
+  prop: function () { 
+    
+  }, 
+  
+  property() {
+    
   },
 };
 ```
 
-```terminal
-#  implement createCar on your own, then use it to create a new race car with the following details:
-Make: Jaguar
-Fuel Level: 0.4
-Engine Status: off
-```
+- ------
+
+ #### Methods
+
+- **Methods**  are object properties that have function values. 
+- You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
 
 ```js
-function createCar(make, fuelLevel, engineOn) {
-  // To be implemented by you.
-  return {
-    make: 'Jaguar',
-    fuelLevel: 0.4,
-    engineOn: false,
-
-    startEngine() {
-      this.engineOn = true;
-    },
-
-    drive() {
-      this.fuelLevel -= 0.1;
-    },
-
-    stopEngine() {
-      this.engineOn = false;
-    },
-
-    refuel(percent) {
-      if ((this.fuelLevel + (percent / 100)) <= 1) {
-        this.fuelLevel += (percent / 100);
-      } else {
-        this.fuelLevel = 1;
-      }
-    },
-  };
-}
-
-let raceCar1 = createCar('Jaguar', 0.4, false);
-raceCar1.drive();
+let obj = {
+  prop () { // property name is `prop`, the value is an anonymous function. 
+    
+  }
+};
 ```
 
-------
+- **behavior** (method) change the **state** of an object. 
+  - **State** means data in an object. 
 
-#### When solving a problem - Steps to planning an object-oriented application
+## Functions Definitions
 
-1. Write a textual description of the problem or exercise. 
-2. Extract the **significant** nouns and verbs from the description. 
-3. Organize and associate the verbs with the nouns. 
+#### 3 ways to define a function (review + new)
 
-- nouns : are the types of objects
-- Verbs: are the methods, which alter state of the objects. 
+1. **Function declaration**: Function definitions that begin with `function` keyword.
 
-------
+   - Function definition that starts with word `function` at beginning of statement. 
 
-#### Tips
+   - Function declaration binds a function to an **identifier**(variable name), declares the existence of the function. 
 
-- You don't want a factory function to create an object whose behavior relies on the object's property. You don't want to use if / else conditionals to create objects of different kinds. 
-  - For now, we are using separate factory functions to deal with this issue.
-  - **Class Inheritance**: child types inherit common properties and methods from parent type. 
-    - handles this problem, but we talk about this later. 
+   - Function declarations can't be anonymous.
+   - Function declarations are **hoisted**: can be called before function is defined. 
 
-- Good practice to initialize object properties explicitly. It makes it easy to see what the initial state of the object looks like at a glance. It also shows the state of all properties in one place. 
-- Sub-types (objects) often share multiple properties and methods. JS provides some constructs that help extract such duplications to once place. We will learn about this later when we talk about constructors, prototypes, and classes. 
-  -  For now, lets move common properties to a separate factory function. This function returns an object with the property. 
-  -  Then use `Object.assign` to merge the two objects. 
+   ```js
+   functionName(); // can invoke function before function is defined.   
+   
+   function functionName() { // function defined here, functionName is a variable & identifier
+     ...
+   }
+   ```
 
-------
+2. **Function expression**: function definitions that are part of an expression. 
 
-#### Principles
+   - Function expressions are <u>not</u> **hoisted** : can't use function expressions before you define them. 
 
-- Extract duplicated code to a single place. It makes changes to the code less error-prone and tedious. In the long run, it often leads to less work.
+   - Any function definition that doesn't have the word `function` at the **<u>beginning</u>** of a statement is a function expression. 
 
-------
+     ```js
+     let functionName = function () { // Anonymous function expression
+       ...
+     }; // note the semi colon here! It's an expression so it needs semicolon. 
+     ```
 
-#### Other vocab
+     ```js
+     let functionName = (parameter) => { // arrow functions are always anonymous function expressions
+       
+     };
+     ```
 
-**interface of an object**: the state and behaviors exposed by the object for other objects to use. 
+   - Wrapping what looks like a function declaration in parentheses creates a function expression
 
-- Encapsulation has a broader purpose in most OOP languages. It also refers to restricting access to the state and certain behaviors. An object only exposes the data and behaviors that other parts of the application need to work. 
-  - Objects expose a **public interface** for interacting with other objects and keep their implementation details hidden. Thus, other objects can't change the data of an object without going through the proper interface. Unfortunately, JS doesn't support access restrictions. 
+     ```js
+     // Function expression, not declaration
+     (function greetPeople() {
+       console.log("Good Morning!");
+     }); 
+     // this code is actually throws an error: expected function call but instead saw an expression. 
+     ```
 
-------
+     ```js
+     function makeGreeter(name) {
+       return function greeter() {
+         console.log(`Hello ${name}`); 
+       }
+     }
+     // Greeter is a function expression because it starts with return. 
+     ```
 
-#### Lesson 1 Summary
+   - Function expressions are usually anonymous. Such as callback functions for array methods like `forEach` and `map`. 
 
-In this lesson, we learned about some foundational concepts of Object Oriented programming and how we can apply those in JavaScript.
+     ```js
+     let squaredNums = [1, 2, 3].map(function(num) {
+       return num * num;
+     }); // => [1, 4, 9]
+     ```
 
-Here's a summary of what we learned in this lesson. Make sure you're fully comfortable with these concepts before moving forward.
+   - Function expressions **<u>don't</u>** have to be anonymous: You can name a function expression. 
 
-- **Encapsulation** is the idea of bundling data and operations related to that data in a cohesive unit called an object. In OOP, encapsulation also refers to the idea of restricting access to state and some behavior, but JavaScript objects don't support that type of encapsulation.
-- The simplest way to create a JavaScript object is to use the object literal syntax: a pair of opening and closing curly braces. Adding methods to an objects is as simple as adding a function as the value of a property.
-- You can access the properties and methods of an object from within a method using the `this` keyword.
-- Objects **collaborate** with other objects by using them as part of their state. We say that two objects have a collaborator relationship if one of them is part of the state of the other.
-- One way to automate the creation of objects is to use the **factory function** pattern. A factory function returns an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments.
-- One object factory can reuse another object factory by mixing the object returned by another factory function into itself by using `Object.assign`.
+     - `Function` keyword can be used to define a function inside an expression. 
 
-------
+       ```js
+       let squaredNums = [1, 2, 3].map(function squareNum(num) { // call back functions don't have to be anonymous
+         return num * num;
+       }); // => [1, 4, 9]
+       ```
 
-#### Practice Problems: Objects and Factories
+     - Or omit name to create anonymous function expressions. 
 
-In these problems, we will develop a factory function for objects that represent books.
+   - However, the function name given to a function expression is **not visible** in the scope that includes the function expression. 
 
-The following three books should give you an idea of what our first book object should look like:
+     - `foo` is a local variable that contains a reference to the function, so we can invoke the function using `foo()`. However, the function name, `bar`, is not in scope on line 3, so `bar()` does not work.
 
-Attributes
-  Title: Mythos
-  Author: Stephen Fry
+     ```js
+     let foo = function bar() {};
+     foo();         // This works
+     bar();         // This does not work, the function name bar is not in scope on line 3. 
+     ```
 
-Behavior:
-  Get Description
+   - Advantage of naming a function expression
 
------------------------------
+     - The main advantage of naming a function expression occurs when the function throws an error (raises an exception). If the function has a name, the stack trace uses that name to help you determine where the error occurred. Without the name, JavaScript merely reports the location as anonymous.
 
-Attributes
-  Title: Me Talk Pretty One Day
-  Author: David Sedaris
+   - We typically assign a function expression to a variable or object property, pass it to another function, or return it to a calling function. 
 
-Behavior:
-  Get Description
+     ```js
+     let prompt = function() { // Assign to a variable
+     
+     };
+     
+     [1, 2, 3].forEach(function(elem) { // pass to another function
+       console.log(elem);
+     });
+     
+     
+     function makeIncrementer(increment) {
+       return function(value) { // return to caller
+         return value + increment;
+       }
+     }
+     ```
 
------------------------------
+3. **Arrow function**
 
-Attributes
- Title: Aunts aren't Gentlemen
- Author: PG Wodehouse
+   - Arrow functions are always function expressions.
+     - No declaration syntax for arrow functions.
+     - Which means they have to be invoked by the variable name. 
+     - Also means we often pass them around or assign them to variables or properties. 
+   - Arrow functions are always anonymous: there's no way to name an arrow function.  
+   - Arrow functions are either immediately invoked, assigned to variables or properties, or passed around as arguments and return values. 
 
- Behavior:
-   Get Description
+   ```js
+   () => console.log("Good Morning!"); // 0 parameters
+   paramOne => console.log("Good Morning!"); // 1 parameter,
+   (paramOne, paramTwo) => console.log("Good Morning!") // 2
+   
+   let greetPeople = () => console.log("Good Morning!"); // 0 parameters
+   let greetPeople = paramOne => console.log("Good Morning!"); // 1 parameter,
+   let greetPeople = (paramOne, paramTwo) => console.log("Good Morning!") // 2 parameters
+   
+   greetPeople(); // Must invoke after defining the function. 
+   ```
+
+   - Arrow functions have an interesting feature: **implicit returns**: can omit return statement when function body contains a single expression, on a <u>**single line**</u>. 
+
+   ```js
+   [1, 2].map(element => return 1 ); // map invokes anonymous callback function here
+   ```
+
+   - If you use braces around the body of an arrow function, you must use an **explicit** `return` statement to provide a return value that isn't `undefined`. You don't need the `return` if the body does not include braces.
+
+   ```js
+   let sum = (number1, number2) => {
+     return number1 + number2; // needs explicit return statement here
+   };
+   ```
+
+   
+
+**Anonymous Function**: a function with no name. 
+
+- Call back functions p methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
 
 ```js
-// factory function
-function createBook(title, author, read = false) { // default parameter
-  return {
-    title: title, 
-    author: author, 
-    read, 
-    
-    readBook() {
-      this.read = true;
-    }, 
-    
-    getDescription() {
-      return `${this.title} was written by ${this.author}. ` +
-             `I ${this.read ? 'have' : "haven't"} read it.`; // tenery operator & + to concatenate
-    },
-  };
-}
+let name = function (x) { // function expression
+  
+});
 
-let book1 = createBook('Mythos', 'Stephen Fry');
-let book2 = createBook('Me Talk Pretty One Day', 'David Sedaris');
-let book3 = createBook("Aunts aren't Gentlemen", 'PG Wodehouse');
-
-book1.getDescription();  // "Mythos was written by Stephen Fry."
-book2.getDescription();  // "Me Talk Pretty One Day was written by David Sedaris."
-book3.getDescription();  // "Aunts aren't Gentlemen was written by PG Wodehouse"
-```
-
-# Lesson 2
-
-### Review objects
-
-##### Objects
-
-- are collections of properties where each property has a key and value. 
-- one of  8 fundamental types. (first 5 are the primitive ones)
-  - String
-  - Number
-  - Boolean
-  - Null: null's type is object! 
-  - Undefined
-  - Object
-  - BigInt (you don't need to know about this)
-  - Symbol (you don't need to know about this)
-- Object values can be any type, but **property keys are always strings**. If you define a property with a non-key string, it will first be converted into a string. 
-
-```js
-let obj = {};
-obj[[1, 2, 3]] = 'three';
-
-obj['1, 2, 3'] // 'three'
-```
-
-##### Object creation
-
-- Objects can be initialized using [`new Object()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/Object), [`Object.create()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create), or using the **object literal syntax** / *literal* notation (*initializer* notation). An object initializer is a comma-delimited list of zero or more pairs of property names and associated values of an object, enclosed in curly braces (`{}`).
-
-- **object-literal syntax** (object initializer)
-
-  - created with curly braces
-
-  - ```js
-    const object1 = { a : 'foo', b: 42, c: {}};
-    ```
-
-  - Function using object literal syntax
-
-    ```js
-    function makeObj() {
-      return {
-        propA: 10,
-        propB: 20,
-      };  
-    }
-    ```
-
-
-  - Function NOT using object literal syntax
-
-    ```js
-    function makeObj() {
-      let obj = {};
-      obj.propA = 10;
-      obj.propB = 20;
-      return obj;
-    }
-    ```
-
-##### Object Factories
-
-- **Object factories** (factory functions): are functions that create and return objects of a particular type. 
-  - **Type** means an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
-  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to automate the creation related objects based on a predefined template. 
-    - Factory functions are one way to automate object creation.  
-    - Extracts code to one place so multiple objects can use it. 
-    - Each invocation of the factory function specifies the differences between the objects with arguments. 
-    - Is a creation type. 
-  - Serves two purposes
-    1. Returns an object that represent data of a specific type. 
-    2. It reuses code. 
-- Advantages of object factory
-  - Reduce code duplication
-  - Returns objects that represent data of a specific type.
-  - Create multiple objects of same "type" with a predefined "template". 
-  - Lets you automate the creation of objects:
-    - let you avoid most of the tedium and errors that result from copying and pasting to create multiple objects of the same type.
-  - Reuses code. 
-  - An advantage of the factory pattern is that it lets us create objects with private state. Elaborate: 
-- Disadvantage of object factory
-
-  - Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
-  - There is no way to tell which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
-    - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
-    - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
-
-##### Object Factories Example
-
-- Entities that are common to multiple objects such as `start` and `stop` methods get declared in one place. On the other hand, arguments passed to the factory function distinguish one object from another, such as make, model and year. 
-- Serves two purposes. 
-
-1. Returns an object that represent data of a specific type. 
-2. It reuses code. 
-
-```js
-function createCar(make, model, year) {
-  return {
-    make,             // Same as "make: make"
-    model,            // Same as "model: model"
-    year,             // Same as "year: year"
-    started: false,
-
-    start() {         // Same as "start: function() {"
-      this.started = true;
-    },
-
-    stop() {          // Same as "stop: function() {"
-      this.started = false;
-    },
-  };
-}
-
-let car = createCar('Toyota', 'Corolla', 2021);
-console.log(car.make); // Toyota
-console.log(car.model); // Corolla
-```
-
-With the `createCar` object factory, we can create as many car objects as our program needs.
-
-```js
-let car1 = createCar('Toyota', 'Corolla', 2016);
-let car2 = createCar('Honda', 'Civic', 2017);
+let name = () => console.log('My name is'); // arrow function
 ```
 
 ------
 
-### Methods and properties; instance and static methods and properties 1, 3
+#### Function Declarations vs Function Expressions
 
-##### Overriding
+- Functions defined with function declaration syntax can be invoked before the declaration in the program. 
 
-- If we add a new `play` method to the `Bingo` class, objects created by `Bingo` will use that method instead of looking up the prototype chain and finding it in the `Game` class. 
+- This code works since the JavaScript engine runs our code in two passes. During the first pass, it does some preparatory work, while the second executes the code. 
 
-  ```js
-  class Game {
-    play() {
-      return 'Start the game!';
-    }
-  }
-  
-  class Bingo extends Game {
-    rulesOfPlay() {
-      // rules of play
-    }
-  }
-  ```
+  - One action that occurs during the first pass is called **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
 
-- As soon as JavaScript finds a method, it calls it. When a class redefines a method that a superclass defines, we call this "**method overriding**."
+- **Hoisting**
 
-  - When method overriding occurs, instance object created by sub-type class will use that method instead of looking up the prototype chain and finding it in the super-type class.
+  - JavaScript Hoisting refers to the process whereby the compiler allocates memory for variable and function <u>declarations</u> prior to execution of the code.
 
-- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
+  - **Hoisting** is an internal step performed by the engine; it doesn't actually move code around. 
 
-  - An object can override a property of its parent by setting the property on itself.
-  - A downstream object overrides an inherited property if it has a property with the same name. 
-  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
-
-- Method overriding can be prevented in class syntax by calling `Super` 
-
-##### Property syntax : defining properties
-
-- Syntax errors when trying to define properties in an object. 
-
-  - `this` is an execution context that that refers to the calling method or function. 
-
-  ```js
-  // All of these cause syntax error when trying to define the properties in the object. 
-  
-  let cat = {
-    this.name: "Butterscotch", // property names are strings and cannot be this.something
-    this.age: 13,
-  };
-  
-  let cat = {
-    name = "Butterscotch", // incorrect syntax to define property in an object.
-    age = 13
-  };
-  ```
-
-  ```js
-  // These work except `this` references the global object
-  function cat() {
-    this.name = 'Butterscotch';
-    this.age = 13;
-  }
-  
-  let cat = {
-    name: this.name; 
-  }
-  
-  function createPet(pet, name) {
-    return {
-      pet: pet, 
-      name: this.pet; 
-    }
-  }
-  ```
-
-- Can use short hand notation when property and variable have the same name. 
-
-  ```js
-  function createBook(title, author) {
-    return {
-      title: title,
-      author: author,
-  
-      getDescription: function() {
-        return `${this.title} was written by ${this.author}.`;
-      },
-    };
-  }
-  ```
-
-  ```js
-  function createBook(title, author) {
-    return {
-      title,     // same as `title: title,`
-      author,    // same as `author: author,`
-  
-      getDescription: function() {
-        return `${this.title} was written by ${this.author}.`;
-      },
-    };
-  }
-  ```
-
-##### Add property 
-
-- The correct terminology is **add** new properties to object by giving it a value 
-  - not "declare" or "assign" new properties. 
-  - assignment is when you assigns a value to a variable's left operand based on the value of its right operand. `this.property = value` 
-- The `delete` keyword deletes a property from an object
-
-##### Accessing Properties
-
-- **member access notation** (**dot notation**)
-
-  - Requires valid variable names. 
-
-- **computed member access notation** (**bracket notation**). 
-
-  - Can take any UTF-8-compatible string as the key. 
-  - Can be computed on the fly -- any expression between the brackets gets evaluated as a string and used to reference the property. 
-
-  ```js
-  obj['a-key'] = 'four';
-  
-  obj.a-key 						 // SyntaxError(a-key is not a valid variable name)
-  obj['a' + '-' + 'key'] // 'four'
-  ```
-
-##### Property Existence
-
-- We get `undefined` when accessing a non-existent property. However we also get same value if we try to access a property set to `undefined`. 
-
-- Two ways to distinguish a non-existent property from an property with value of `undefined`: 
-
-  - The **`in` operator** : returns `true` if the specified property is in the specified object or its prototype chain.
-
-    - prop: A string or symbol representing a property name or array index (non-symbols will be coerced to strings).
+  - Hoisting isn't limited to function declarations. We'll discuss it in more detail later in the curriculum.
 
     ```js
-    prop in object // syntax
-    'propertyName' in object
+    prompt('How are you today?');
+    
+    function prompt(message) {
+    	console.log(`=> ${message}`);
+    }
     ```
 
-  - `hasOwnProperty` (is an instance method): Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
-
-    - `Object.prototype.hasOwnProperty()` method
+    Acts like this
 
     ```js
-    obj.hasOwnproperty() // syntax
+    function prompt(message) {
+      console.log(`=> ${message}`);
+    }
+    
+    prompt('How are you today?');
     ```
 
-    ```js
-    Object.keys(obj) = ['7', 'false', '1, 2, 3', 'a-key'];
-    
-    'false' in obj // true
-    'true'  in obj // false
-    
-    obj.hasOwnProperty('7') // true
-    obj.hasOwnProperty('8') // true
+- Function expressions are not **hoisted** : can't use function expressions before you define them. 
+
+  - You can test whether a function definition is a function declaration by trying to call it before the declaration. You can't call a function expression until after the expression is evaluated. 
+
+  - ```terminal
+    ReferenceError: Cannot access 'foo' before initialization
     ```
 
-- Other ways to check for property existence is to **enumerate**(**iterate** over) the properties of an object.  
-
-  - `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
-  - `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
-  - `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
+- 3 ways to do the same thing 
 
   ```js
-  Object.keys(obj)                    // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
-  Object.getOwnPropertyNames(obj)     // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
-  ```
-
-|                              | Enumerable | Includes Non-Enumerable | Own  | Prototype Chain |
-| ---------------------------- | ---------- | ----------------------- | ---- | --------------- |
-| For … in loop                | ✅          |                         |      | ✅               |
-| Object.keys(obj)             | ✅          |                         | ✅    |                 |
-| Object.getOwnPropertyNames() |            | ✅                       | ✅    |                 |
-
-**Enumerable properties**: means the property can be **iterated** over. 
-
-- Not all properties are enumerable. In particular, most properties and methods of the built-in types are not. 
-- Usually, any properties or methods you define on for an object are enumerable. 
-- You can check whether a property is enumerable with the `Object.prototype.propertyIsEnumerable` method. ( don't have to remember this)
-- All properties created by simple assignment or property initializer are enumerable by default. 
-- Ownership of properties is determined by whether the property belongs to the object directly and not to its prototype chain. 
-
-##### Instance 
-
-- **Instance **: objects created using any means of defining multiple objects of the same kind. 
-
-  - Objects created by factory functions are considered instances, even if there's no way to test that in code. 
-
-- In JavaScript, "instance" does not have this technical meaning because JavaScript does not have this difference between classes and instances. However, in talking about JavaScript, "instance" can be used informally to mean an object created using a particular constructor function. 
-
-- Must use instance object to invoke instance properties or methods.
-
-- **Instance Properties** : properties of an instance.
-
-  - Properties of instances created by a constructor. 
-  - May be stored directly on the instance, or its prototype. Its prototype is `Constructor.prototype`
-  - For classes, instance properties must be defined in methods. 
-
-- **Instance Methods**:  (object methods / methods) :stored either as part of an object or anywhere in the object's prototype chain.
-
-  - Methods usually aren't stored directly in instances(on the instance object directly), but rather in the object's prototype object (the object referenced by **prototype** property). 
-  - Methods usually aren't stored in the object, but still operate on individual instances so we refer to them as instance methods. 
-  - Ordinary methods -- those defined on a prototype object -- are sometimes called **instance methods** or **object methods** since you need an instance of (an object) the type. More commonly, they are simply called **methods**.
-  - The methods that use this syntax: `Constructor.prototype.method` are the **instance** methods for the Constructor type. 
-    - `forEach` is an instance method of the`Array` constructor. 
-
-- Constructor and prototype pattern
-
-  ```js
-  function Rectangle(length, width) {
-    this.length = length; // instance properties
-    this.width = width;
+  // variable 
+  function logNum(num) { // function declaration syntax, logNum is a variable
+    console.log('Number: ' + num);
   }
   
-  Rectangle.prototype.getArea = function() { // instance method
-    return this.length * this.width;
-  };
-  
-  Rectangle.prototype.value = 2; // instance property
-  
-  let rect = new Rectangle();
-  console.log(rect.getArea());
-  
-  // notice that adding method to constructor.prototype is outside the constructor function
-  
-  // notice we are using instance object to invoke the method
+  [1, 2, 3].forEach(logNum);
   ```
-
-- Class pattern
 
   ```js
-  class Rectangle {
-    constructor(length, width) {
-    	this.length = length; // instance properties
-    	this.width = width;
-    }
-    
-    getArea() { // instance method
-       return this.length * this.width;
-    }
-    
-    value = 2; // invalid code, instance properties must be defined in methods.
-  }
-  
-  let rect = new Rectangle();
-  console.log(rect.getArea());
+  // function expression 
+  [1, 2, 3].forEach(function logNum(num) {
+    console.log('Number: ' + num);
+  });
   ```
-
-##### Static 
-
-- static keyword defines static properties and methods. 
-
-- Must use constructor name to invoke static properties and methods. 
-
-- invoking static methods on an instance of a class results in a `TypeError`. 
-
-- **Static properties** are defined and accessed directly on the <u>constructor</u>, not on an instance or a prototype.
-
-  - Static properties are properties about a constructor. 
-
-  - Typically, static properties belong to the **type** (e.g., `Dog`) rather than to the individual instances or the prototype object.
-
-  - One common use of static properties is to keep track of all of the objects created by a constructor.
-
-    ```js
-    function Dog(name, breed, weight) {
-      this.name = name;
-      this.breed = breed;
-      this.weight = weight;
-      Dog.allDogs.push(this);
-    }
-    
-    Dog.allDogs = [];
-    ```
-
-    - In this case, the static property `allDogs` contains an array with a reference to every dog object created while the program is running. 
-    - While `allDogs` maintains a list of all the dogs, it isn't information that is pertinent to a specific dog -- it's information about dogs in general. Therefore, it should be a static property.
-
-  - One well-known example of a static property is the `length` property used by the `String` type.
-
-- **Static methods**: are stored on the constructor or class. 
-
-  - ```js
-    Dog.showSpecies = function() {
-      console.log(`Dogs belong to the species ${Dog.species}`);
-    };
-    
-    Dog.showSpecies();
-    ```
-
-  - You've already seen examples of static methods on built-in JavaScript constructors. `Object.assign`, `Array.isArray`, and `Date.now` are all examples of static methods.
-
-  - Is `forEach`  static method of the `Array` constructor then?
-
-    - No, `forEach` is an instance method of the `Array` constructor, because you are using an object (array object) to invoke an instance method of the `Array` constructor, rather than calling the `Array` constructor directly. 
-
-- Constructor and prototype pattern
 
   ```js
-  function Rectangle(length, width) {
-    this.length = length;
-    this.width = width;
-  }
-  
-  Rectangle.getDescription = function() { // static method
-    return 'A rectangle is a shape with 4 sides''
-  };
-  
-  Rectangle.description = 'A rectangle is a shape with 4 sides'; // static property 
-  
-  let rect = new Rectangle();
-  console.log(Rectangle.getDescription());
+  // arrow function 
+  [1, 2, 3].forEach(num => {
+    console.log('Number: ' + num);
+  });
   ```
 
-- Class Pattern
+- Takeaways: 
 
-  ```js
-  class Rectangle {
-    constructor(length, width) {
-      this.length = length;
-      this.width = width;
-    }
-  
-  	static getArea() {
-      return 'A rectangle is a shape with 4 sides'; // static method
-    }
-    
-    static DESCRIPTION = 'A rectangle is a shape with 4 sides'; // static property 
-  }
-  
-  let rect = new Rectangle();
-  console.log(Rectangle.getArea());
-  ```
+  - Don't invoke functions when you want to use them as values. Use invocation only when you need to run the code in the function. 
+  - Treat any function as any other JS value: remove the invocation syntax, and you got an expression whose value is a function. 
+
+#### Type of a Function Value
+
+```js
+let myFunc = function() {};
+typeof myFunc; // => "function"
+```
+
+- Functions are a kind of object: they are a compound type that has its own properties and methods. 
+- Definition of **function**: a kind of object with properties and methods.
+
+#### Summary
+
+- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
+- To use a function as an expression, write its name without the parentheses of invocation. 
+- All functions' type is  `function`, which is a kind of object with properties and methods.
+
 
 ------
+
+## Higher-order functions 2
+
+- **Higher-order function**:  are functions that return another function or take another function as an argument. 
+- Higher-order functions let the programmer use powerful and flexible abstractions.
+  - abstracts away similar structures of functions and leave specific mapping up to function's caller. 
+  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. 
+  - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
+- Function factories are higher- order functions
+- All higher-order functions are first class functions. 
+
+#### First Class Functions
+
+- Have these charactersitics ( from summary)
+
+  - You can add them to objects and execute them in the respective object's context.
+  - You can remove them from their objects, pass them around, and execute them in entirely different contexts.
+  - **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
+
+- **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
+- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
+
+------
+
+## Method and property lookup sequence 2
 
 ### Prototypes
 
@@ -1099,60 +627,58 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### The Prototype Chain (what is it, what is it used for)
 
+##### What is prototype chain (summary)
 
+- The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. The object referenced by `Object.prototype` is at the top of all JavaScript prototype chains.
 
-- ##### What is prototype chain (summary)
+- The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
 
-  - The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. The object referenced by `Object.prototype` is at the top of all JavaScript prototype chains.
+- If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain. 
 
-  - The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
+  - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[Prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches the default prototype object referenced by `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
 
-  - If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain. 
+  - ```js
+    let a = {
+      prop1: 1,
+    }
+    
+    let b = Object.create(a);
+    b.prop2 = 2;
+    
+    console.log(b.prop1); // 1
+    ```
 
-    - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[Prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches the default prototype object referenced by `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+  - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
 
-    - ```js
-      let a = {
-        prop1: 1,
-      }
-      
-      let b = Object.create(a);
-      b.prop2 = 2;
-      
-      console.log(b.prop1); // 1
-      ```
+- The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
 
-    - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
+##### What it's used for. 
 
-  - The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+- The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
+- **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
 
-  ##### What it's used for. 
+##### Property Look up Sequence
 
-  - The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
-  - **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
+- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+- If we try to access a property on an object and it's not a property directly owned by that object, the next port of call is the object pointed to by the __proto__ property. 
+  - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype(the object pointed to by the internal `[[prototype]]` or dunder proto property) then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
+  - A downstream object overrides an inherited property if it has a property with the same name. 
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
+- What happens when you set a property to a different value? 
 
-  ##### Property Access
+  - Property assignment creates a new "own " property in the object.
+    - It assumes that the property belongs to the object named to the left of the property name. 
+    - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
 
-  - When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
-  - If we try to access a property on an object and it's not a property directly owned by that object, the next port of call is the object pointed to by the __proto__ property. 
-    - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype(the object pointed to by the internal `[[prototype]]` or dunder proto property) then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-  - When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
-    - A downstream object overrides an inherited property if it has a property with the same name. 
-    - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
-  - What happens when you set a property to a different value? 
+##### Usefulness
 
-    - Property assignment creates a new "own " property in the object.
-      - It assumes that the property belongs to the object named to the left of the property name. 
-      - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
+- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+- Looking up a property in the prototype chain is the basis for prototypal inheritance. 
 
-  ##### Usefulness
+##### Implications
 
-  - This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
-  - Looking up a property in the prototype chain is the basis for prototypal inheritance. 
-
-  ##### Implications
-
-  - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
+- Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
 
 ------
 
@@ -1440,2379 +966,7 @@ console.log(dog.says); // woof
 
 ------
 
-- 
-
-------
-
-### Practice Problems 
-
-1. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
-
-   ```js
-   let qux = { foo: 1 };
-   let baz = Object.create(qux);
-   console.log(baz.foo + qux.foo);
-   ```
-
-   Solution
-
-   ```js
-    2
-   ```
-
-   `qux.foo` returns 1 because `qux` has a `foo` property with that value. `baz` doesn't have its "own" copy of the `foo` property, so JavaScript searches the prototype chain for a `foo` property and finds the property in `qux`. 
-
-   
-
-2. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
-
-   ```js
-   let qux = { foo: 1 };
-   let baz = Object.create(qux);
-   baz.foo = 2;
-   
-   console.log(baz.foo + qux.foo);
-   ```
-
-   Solution
-
-   ```js
-   3
-   ```
-
-   Their solution: We assign `baz.foo` to a value of 2. Property assignment doesn't use the prototype chain; instead, it creates a new property in the `baz` object named `foo`. When we add `baz.foo` and `qux.foo` together, `baz.foo` returns the value of its "own" `foo` property, while `qux.foo` returns the value of its "own" `foo` property. Thus, the result is 3. 
-
-3. What will the following code log to the console? Explain why it logs that value. Try to answer without running the code.
-
-   ```js
-   let qux = { foo: 1 };
-   let baz = Object.create(qux);
-   qux.foo = 2;
-   
-   console.log(baz.foo + qux.foo);
-   ```
-
-   Solution
-
-   ```js
-   4
-   ```
-
-   On line 3, property `foo` is reassigned to value of 2 in object `qux`. On line 5, `baz.foo` returns 2 because it doesn't have an own property `foo` so JavaScript searches the prototype chain for `foo` and finds it on `qux`. `qux.foo` returns 2 because `qux` has an own `foo` property with value of 2. Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well. 
-
-4. As we saw in problem 2, the following code creates a new property in the `baz` object instead of assigning the property in the prototype object.
-
-   ```js
-   let qux = { foo: 1 };
-   let baz = Object.create(qux);
-   baz.foo = 2;
-   ```
-
-Write a function that searches the prototype chain of an object for a given property and assigns it a new value. If the property does not exist in any of the prototype objects, the function should do nothing. The following code should work as shown:
-
-```js
-let fooA = { bar: 1 };
-let fooB = Object.create(fooA);
-let fooC = Object.create(fooB);
-
-assignProperty(fooC, "bar", 2);
-console.log(fooA.bar); // 2
-console.log(fooC.bar); // 2
-
-assignProperty(fooC, "qux", 3);
-console.log(fooA.qux); // undefined
-console.log(fooC.qux); // undefined
-console.log(fooA.hasOwnProperty("qux")); // false
-console.log(fooC.hasOwnProperty("qux")); // false
-```
-
-**Iterative Solution**
-
-```js
-function assignProperty(obj, property, value) {
-  while (obj !== null) { // loops until obj reaches the null prototype
-    if (obj.hasOwnProperty(property)) { 
-      obj[property] = value;
-      break; // need this to prevent infinite looping
-    }
-
-    obj = Object.getPrototypeOf(obj); // // if property is not "own property", then search next prototype. 
-  }
-}
-```
-
-**Recursive Solution**
-
-```js
-function assignProperty(obj, property, value) {
-  if (obj === null) { // property not found
-    return;
-  } else if (obj.hasOwnProperty(property)) {
-    obj[property] = value;
-  } else {
-    assignProperty(Object.getPrototypeOf(obj), property, value); // calls on same funciton, passing prototype of obj as argument 
-  }
-}
-```
-
-5. Consider the following loops. 
-
-```js
-for (let property in foo) {
-  console.log(`${property}: ${foo[property]}`);
-}
-```
-
-```js
-Object.keys(foo).forEach(property => {
-  console.log(`${property}: ${foo[property]}`);
-});
-```
-
-Q: If `foo` is an arbitrary object, will these loops always log the same results to the console? Explain why they do or do not. If they don't always log the same information, show an example of when the results differ.
-
-- They don't always produce the same results since the second loop only iterates over `foo`'s "own" enumerable properties, but the first loop iterates over all of the object's enumerable properties, including those inside its prototype chain. 
-- An example of when the results differ is 
-
-```js
-let bar = {a: 1, b: 2};
-let foo = Object.create(bar);
-foo.a = 3; 
-foo.c = 4;
-```
-
-```js
-// first loop outputs
-a: 3 		// from foo
-c: 4 	  // from foo
-b: 2 		// from bar
-```
-
-```js
-// second loop outputs 
-a: 3 	// from foo
-c: 4 	// from foo
-```
-
-- The two loops only produce the same results if the prototype chain doesn't include enumerable properties.
-
-##### Q: How do you create an object that doesn't have a prototype? 
-
-```js
-let bareObj = Object.create(null);
-```
-
-##### Q: How can you determine whether an object has a prototype?
-
-```js
-if (Object.getPrototypeOf(obj)) {
-  // obj has a prototype
-} else {
-  // obj does not have a prototype
-}
-```
-
-------
-
-### Functions Definitions
-
-**Hoisting**
-
--  JavaScript Hoisting refers to the process whereby the compiler allocates memory for variable and function <u>declarations</u> prior to execution of the code.
-
--  JavaScript runs programs in two passes; the first pass performs hoisting, and the second executes the code.
-
-##### 3 ways to define a function (review + new)
-
-1. **Function declaration**: Function definitions that begin with `function` keyword.
-
-   - Function definition that starts with word `function` at beginning of statement. 
-
-   - Function declaration binds a function to an **identifier**(variable name), declares the existence of the function. 
-
-   - Function declarations can't be anonymous.
-   - Function declarations are **hoisted**: can be called before function is defined. 
-
-   ```js
-   functionName(); // can invoke function before function is defined.   
-   
-   function functionName() { // function defined here, functionName is a variable & identifier
-     ...
-   }
-   ```
-
-2. **Function expression**: function definitions that are part of an expression. 
-
-   - Function expressions are <u>not</u> **hoisted** : can't use function expressions before you define them. 
-
-   - Any function definition that doesn't have the word `function` at the **<u>beginning</u>** of a statement is a function expression. 
-
-     ```js
-     let functionName = function () { // Anonymous function expression
-       ...
-     }; // note the semi colon here! It's an expression so it needs semicolon. 
-     ```
-
-     ```js
-     let functionName = (parameter) => { // arrow functions are always anonymous function expressions
-       
-     };
-     ```
-
-   - Wrapping what looks like a function declaration in parentheses creates a function expression
-
-     ```js
-     // Function expression, not declaration
-     (function greetPeople() {
-       console.log("Good Morning!");
-     }); 
-     // this code is actually throws an error: expected function call but instead saw an expression. 
-     ```
-
-     ```js
-     function makeGreeter(name) {
-       return function greeter() {
-         console.log(`Hello ${name}`); 
-       }
-     }
-     // Greeter is a function expression because it starts with return. 
-     ```
-
-   - Function expressions are usually anonymous. Such as callback functions for array methods like `forEach` and `map`. 
-
-     ```js
-     let squaredNums = [1, 2, 3].map(function(num) {
-       return num * num;
-     }); // => [1, 4, 9]
-     ```
-
-   - Function expressions **<u>don't</u>** have to be anonymous: You can name a function expression. 
-
-     - `Function` keyword can be used to define a function inside an expression. 
-
-       ```js
-       let squaredNums = [1, 2, 3].map(function squareNum(num) { // call back functions don't have to be anonymous
-         return num * num;
-       }); // => [1, 4, 9]
-       ```
-
-     - Or omit name to create anonymous function expressions. 
-
-   - However, the function name given to a function expression is **not visible** in the scope that includes the function expression. 
-
-     - `foo` is a local variable that contains a reference to the function, so we can invoke the function using `foo()`. However, the function name, `bar`, is not in scope on line 3, so `bar()` does not work.
-
-     ```js
-     let foo = function bar() {};
-     foo();         // This works
-     bar();         // This does not work, the function name bar is not in scope on line 3. 
-     ```
-
-   - Advantage of naming a function expression
-
-     - The main advantage of naming a function expression occurs when the function throws an error (raises an exception). If the function has a name, the stack trace uses that name to help you determine where the error occurred. Without the name, JavaScript merely reports the location as anonymous.
-
-   - We typically assign a function expression to a variable or object property, pass it to another function, or return it to a calling function. 
-
-     ```js
-     let prompt = function() { // Assign to a variable
-     
-     };
-     
-     [1, 2, 3].forEach(function(elem) { // pass to another function
-       console.log(elem);
-     });
-     
-     
-     function makeIncrementer(increment) {
-       return function(value) { // return to caller
-         return value + increment;
-       }
-     }
-     ```
-
-3. **Arrow function**
-
-   - Arrow functions are always function expressions.
-     - No declaration syntax for arrow functions.
-     - Which means they have to be invoked by the variable name. 
-     - Also means we often pass them around or assign them to variables or properties. 
-   - Arrow functions are always anonymous: there's no way to name an arrow function.  
-   - Arrow functions are either immediately invoked, assigned to variables or properties, or passed around as arguments and return values. 
-
-   ```js
-   () => console.log("Good Morning!"); // 0 parameters
-   paramOne => console.log("Good Morning!"); // 1 parameter,
-   (paramOne, paramTwo) => console.log("Good Morning!") // 2
-   
-   let greetPeople = () => console.log("Good Morning!"); // 0 parameters
-   let greetPeople = paramOne => console.log("Good Morning!"); // 1 parameter,
-   let greetPeople = (paramOne, paramTwo) => console.log("Good Morning!") // 2 parameters
-   
-   greetPeople(); // Must invoke after defining the function. 
-   ```
-
-   - Arrow functions have an interesting feature: **implicit returns**: can omit return statement when function body contains a single expression, on a <u>**single line**</u>. 
-
-   ```js
-   [1, 2].map(element => return 1 ); // map invokes anonymous callback function here
-   ```
-
-   - If you use braces around the body of an arrow function, you must use an **explicit** `return` statement to provide a return value that isn't `undefined`. You don't need the `return` if the body does not include braces.
-
-   ```js
-   let sum = (number1, number2) => {
-     return number1 + number2; // needs explicit return statement here
-   };
-   ```
-
-   
-
-**Anonymous Function**: a function with no name. 
-
-- Call back functions p methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
-
-```js
-let name = function (x) { // function expression
-  
-});
-
-let name = () => console.log('My name is'); // arrow function
-```
-
-------
-
-##### Function Declarations vs Function Expressions
-
-- Functions defined with function declaration syntax can be invoked before the declaration in the program. 
-
-- This code works since the JavaScript engine runs our code in two passes. During the first pass, it does some preparatory work, while the second executes the code. 
-
-  - One action that occurs during the first pass is called **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
-
-  - **Hoisting** is an internal step performed by the engine; it doesn't actually move code around. 
-
-  - Hoisting isn't limited to function declarations. We'll discuss it in more detail later in the curriculum.
-
-    ```js
-    prompt('How are you today?');
-    
-    function prompt(message) {
-      console.log(`=> ${message}`);
-    }
-    ```
-
-    Acts like this
-
-    ```js
-    function prompt(message) {
-      console.log(`=> ${message}`);
-    }
-    
-    prompt('How are you today?');
-    ```
-
-- Function expressions are not **hoisted** : can't use function expressions before you define them. 
-
-  - You can test whether a function definition is a function declaration by trying to call it before the declaration. You can't call a function expression until after the expression is evaluated. 
-
-  - ```terminal
-    ReferenceError: Cannot access 'foo' before initialization
-    ```
-
-- 3 ways to do the same thing 
-
-  ```js
-  // variable 
-  function logNum(num) { // function declaration syntax, logNum is a variable
-    console.log('Number: ' + num);
-  }
-  
-  [1, 2, 3].forEach(logNum);
-  ```
-
-  ```js
-  // function expression 
-  [1, 2, 3].forEach(function logNum(num) {
-    console.log('Number: ' + num);
-  });
-  ```
-
-  ```js
-  // arrow function 
-  [1, 2, 3].forEach(num => {
-    console.log('Number: ' + num);
-  });
-  ```
-
-- Takeaways: 
-
-  - Don't invoke functions when you want to use them as values. Use invocation only when you need to run the code in the function. 
-  - Treat any function as any other JS value: remove the invocation syntax, and you got an expression whose value is a function. 
-
-##### Type of a Function Value
-
-```js
-let myFunc = function() {};
-typeof myFunc; // => "function"
-```
-
-- Functions are a kind of object: they are a compound type that has its own properties and methods. 
-- Definition of **function**: a kind of object with properties and methods.
-
-##### Summary
-
-- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
-- To use a function as an expression, write its name without the parentheses of invocation. 
-- All functions' type is  `function`, which is a kind of object with properties and methods.
-
-------
-
-### Higher Order Functions
-
-**Higher-order function**:  are functions that return another function or take another function as an argument. 
-
-#### Summarized
-
-- Higher-order functions let the programmer use powerful and flexible abstractions.
-  - abstracts away similar structures of functions and leave specific mapping up to function's caller. 
-  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. 
-  - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
-- Function factories are higher- order functions
-- All higher-order functions are first class functions. 
-
-##### Functions that Accept Functions as Arguments
-
-- We've seen many examples of functions that have the first property. 
-
-  - Specifically, array methods like `forEach`, `map`, `filter`, and `reduce` each take a function argument. 
-  - As these methods show, functions that take other functions give the developer a lot of power and flexibility.
-
-- Let's pretend that we don't have a `map` method on JavaScript arrays. If we want to implement some code that squares all the elements of an array, we'd probably come up with something like this:
-
-  ```js
-  function mapNumsToSquares(nums) {
-    let squaredArray = [];
-  
-    for (let index = 0; index < nums.length; index++) {
-      let current = nums[index];
-      squaredArray.push(current * current);
-    }
-  
-    return squaredArray;
-  }
-  ```
-
-  - This approach is valid, and you'll see functions like this in languages that don't have first-class functions (nor the closely related concept of lambdas(?))
-
-- Suppose that we need another function that uppercases all the elements in an array of strings. The solution may look like this:
-
-  ```js
-  function uppercaseStrings(strings) {
-    let capStrings = [];
-  
-    for (let index = 0; index < strings.length; index++) {
-      let current = strings[index];
-      capStrings.push(current.toUpperCase());
-    }
-  
-    return capStrings;
-  }
-  ```
-
-  - The only difference between the two functions is on line 6, where we either square a number or uppercase a string. 
-  - Everything else follows same general structure
-    - Declare and initialize the result array.
-    - Iterate over the input array.
-      - Add mapped values to the result.
-    - Return the result. 
-
-- Can we abstract away the similar structure of the two functions and leave the specific mapping operation up to the function's caller? 
-
-- Higher-order functions let the programmer use powerful and flexible abstractions.
-
-  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. 
-  - Does this by providing a function as argument. 
-  - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
-
-##### Functions That Return a Function
-
-- Previously, we saw example of how higher-order function that takes another function lets us write elegant and flexible code. Let's look at another useful application of higher-order functions by having one return another function. 
-
-- Can think of a function that returns another function as a function factory: it creates and returns a new function. 
-
-  - Typically, the function factory uses the arguments you pass to it to determine the specific job performed by the function it returns.
-
-  - To truly appreciate how useful this is, I would need to understand "closure", but we're not ready for that yet. 
-
-  - For now, let's use an example to demonstrate the mechanics of functions returning other functions. 
-
-    ```js
-    function greet(language) {
-      switch (language) {
-        case 'en':
-          console.log('Hello!');
-          break;
-        case 'es':
-          console.log('Hola!');
-          break;
-        case 'fr':
-          console.log('Bonjour!');
-      }
-    }
-    
-    greet('fr'); // logs 'Bonjour!'
-    ```
-
-    This implementation works, but if we're using a particular language over and over, we need to provide the language string every time. Instead of a `greet` function, let's implement a greeter factory that let us create a greater function for a given language. 
-
-    ```js
-    function createGreeter(language) {
-      switch (language) {
-        case 'en':
-          return () => console.log('Hello!'); // arrow function with 0 parameters
-        case 'es':
-          return () => console.log('Hola!');
-        case 'fr':
-          return () => console.log('Bonjour!');
-      }
-    }
-    
-    let greeterEs = createGreeter('es'); // createGreeter returns a function
-    greeterEs(); // logs 'Hola!' // Using variable to invoke the function. 
-    greeterEs(); // logs 'Hola!'
-    greeterEs(); // logs 'Hola!'
-    
-    let greeterEn = createGreeter('en');
-    greeterEn(); // logs 'Hello!'
-    ```
-
-- This code doesn't provide a significant improvement or convenience for the developer, but it does illustrate how we might use a function that returns another function in our code.
-
-##### Summary
-
-- Higher-order functions are functions that return another function or take another function as an argument. 
-- Higher-order functions let the programmer use powerful and flexible abstractions.
-
-#### First Class Functions
-
-- Have these charactersitics ( from summary)
-
-  - You can add them to objects and execute them in the respective object's context.
-  - You can remove them from their objects, pass them around, and execute them in entirely different contexts.
-  - **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
-
-- **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
-- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
-
-------
-
-### The Global object
-
-##### From specifics 
-
-- JavaScript creates a global object when it starts running. 
-  - In Node.js, the global object is the object named `global`. [object global]
-  - In the browser, it's the `window` object. 
-- This global object is the **implicit execution context** for function invocations, and when `this` is outside a function.
-
-- If you don't provide an explicit execution context, JavaScript uses the global object as the value for `this`. However, you can access the global object anywhere merely by using its name (`global` or `window`).
-
-- Undeclared variables are added to the global object as property. 
-  - When you assign a value to a variable without using `let` `const` or `var` keywords, the variable gets added to global object as property. 
-- The global object is available everywhere in a JavaScript program, including both the top level and inside other functions and methods. 
-
-- Global properties / methods
-  - global: `global` object is itself a property of the `global` object. 
-  - Infinity
-  - NaN
-  - undefined
-  - global
-  - isFinite
-  - console
-  - log
-
-##### From JS 129
-
-- JavaScript creates a global object when it starts running. 
-  - In Node.js, the global object is the object named `global`. [object global]
-  - In the browser, it's the `window` object. 
-- This global object is the **implicit execution context** for function invocations. 
-- Can investigate this in the node REPL or a browser's console. 
-
-```terminal
-> global
-Object [global] {
-  global: [Circular],
-  clearInterval: [Function: clearInterval],
-  clearTimeout: [Function: clearTimeout],
-  setInterval: [Function: setInterval],
-  setTimeout: [Function: setTimeout] { [Symbol(util.promisify.custom)]: [Function] },
-  queueMicrotask: [Function: queueMicrotask],
-  clearImmediate: [Function: clearImmediate],
-  setImmediate: [Function: setImmediate] {
-    [Symbol(util.promisify.custom)]: [Function]
-  },
-  __filename: '[eval]',
-  exports: {},
-  __dirname: '.'
-```
-
-- The global object is available everywhere in your program and houses important global properties. 
-  - In the previous course, we talked about global values such as `Infinity` and `NaN`, and global functions, such as `isNaN` and `parseInt`. All these entities are properties of the global object! 
-  - In your console, you can look at the global object to examine those properties.
-
-```node
-> global.isNaN      // [Function: isNaN]
-> global.Infinity   // Infinity
-```
-
-- Note: don't use `isNaN` in your code. Use `Number.isNaN` instead. The bare `isNaN` function has some odd behavior:
-
-```node
-Number.isNaN('I am not a number');   // false - this is a correct value
-isNaN('I am not a number');          // true - string gets coerced to NaN
-```
-
-- As with other JavaScript objects, you can add properties to the global object at any time:
-
-```js
-// in Node
-> global.foo = 1
-> global.foo       // 1
-```
-
-```js
-// in a browser
-> window.foo = 1
-> window.foo       // 1
-```
-
-##### The Global Object and Undeclared Variables
-
-- Undeclared variables are added to the global object as property. 
-- The global object has an interesting property: whenever you assign a value to a variable without using the `let`, `const`, or `var` keywords (we'll discuss `var` later), the variable gets added to the global object as a property. 
-
-```js
-foo = 'bar';
-global.foo; // => 'bar' (in Node)
-window.foo; // => 'bar' (in a browser)
-```
-
-- Without a keyword, the variable gets added to the global object as a property. You can even access such variables without using the global object as the caller:
-
-```js
-foo = 'bar';
-foo; // 'bar'
-```
-
-- Whenever you try to access a variable for which there are no local or global variables with the variable's name, JavaScript looks at the global object and looks for a property with that name. 
-- In this example, since there are no local or global variables named `foo`, JavaScript looks in the global object and finds the `foo` property. As a result, line `2` is identical to `global.foo`; it returns the value of the property `foo` from the global object.
-
-- We discuss the global object here since you need to know where JavaScript gets all those global entities like `NaN`, `Infinity`, and `setTimeout`. 
-  - It's not very often that you'll need to modify the global object, but you'll sometimes use it to set properties in Node that you need in multiple modules. 
-
-------
-
-### Implicit and Explicit Execution Context
-
-##### Execution Context
-
-- Earlier, we said that `this` refers to the object that contains the method. That's true, but there's a bit more nuance to how JavaScript determines the value of `this` in a function or method call. 
-- **Execution context**:  the **environment** in which a function executes. 
-  - The current value of the `this` keyword. 
-  - `this` refers to the **environment** (an object) in which a function executes. 
-  - Execution context of a function or method call is the value of `this` when that code executes.
-- The context depends on how the function or method was invoked, not on where the function was defined. 
-  - In other words, <u>***how you invoke***</u> a function or method determines its execution context for that invocation. It doesn't matter how you define the function or method, nor does it matter where or when you called it. 
-  - So two invocations of the same function or method can have very different execution contexts depending on how you make those calls. 
-- There are two basic ways to set the context when calling a function or method
-  1. **Explicit**: The execution context that you set explicitly.
-  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
-- Setting the execution context is also called **binding** **`this`** or **setting the binding**. 
-  - A call binds `this` to a specific object when the function or method is called. 
-
-##### Function Execution Context(Implicit)
-
-- **<u>Every JavaScript function call has an execution context.</u>** 
-  - This means `this` keyword is available to every function in your JavaScript program. 
-  - Every time you *call* that function, JavaScript binds some object to `this`. 
-
-```js
-function foo() {
-  console.log("this refers to: " + this);
-}
-
-foo();
-// this refers to: [object global]
-```
-
-- Regular function calls use the global object as their execution context. 
-- Within a regular function call (`foo()`), JavaScript implicitly sets the binding for `this` to the global object. 
-  - Remember in Node, global object is `global` and in browser, global object is `window`. 
-  - This means that when you use `this` inside the function, it refers to the global object. 
-  - Can use `this` to modify access or modify properties of global object. 
-
-```js
-function foo() {
-  this.bar = 'bar';
-}
-
-foo();
-global.bar; // 'bar'
-```
-
-- Regular function calls do not provide explicit context, JavaScript supplies an implicit context: the global object. 
-  - We say the execution context is implicit because the function invocation doesn't supply an explicit alternative. 
-
-##### Strict Mode and Implicit Context
-
-- When strict mode is enabled,  implicit `this` is assigned to `undefined` instead of the global object. 
-  - For now, just be aware of this behavioral change. For example, strict mode shows up in JS classes and Coderpad.
-
-```js
-"use strict"; // the quotes are required
-
-function foo() {
-  console.log("this refers to: " + this);
-}
-
-foo(); // this refers to: undefined
-```
-
-##### Method Execution Context (Implicit)
-
-- Method calls implicitly use the calling object as its execution context. 
-
-- Method calls / method execution syntax provide an implicit execution context. 
-  - We are using an explicit object to call the method, but JavaScript interprets the object as the implicit context. 
-
-```js
-let foo = {
-  bar: function() {
-    console.log(this);
-  }
-};
-
-foo.bar(); // `foo` is the implicit execution context for `bar`
-// { bar: [Function: bar] }
-```
-
-- The execution context inside a method call is the object used to call the method. 
-- Be careful, however. The first-class nature of JavaScript functions has ramifications for the execution context. <u>Remember that the context is determined solely by how you call the function or method.</u> 
-  - Here, `foo.bar()` is considered a method call since we *call it as a method*; that is, we use the method call syntax `object.method()`.
-  - Since JavaScript functions are first-class objects, `bar` can be called in other ways that change the context:
-
-```js
-let baz = foo.bar;
-baz(); // Object [global] {...}
-```
-
-- In this code, we assign the `foo.bar` method to the `baz` variable. The `foo.bar` property and the `baz` variable now refer to the same function object. 
-
-- What should `baz()` log? 
-
-  - Since `baz` references a method of the `foo` object, you may think that its execution context is foo. But this is wrong. 
-  - Since we are calling `baz` as a standalone function, its execution context is the global object, *not* the `foo` object. 
-
-- Question: so if we instead did this
-
-  ```js
-  foo.bar(); // Then the implicit execution context would be foo object, because we use foo object to invoke the bar method. 
-  ```
-
-##### Explicit Function and Method Execution Context
-
-- Using parenthesis after a function or method name is not the only way to invoke it. As we've seen, 
-  - When you invoke a function with parentheses, JavaScript uses the global object as the implicit context. 
-  - When you invoke a method, it uses the object that you used to call the method as the implicit context. 
-- You can provide an explicit context to any function or method, and it doesn't have to be the global object or the object that contains the method. 
-- Instead, you can use any object -- or even `null` -- as the execution context for any function or method. 
-- There are two main ways to do that in JavaScript: `call` and `apply`.
-
-##### Explicit Execution Context with `Call`
-
-- Remember that all JavaScript functions are objects: they have properties and methods just like any other object. 
-- The general syntax for `call` is 
-
-```js
-someObject.someMethod.call(context, arg1, arg2, arg3, ...)
-```
-
-- One method that all JavaScript functions have is the `call` method. 
-
-  - The **`call`** method calls a function with an explicit execution context. 
-  - The first argument to `call` provides the <u>explicit context</u> for the function invocation. 
-  - `Call` does not mutate the object passed as argument to `call`
-
-  ```js
-  // calls logNum and sets explicit execution context to obj (binds this to obj). 
-  // obj becomes the explicit context. 
-  function logNum() {
-    console.log(this.num);
-  }
-  
-  let obj = {
-    num: 42
-  };
-  
-  logNum.call(obj); // logs 42 
-  // This code shows how the execution context is explicitely set to `obj` isntead of global object.
-  // obj is not mutated. 
-  ```
-
-  The code is functionally similar to the following
-
-  ```js
-  // Makes logNum a method(property) inside obj.
-  // Invokes logNum using obj, so the implicit context is obj. 
-  // Mutates obj. 
-  function logNum() {
-    console.log(this.num);
-  }
-  
-  let obj = {
-    num: 42
-  };
-  
-  obj.logNum = logNum; // added new property to obj. 
-  obj.logNum(); // logs 42
-  ```
-
-  ```js
-  // above code becomes like to this 
-  function logNum() {
-    console.log(this.num);
-  }
-  
-  let obj = {
-    num: 42, 
-    logNum : logNum, // Note that there's no parentheses, just the logNum function identifier, not the logNum() which returns value of undefined. 
-  };
-  
-  obj.logNum(); // logs 42
-  ```
-
-  - This code is different however because we add a new property to the `obj` object, which mutates `obj`. 
-  - we don't mutate the object when we used `call`. 
-
-- Can also use `call` to explicitly set the execution context on methods, not just functions. 
-
-```js
-// Calls the method logNum and sets explicit execution context to obj2. 
-let obj1 = {
-  logNum() { // logNum is a method
-    console.log(this.num);
-  }
-};
-
-let obj2 = {
-  num: 42
-};
-
-obj1.logNum.call(obj2); // logs 42
-// This code shows how the execution context is set to obj2 instead of obj1, which is the calling object of method logNum. 
-```
-
-The behavior here is similar to: 
-
-```js
-// Makes obj1.logNum a method (property) of obj2. 
-// So the implicit execution context becomes obj2. 
-// obj2 is mutated. 
-let obj1 = {
-  logNum() {
-    console.log(this.num);
-  }
-};
-
-let obj2 = {
-  num: 42
-};
-
-obj2.logNum = obj1.logNum;
-obj2.logNum(); // logs 42
-```
-
-```js
-// above code becomes like this
-let obj1 = {
-  logNum() {
-    console.log(this.num);
-  }
-};
-
-let obj2 = {
-  num: 42, 
-  logNum : obj1.logNum, // Note: no parentheses, we are setting it to the function, not return value of the function. 
-};
-
-obj2.logNum(); // logs 42
-```
-
-- Again there is a difference because `obj2` is mutated when we give it a `logNum` property. 
-  - That's the problem with this pattern. 
-- Supposed our function takes arguments.
-
-```js
-function sumNum(num1) {
-  return this.num + num1;
-}
-
-let obj = {
-  num: 42
-};
-```
-
-```js
-obj.num = sumNum.call(obj, 5);
-console.log(obj.num); // => 42 + 5 = 47
-```
-
-- We want to call `sumNum` in a way that it updates `obj.num`. 
-- Fortunately `call`method allows you to pass multiple arguments. 
-
-```js
-// Again, can understand code better if we write it directly, which is making sumNum a method inside obj, and passing 5 to sumNum. 
-function sumNum(num1) {
-  return this.num + num1;
-}
-
-let obj = {
-  num: 42
-};
-
-obj.sumNum = sumNum;
-obj.num = obj.sumNum(5);
-console.log(obj.num); // => 47
-```
-
-##### Explicit Execution Context with `apply`
-
-- `apply`: calls a function or method with an explicit execution context (the first argument passed to it), and also (optionally) passes an array of arguments to the called function or method. 
-
-- Only difference between `apply` and `call` is that `apply` uses an array to pass any arguments to the function. 
-- General syntax of `apply`: 
-
-```js
-someObject.someMethod.apply(context, [arg1, arg2, arg3, ...])
-```
-
-- Useful if you have a list of arguments in an array.
-- But with modern JS(ES6 + ) `apply` isn't needed since you can use `call` in conjunction with the spread operator to accomplish the same thing. 
-
-```js
-let args = [arg1, arg2, arg3];
-someObject.someMethod.call(context, ...args);
-```
-
-> Reminder definition of **spread operator**: allows an iterable such as an array expression or string to be expanded in places where zero or more arguments (for function calls) or elements (for array literals) are expected, or an object expression to be expanded in places where zero or more key-value pairs(for object literals) are expected. 
-
-##### Summary
-
-- All JavaScript functions and methods execute within an execution context, sometimes called its `this` binding. 
-  - How `this` gets bound depends entirely on how the function is invoked. 
-  - You can't tell a function's execution context by merely looking at how the function is defined or where it's defined: you must examine the invocation itself. 
-- Regular function calls implicitly use the global object as their execution context, while method calls implicitly use the calling object as their context. 
-  - You can override this behavior by setting the execution context explicitly with either `call` or `apply`. 
-- The mechanics of context binding is an essential but difficult concept. Most difficulties arise from forgetting that JavaScript does not use *lexical scoping rules* to determine the binding. 
-  -  For instance, if you use `this` inside a method of `obj`, you expect that `this` refers to `obj`. However, that's not always the case.
-  -  It's important to remember that the rules for `this` are entirely different from the rules for variable scope. 
-  -  While a variable's scope is determined by where you write the code, `this` depends on how you invoke it.
-
-------
-
-### Practice Problems: Implicit and Explicit Function Execution Contexts
-
-[reference](https://launchschool.com/lessons/1eaf5e37/assignments/a6c48cbb)
-
-1. What will the following code output? Try to determine the results without running the code.
-
-   ```js
-   function func() {
-     return this;
-   }
-   
-   let context = func();
-   
-   console.log(context);
-   ```
-
-   Show Solution
-
-   The global object. In Node it's `global`; in a browser, it's `window`. Line 5 calls `func` as a function. Regular function calls implicitely use the global object as their execution context, so the implicit context for `func` is the global object, and it returns the global object. 
-
-2. What will the following code output? Explain the difference, if any, between this output and that of problem 1.
-
-   ```js
-   let obj = {
-     func: function() {
-       return this;
-     },
-   };
-   
-   let context = obj.func();
-   
-   console.log(context);
-   ```
-
-   Show Solution
-
-   The output is `obj`. That is because on line 7, there is a method invocation. `Func` is invoked as a method and uses the calling object `obj` as its implicit execution context. 
-
-3. What will the following code output?
-
-   ```js
-   message = 'Hello from the global scope!';
-   
-   function deliverMessage() {
-     console.log(this.message);
-   }
-   
-   deliverMessage();
-   
-   let foo = {
-     message: 'Hello from the function scope!',
-   };
-   
-   foo.deliverMessage = deliverMessage;
-   
-   foo.deliverMessage();
-   ```
-
-   Show Solution
-
-   ```terminal
-   Hello from the global scope
-   Hello from the function scope!
-   ```
-
-   The first log operation is generated by the function call `deliverMessage()` on line 7. Since this is a regular function call, which means that `deliverMessage` is invoked as a standalone function, the implicit execution context is the global object. `this.message` refers to the global property `message` . The second log operation occurs on line 15 where `deliverMessage()` is invoked as a method. The implicit execution context for method calls is the calling object `foo`, so `this.message` resolves to `foo.message`.  
-
-4. What built-in methods have we learned about that we can use to specify a function's execution context explicitly?
-
-   Show Solution
-
-   `call` `apply` `bind`
-
-5. Take a look at the following code snippet. Use `call` to invoke the `add` method but with `foo` as execution context. What will this return?
-
-   ```js
-   let foo = {
-     a: 1,
-     b: 2,
-   };
-   
-   let bar = {
-      a: 'abc',
-      b: 'def',
-      add: function() {
-        return this.a + this.b;
-      },
-   };
-   ```
-
-   Show Solution
-
-   ```js
-   bar.add.call(foo); // 3
-   ```
-
-   Since we invoke `call` on `bar.add` with `foo` as the explicit context, the `add` method uses `foo.a` and `foo.b` to determine the results, not `bar.a` and `bar.b`. Thus, the return value is 3. 
-
-------
-
-### Hard Binding Functions with Contexts
-
-- JavaScript has a third way to specify the execution context: the `bind` method on function objects.
-
-##### `bind`
-
-- Definition: **Bind** returns a new function that is permanently bound to the context passed to **bind**  as first argument. 
-
-  - Hard binds a function to an explicit execution context. 
-  - We have to call on the new function using `()`. 
-
-- Syntax
-
-  ```js
-  newFunc = someObject.someMethod.bind(context)
-  // Or 
-  function.bind(context)
-  ```
-
-- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
-
-  - In detail: `bind`'s context is the *original* function and it returns a new function that is permanently bound to the context passed to `bind` as first argument. When we call this new function using `()`, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
-  - What's important is to recognize that `bind`'s context is the original function, and it <u>returns a new function that calls the original function with the context supplied to bind as its first argument.</u> 
-  - `bind`'s execution context is the original function, because it is invoked using method invocation. Method invocations always use the calling function as its implicit execution context. But `bind` explicitly sets the execution context for the new function. 
-
-- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
-
-  ```js
-  function sumNum(num1) {
-    return this.num + num1;
-  }
-  
-  let obj = {
-    num: 42
-  };
-  
-  let sumNum2 = sumNum.bind(obj);
-  sumNum2(5); // => 47
-  // new function sumNum2 is permanently bound to obj. 
-  ```
-
-- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
-
-  ```js
-  let object = {
-    a: 'hello',
-    b: 'world',
-    foo: function() {
-      return this.a + ' ' + this.b;
-    },
-  };
-  
-  let bar = object.foo;
-  bar();                                // "undefined undefined" 
-  																			// undefined because there is no 'a' property in the global object
-  
-  let baz = object.foo.bind(object);
-  baz();                                // "hello world"
-  																			// baz is permanently bound to object, so the context / 'this' now refers to object 
-  // baz calls on foo, passing permanent object context to it. 
-  ```
-
-  ```js
-  let object2 = {
-    a: 'hi',
-    b: 'there',
-  };
-  
-  baz.call(object2);  // "hello world" - `this` still refers to `object`
-  ```
-
-- JavaScript implements `bind` method like this: 
-
-  ```js
-  Function.prototype.bind = function (...args) {
-    let fn = this; // bind's context is the original function function ()
-    let context = args.shift();
-  
-    return function () {  										// bind returns a function function(), which is permanently bound to context. 
-      return fn.apply(context, args); // this function calls the original function fn. using apply. 
-    };
-  };
-  ```
-
-  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
-
-- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
-
-  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
-  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
-
-> - A trap is thinking that `bind` permanently alters the original function. 
-> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
-> - The original function isn't changed and doesn't have its context changed. 
-
-##### Advantage and disadvantage of `bind`
-
-- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
-- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
-
-##### Summary
-
-- In this assignment, we saw a third way to specify the execution context.
-
-- Unlike `call` and `apply`, though, `bind` returns a new function that is permanently bound to the context that's provided to `bind` as the first argument. 
-- You cannot alter the execution context of the resulting function, even if you use `call`, `apply`, or try calling `bind` a second time.
-
-------
-
-### Practice Problems: Hard Binding Functions with Contexts
-
-[reference](https://launchschool.com/lessons/1eaf5e37/assignments/ed3a72f0)
-
-1. What method can we use to bind a function permanently to a particular execution context?
-
-   Show Solution
-
-   ```markdown
-   Function.prototype.bind()
-   ```
-
-   We can use the `bind` method on function objects to permanently bind a function to an execution context. 
-
-2. What will the following code log to the console?
-
-   ```js
-   let obj = {
-     message: 'JavaScript',
-   };
-   
-   function foo() {
-     console.log(this.message);
-   }
-   
-   foo.bind(obj);
-   ```
-
-   Show Solution
-
-   ```terminal
-   
-   ```
-
-   Nothing is logged to the console because unlike `call` or `apply`, `bind` doesn't invoke the function used to call it. Instead, it returns a new function that is permanently bound to the context argument. 
-
-3. What will the following code output?
-
-   ```js
-   let obj = {
-     a: 2,
-     b: 3,
-   };
-   
-   function foo() {
-     return this.a + this.b;
-   }
-   
-   let bar = foo.bind(obj);
-   
-   console.log(foo());
-   console.log(bar());
-   ```
-
-   Show Solution
-
-   ```terminal
-   NaN
-   
-   5
-   ```
-
-   On line 12 `foo` is invoked as a standalone function so its implicit execution context is the global object. `foo` looks for properties on the global object. Both `this.a` and `this.b` evaluate to `undefined`, resulting in a `NaN` value. `bar` refers to a function that is permanently bound to object `obj` as its explicit execution context, so when `bar` is called on line 13, it references `obj`'s properties. `this.a` and `this.b` evaluate to 2 and 3, resulting in the 5 value. 
-
-4. What will the code below log to the console?
-
-   ```js
-   let positivity = {
-     message: 'JavaScript makes sense!',
-   };
-   
-   let negativity = {
-     message: 'JavaScript makes no sense!',
-   };
-   
-   function foo() {
-     console.log(this.message);
-   }
-   
-   let bar = foo.bind(positivity);
-   
-   negativity.logMessage = bar;
-   negativity.logMessage();
-   ```
-
-   My Solution 
-
-   ```terminal
-   Javascript makes sense!
-   ```
-
-   On line 15, property `logMessage` is added to the `negativity` object and assigned to `bar`. `logMessage` is invoked on line 16. `logMessage` references `bar`, which references a function that is explicitly bound to the object `positivity` as its execution context. That function invokes `foo` with `this` referring to `positivity`, and `this.message` resolves to 'JavaScript makes sense'. So even though a method is invoked on the `negativity` object, it references a property from the `positivity` object. 
-
-   Their Solution
-
-   Since `bar` is bound to `positivity` as the return value of the `bind` invocation on line 13, `positivity`'s property `message` is logged by the function call on the last line, despite the fact that the function is invoked as a method on the `negativity` object
-
-5. What will the code below output?
-
-   ```js
-   let obj = {
-     a: 'Amazebulous!',
-   };
-   let otherObj = {
-     a: "That's not a real word!",
-   };
-   
-   function foo() {
-     console.log(this.a);
-   }
-   
-   let bar = foo.bind(obj);
-   
-   bar.call(otherObj);
-   ```
-
-   Show Solution
-
-   ```terminal
-   Amazebulous
-   ```
-
-   `bind` returns a function that is permanently bound to the execution context passed to it as argument. So `bar` references a function that is permanently bound to `obj`. Even when `bar` is invoked by `call` on line 14, `bar`'s execution context is still `obj`.
-
-   Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`. In keeping with this, the last line of our code outputs "Amazebulous!", because the function `bar`'s context has been permanently bound to `obj`.
-
-------
-
-### Dealing with Context Loss I
-
-- Functions and methods can "lose context". Quoted because functions don't lose their execution context in reality - they always have one, but it may not be the context you expect. 
-- If you understand how execution context is determined, you shouldn't be surprised by the value of `this` in any given scenario. 
-- However how a specific context arrived isn't always intuitive. even when you understand the rules, the context for a given invocation may surprise you. 
-
-##### Method Copied from Object
-
-- Context loss when a method is copied out of an object and used elsewhere. 
-
-- When we took a method out of an object and execute it as a function or method on another object, the function's context was no longer the original object. 
-
-```js
-let john = {
-  firstName: 'John',
-  lastName: 'Doe',
-  greetings() {
-    console.log('hello, ' + this.firstName + ' ' + this.lastName);
-  },
-};
-
-john.greetings();         // context is john
-let foo = john.greetings; // Strips context
-foo(); // context is now the global object
-```
-
-```js
-// we would have to write this code instead
-let foo = john.greetings.bind(john); // bind returns a function
-foo(); // => need to invoke foo here in order to run greetings() 
-
-// or simply
-let foo = john.greetings; 
-foo.call(john)
-```
-
-##### Unideal Solutions
-
-- You can use `foo.call(john)` to restore the original context, but suppose you don't execute the function right away or you need to pass it to another function for execution? Context passed to `call` may be out of scope by then. 
-  - By the time `foo` gets called, `john` made be out of scope. 
-- Another way to solve this problem is to change the original function to accept context object as second parameter, then pass context to original function when calling it(problem is you can't always change methods, and not good to pass a lot of arguments to functions)
-  - change `repeatThreeTimes` to accept the context object as the second parameter, then pass the context to `repeatThreeTimes` when calling it. 
-
-```js
-function repeatThreeTimes(func) {
-  func(); // can't use func.call(john); john is out of scope
-  func();
-  func();
-}
-
-function foo() {
-  let john = {
-    firstName: 'John',
-    lastName: 'Doe',
-    greetings: function() {
-      console.log('hello, ' + this.firstName + ' ' + this.lastName);
-    },
-  };
-
-  repeatThreeTimes(john.greetings); // Strips context
-}
-
-foo();
-
-// => hello, undefined undefined
-// => hello, undefined undefined
-// => hello, undefined undefined
-```
-
-```js
-function repeatThreeTimes(func, context) {
-  func.call(context);
-  func.call(context);
-  func.call(context);
-}
-
-function foo() {
-  let john = {
-    firstName: 'John',
-    lastName: 'Doe',
-    greetings: function() {
-      console.log('hello, ' + this.firstName + ' ' + this.lastName);
-    },
-  };
-
-  repeatThreeTimes(john.greetings, john);
-}
-
-foo();
-
-// hello, John Doe
-// hello, John Doe
-// hello, John Doe
-```
-
-- Some of JavaScript's built-in methods, such as the Array abstraction methods like `forEach`, `map`, and `filter`, use this technique. 
-  - Such methods take a callback function as an argument and an optional `thisArg` context object that gets used as the callback's execution context.
-- However, it's not always possible to pass a context argument to a function or method, you may not even be able to change the function, if say, it belongs t a third-arty library. 
-  - It's also not a good idea to pass a lot of arguments to your functions; the more arguments a function can accept, the harder the function is to use. 
-
-##### Best solution: `bind`
-
-- Another approach is to hard-bind the method's context using `bind`. 
-
-```js
-function repeatThreeTimes(func) {
-  func();
-  func();
-  func();
-}
-
-function foo() {
-  let john = {
-    firstName: 'John',
-    lastName: 'Doe',
-    greetings: function() {
-      console.log('hello, ' + this.firstName + ' ' + this.lastName);
-    },
-  };
-
-  repeatThreeTimes(john.greetings.bind(john));
-}
-
-foo();
-
-// => hello, John Doe
-// => hello, John Doe
-// => hello, John Doe
-```
-
-##### Advantage and Disadvantage of `bind`
-
-- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
-- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
-
-------
-
-### Dealing with Context Loss II
-
-In this assignment we'll see how nested functions suffer from context loss. Loss of surrounding context is a common issue when dealing with functions nested within object methods.
-
-##### Nested Functions: Inner Function Not Using the Surrounding Context
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    function bar() {
-      console.log(this.a + ' ' + this.b);
-    }
-
-    bar(); // bar is invoked as standalone function on line 9. THus its execution context is the global object, not `obj` object. 
-  },
-};
-
-obj.foo();        // => undefined undefined
-```
-
-- By now, you should be able to understand why this code logs `undefined undefined` instead of `hello world`. 
-  - Here, `bar`is invoked as a standalone function on line 9. Thus, its execution context is the global object, not the `obj` object that you may have expected. (Every function invocation has an execution context, look at the most specific one inside of a method call... if that makes sense. )
-  - Once again, a function or method's execution context depends solely on how you invoke it, now on how and where it's defined. 
-- Let's examine solutions to this problem. 
-
-##### Solution1: Preserve Context with a Variable in Outer Scope
-
-- Use `let self = this` or `let that = this` in the outer function. 
-  - Basically, set `this` to a variable to access the correct context object. 
-- If you define the `self` or `that` variable -- these names are idiomatic, not a required name-- in the outer scope, you can use that variable and whatever value it contains inside your nested inner function(s).
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let self = this; // self references `obj`
-
-    function bar() {
-      console.log(self.a + ' ' + self.b); // Can use self instead of `this` to access the correct context object. 
-    }
-
-    bar();
-  },
-};
-
-obj.foo(); // => hello world
-```
-
-##### Solution2 : Call Inner Function with Explicit Context
-
-- Use `call` or `apply` to explicitly provide a context when calling the inner function. 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    function bar() {
-      console.log(this.a + ' ' + this.b);
-    }
-
-    bar.call(this); // call invokes bar with `obj` as execution context.
-  },
-};
-
-obj.foo(); // => hello world
-```
-
-- We won't show an example of `apply` since you can always use `call` in its place if you use the spread operator to expand `apply`'s array argument.
-
-##### Solution 3: Use `bind`
-
-- Call `bind` on the inner function and get a new function with its execution context permanently set to the object. 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let bar = function() { // anonymous function expression
-      console.log(this.a + ' ' + this.b);
-    }.bind(this); 
-
-    // some code
-    bar(); // bar is invoked twice in foo 
-
-    // some more code
-    bar();
-
-    // still more code
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
-```
-
-- We're calling bind on the function expression here, then assigning the returned function to the `bar` variable. 
-- You can use a function declaration instead of a function expression, but you'll need an extra variable. 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    function bar() {
-      console.log(this.a + ' ' + this.b);
-    }
-
-    let qux = bar.bind(this); // function declaration
-
-    // some code
-    qux();
-
-    // some more code
-    qux();
-
-    // still more code
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
-```
-
-- Advantage of `bind` is that you can do it once and then call it as often as needed without an explicit context. 
-
-##### Solution 4: Using an Arrow Function
-
-- Arrow functions use lexical scoping. 
-
-- Arrow functions ignore the rule that a function or method's execution context depends soley on how you invoke it, now on how and where it's defined. 
-- This exception comes in very handy when dealing with context loss. 
-- A property of arrow functions is that <u>they inherit their execution context from the surrounding scope</u>. 
-- An Arrow function defined inside another function always has the same context as the outer function: 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() { // outer function is foo, which is invoked with obj as implicit context
-    let bar = () => {
-      console.log(this.a + ' ' + this.b);
-    }
-
-    // some code
-    bar();
-
-    // some more code
-    bar();
-
-    // still more code
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
-```
-
-- Using arrow functions like this is similar to using `bind` in that you don't have to worry about arrow functions losing their surrounding context. 
-- An arrow function, once created, always has the same context as the function that surrounded it when it was created. 
-- Of all the techniques we saw in the assignment, using arrow functions is most common these days. 
-
-##### Arrow function Exception 
-
-- Don't try to use arrow functions as methods on an object. 
-
-```js
-let obj = {
-  a: 5,
-
-  foo: () => {
-    console.log(this.a);
-  },
-};
-
-obj.foo(); // => undefined
-// // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
-```
-
-- This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
-- The surrounding context is the **global object**. The reason for that is simple: the `let` statement in this example is in the program's top level code, so its context is the global object. That means `this` inside the object literal is also the global object, so `this` on line 5 refers to the global object, not `obj`. 
-- Note that `this` in `obj.foo` is not determined by how the method is called. 
-  - We call the method on line 9, and we seem to be telling JavaScript to use `obj` as the context. 
-  - Instead, the context ends up being the global object. 
-  - That seems to contradict our repeated statements that the context is determined entirely by how a function or method is invoked. That's clearly not the case here; it certainly violates the rule.
-  - However, you won't usually see code like this in practice.
-  - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
-
-------
-
-### Dealing with Context Loss III
-
-- Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
-
-##### Function as Argument Losing Surrounding Context
-
-- Here we use `john` object to call the `greetings` method, with `john` as its context. `greetings` then calls `repeatThreeTimes` function with a function argument whose body refers to `this`. `repeatThreeTimes` calls its argument three times with an implicit context. 
-- Since context is determined by how a function is invoked, the context for all three invocations will be the global object. Thus, the `this` inside the function passed to `repeatThreeTimes` is the global object, not `john`. 
-
-```js
-function repeatThreeTimes(func) {
-  func(); // `this` loses context here. Now the context is the global object. 
-  func();
-  func();
-}
-
-let john = {
-  firstName: 'John',
-  lastName: 'Doe',
-  greetings: function() {
-    repeatThreeTimes(function() {
-      console.log('hello, ' + this.firstName + ' ' + this.lastName); // this refers to john. 
-    });
-  },
-};
-
-john.greetings(); // john.greetings would be the function, but john.greetings() invokes the function
-
-// => hello, undefined undefined
-// => hello, undefined undefined
-// => hello, undefined undefined
-```
-
-- Problem in code below is that the callback function expression is passed as argument to `forEach` so it gets executed with the global object as context. 
-  - Remember: array iteration methods like `forEach` invoke and executes the callback function on every element in the array. 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // context loss from passing callback function as argument. 
-    });
-  },
-};
-
-obj.foo();
-
-// => 1 undefined undefined
-// => 2 undefined undefined
-// => 3 undefined undefined
-```
-
-##### Solution 1: Preserve the Context with a Variable in Outer Scope
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let self = this; // this refers to obj, because of method invocation on line 12. 
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + self.a + ' ' + self.b);
-    });
-  },
-};
-
-obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
-```
-
-##### Solution 2 : Use `bind`
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // why does this refer to obj? 
-    }.bind(this)); // binding foo method, which is an anonymous function expression. 
-  },
-};
-
-obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
-```
-
-- `this` on line 6 refers to `obj` because the order of method calls starts from line 11, where method `foo` is invoked by `obj` and the context is set to `obj`. Then on line 7, foo references a new function that is permanently bound to context of `this`, which still refers to `obj`. The new function invokes the original `foo` function with permanent context of `obj`, so on line 6, `this` refers to `obj`.  
-
-##### Solution 3 : Use arrow function
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(number => {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // arrow function inherits surrounding context, the surrounding context is obj. 
-    });
-  },
-};
-
-obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
-```
-
-##### Solution 4: Use the optional `thisArg` argument
-
-- Some methods that take function arguments allow an optional argument that specifies the context to use when invoking the function. 
-- For example `Array.prototype.forEach` has an optional `thisArg` argument for the context. 
-- `map`, `every`, `some`, and others take this optional argument. 
-
-```js
-let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b);
-    }, this);
-  },
-};
-
-obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
-```
-
-##### Summary
-
-- Passing a function as an argument to another function strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
-- This problem is identical to the problem of copying a method from an object and using it as a bare function. 
-- These two code do the same thing
-
-```js
-array.forEach(obj.logData);
-```
-
-```js
-let logData = obj.logData;
-array.forEach(logData);
-```
-
-- In both code, `obj.logData` method gets invoked by `forEach` with the global object as the context, not`obj`. 
-
-------
-
-### Practice Problems: Dealing with Context Loss
-
-[reference](https://launchschool.com/lessons/1eaf5e37/assignments/408c20c3)
-
-1. The code below should output `"Christopher Turk is a Surgeon"`. Without running the code, what will it output? If there is a difference between the actual and desired output, explain the difference.
-
-   ```js
-   let turk = {
-     firstName: 'Christopher',
-     lastName: 'Turk',
-     occupation: 'Surgeon',
-     getDescription() {
-         return this.firstName + ' ' + this.lastName + ' is a '
-                                     + this.occupation + '.';
-     }
-   };
-   
-   function logReturnVal(func) {
-     let returnVal = func();
-     console.log(returnVal);
-   }
-   
-   logReturnVal(turk.getDescription);
-   ```
-
-   Show Solution
-
-   ```terminal
-   undefined undefined is a undefined.
-   ```
-
-   Functions as arguments lose surrounding context. When we pass `turk.getDescription` to `logReturnVal` as an argument, we remove the method from its context.  When it is executed as `func`, the context is set to the global object instead of `turk`. Since the global object doesn't have properties defined for `firstName`, `lastName`, or `occupation`, the output isn't what we expect.
-
-2. Modify the program from the previous problem so that `logReturnVal` accepts an additional `context` argument. If you then run the program with `turk` as the context argument, it should produce the desired output.
-
-   Show Solution
-
-   ```js
-   let turk = {
-     firstName: 'Christopher',
-     lastName: 'Turk',
-     occupation: 'Surgeon',
-     getDescription() {
-         return this.firstName + ' ' + this.lastName + ' is a '
-                                     + this.occupation + '.';
-     }
-   };
-   
-   function logReturnVal(func, context) {
-     let returnVal = func.call(context);
-     console.log(returnVal);
-   }
-   
-   logReturnVal(turk.getDescription, turk);
-   ```
-
-   By using `call` to invoke `func` and passing it the `context` argument, we can provide the desired context for the function. On line 16, we invoke `logReturnVal` with `turk` as the `context` argument, then pass that value to `call`; the result is our desired output. 
-
-   We can use `bind` but given the condition that `logReturnVal` must accept a context argument, the solution would lead to odd code. 
-
-   ```js
-   let returnVal = func.bind(context)();
-   ```
-
-3. Suppose that we want to extract `getDescription` from `turk`, but we always want it to execute with `turk` as its execution context. How would you modify your code to do that?
-
-   Show Solution
-
-   ```js
-   let turk = {
-     firstName: 'Christopher',
-     lastName: 'Turk',
-     occupation: 'Surgeon',
-     getDescription() {
-         return this.firstName + ' ' + this.lastName + ' is a '
-                                     + this.occupation + '.';
-     }
-   };
-   
-   function logReturnVal(func) {
-     let returnVal = func();
-     console.log(returnVal);
-   }
-   
-   logReturnVal(turk.getDescription.bind(turk));
-   ```
-
-   
-
-4. Consider the following code:
-
-   ```js
-   const TESgames = {
-     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-     seriesTitle: 'The Elder Scrolls',
-     listGames: function() {
-       this.titles.forEach(function(title) {
-         console.log(this.seriesTitle + ': ' + title);
-       });
-     }
-   };
-   
-   TESgames.listGames();
-   ```
-
-   Will this code produce the following output? Why or why not?
-
-   ```plaintext
-   The Elder Scrolls: Arena
-   The Elder Scrolls: Daggerfall
-   The Elder Scrolls: Morrowind
-   The Elder Scrolls: Oblivion
-   The Elder Scrolls: Skyrim
-   ```
-
-   Show Solution
-
-   ```terminal
-   undefined: Arena
-   undefined: Daggerfall
-   undefined: Morrowind
-   undefined: Oblivion
-   undefined: Skyrim
-   ```
-
-   No because on line 5, a callback function is passed to `forEach` as argument. When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. So on line 6, the execution context is not `TESgames` object, but the global object. `this.seriesTitle` resolves to `undefined` as there is no `seriesTitle` property on the global object. 
-
-5. Use `let self = this;` to ensure that `TESgames.listGames` uses `TESGames` as its context and logs the proper output.
-
-   Show Solution
-
-   ```js
-   const TESgames = {
-     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-     seriesTitle: 'The Elder Scrolls',
-     listGames: function() {
-       let self = this;
-       this.titles.forEach(function(title) {
-         console.log(self.seriesTitle + ': ' + title);
-       });
-     }
-   };
-   
-   TESgames.listGames();
-   ```
-
-6. The `forEach` method provides an alternative way to supply the execution context for the callback function. Modify the program from the previous problem to use that technique to produce the proper output:
-
-   Show Solution
-
-   ```js
-   const TESgames = {
-     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-     seriesTitle: 'The Elder Scrolls',
-     listGames: function() {
-       this.titles.forEach(function(title) {
-         console.log(this.seriesTitle + ': ' + title);
-       }, this);
-     }
-   };
-   
-   TESgames.listGames();
-   ```
-
-7. Use an arrow function to achieve the same result:
-
-   Show Solution
-
-   ```js
-   const TESgames = {
-     titles: ['Arena', 'Daggerfall', 'Morrowind', 'Oblivion', 'Skyrim'],
-     seriesTitle: 'The Elder Scrolls',
-     listGames: function() {
-       this.titles.forEach(title => {
-         console.log(this.seriesTitle + ': ' + title);
-     	});
-     }
-   };
-   
-   TESgames.listGames();
-   ```
-
-   
-
-8. Consider the following code:
-
-   ```js
-   let foo = {
-     a: 0,
-     incrementA: function() {
-       function increment() {
-         this.a += 1;
-       }
-   
-       increment();
-     }
-   };
-   
-   foo.incrementA();
-   foo.incrementA();
-   foo.incrementA();
-   ```
-
-   What will the value of `foo.a` be after this code runs?
-
-   Show Solution
-
-   ```terminal
-   0
-   ```
-
-   When the code on line 5 runs, the value of `this` is the global object. That is because the function `increment` is invoked as a standalone function on line 8. `this.a` on line 5 references a property of the global object rather than a property of `foo`. Thus, property `foo.a` is never modified in the code, its value remains 0. 
-
-   The value of `foo.a` will be `0`. Since `increment` gets invoked as a function, `this.a` on line 5 references a property of the global object rather than a property of `foo`. Thus, the property `foo.a` isn't modified by the `increment`; its value remains 0.
-
-9. Use one of the methods we learned in this lesson to invoke `increment` with an explicit context such that `foo.a` gets incremented with each invocation of `incrementA`.
-
-   Show Solution
-
-   ```js
-   let foo = {
-     a: 0,
-     incrementA: function() {
-       function increment() {
-         this.a += 1;
-       }
-   
-       increment.call(this);
-     }
-   };
-   
-   foo.incrementA();
-   foo.incrementA();
-   foo.incrementA();
-   ```
-
-   We can use `apply` or `call` to invoke `increment` on line 8 with explicit context. We pass `this` as the context argument since inside `incrementA` but outside of `increment`, `this` references the containing object, namely `foo`.
-
-   ```js
-   let foo = {
-     a: 0,
-     incrementA: function() {
-       function increment() {
-         this.a += 1;
-       }
-   
-       increment.bind(this)(); // bind also works but code is strange
-     }
-   };
-   
-   foo.incrementA();
-   foo.incrementA();
-   foo.incrementA();
-   ```
-
-------
-
-### Lesson 2 Summary
-
-- **Default prototype**: The default prototype is the prototype object of the `Object` constructor, referenced by `Object.prototype`
-  - `Object.prototype` is the `prototype`property of the Object constructor. 
-
-- Every object has an internal `[[Prototype]]` property that points to a special object, the object's prototype. It is used to look up properties that don't exist on the object itself. 
-  - `Object.create` returns a new object with the passed-in argument as its prototype.
-  - You can use `Object.getPrototypeOf` and `obj.isPrototypeOf` to check for prototype relationships between objects.
-- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-  - In other words, **downstream** objects can delegate properties or behaviors to **upstream** objects. 
-  - A downstream object overrides an inherited property if it has a property with the same name. (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
-  - `Object.getOwnPropertyNames` and `obj.hasOwnProperty` can be used to test whether an object owns a given property.
-- Function invocations (e.g., `parseInt(numberString)`) rely upon implicit execution context that resolves to the global object. Method invocations (e.g., `array.forEach(processElement)`) rely upon implicit context that resolves to the object that holds the method.
-- All JavaScript code executes within a context. The top-level context is the `window` object in browsers and the `global` object in Node. All global methods and objects, such as `parseInt` and `Math`, are properties of `window` or `global`.
-- The value of `this` is the current execution context of a function or method.
-- The value of `this` changes based on how you invoke a function, not how you define it.
-- JavaScript has first-class functions that have the following characteristics:
-  - You can add them to objects and execute them in the respective object's context.
-  - You can remove them from their objects, pass them around, and execute them in entirely different contexts.
-  - **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
-- The `call` and `apply` methods invoke a function with an explicit execution context.
-- The `bind` method returns a new function that permanently binds a function to a context.
-- Arrow functions are permanently bound to the execution context of the enclosing function invocation. When defined at the top level, the context of an arrow function is the global object.
-
-## Functions Definitions
-
-**Hoisting**
-
--  JavaScript Hoisting refers to the process whereby the compiler allocates memory for variable and function <u>declarations</u> prior to execution of the code.
-
-- JavaScript runs programs in two passes; the first pass performs hoisting, and the second executes the code.
-
-#### 3 ways to define a function (review + new)
-
-1. **Function declaration**: Function definitions that begin with `function` keyword.
-
-   - Function definition that starts with word `function` at beginning of statement. 
-
-   - Function declaration binds a function to an **identifier**(variable name), declares the existence of the function. 
-
-   - Function declarations can't be anonymous.
-   - Function declarations are **hoisted**: can be called before function is defined. 
-
-   ```js
-   functionName(); // can invoke function before function is defined.   
-   
-   function functionName() { // function defined here, functionName is a variable & identifier
-     ...
-   }
-   ```
-
-2. **Function expression**: function definitions that are part of an expression. 
-
-   - Function expressions are <u>not</u> **hoisted** : can't use function expressions before you define them. 
-
-   - Any function definition that doesn't have the word `function` at the **<u>beginning</u>** of a statement is a function expression. 
-
-     ```js
-     let functionName = function () { // Anonymous function expression
-       ...
-     }; // note the semi colon here! It's an expression so it needs semicolon. 
-     ```
-
-     ```js
-     let functionName = (parameter) => { // arrow functions are always anonymous function expressions
-       
-     };
-     ```
-
-   - Wrapping what looks like a function declaration in parentheses creates a function expression
-
-     ```js
-     // Function expression, not declaration
-     (function greetPeople() {
-       console.log("Good Morning!");
-     }); 
-     // this code is actually throws an error: expected function call but instead saw an expression. 
-     ```
-
-     ```js
-     function makeGreeter(name) {
-       return function greeter() {
-         console.log(`Hello ${name}`); 
-       }
-     }
-     // Greeter is a function expression because it starts with return. 
-     ```
-
-   - Function expressions are usually anonymous. Such as callback functions for array methods like `forEach` and `map`. 
-
-     ```js
-     let squaredNums = [1, 2, 3].map(function(num) {
-       return num * num;
-     }); // => [1, 4, 9]
-     ```
-
-   - Function expressions **<u>don't</u>** have to be anonymous: You can name a function expression. 
-
-     - `Function` keyword can be used to define a function inside an expression. 
-
-       ```js
-       let squaredNums = [1, 2, 3].map(function squareNum(num) { // call back functions don't have to be anonymous
-         return num * num;
-       }); // => [1, 4, 9]
-       ```
-
-     - Or omit name to create anonymous function expressions. 
-
-   - However, the function name given to a function expression is **not visible** in the scope that includes the function expression. 
-
-     - `foo` is a local variable that contains a reference to the function, so we can invoke the function using `foo()`. However, the function name, `bar`, is not in scope on line 3, so `bar()` does not work.
-
-     ```js
-     let foo = function bar() {};
-     foo();         // This works
-     bar();         // This does not work, the function name bar is not in scope on line 3. 
-     ```
-
-   - Advantage of naming a function expression
-
-     - The main advantage of naming a function expression occurs when the function throws an error (raises an exception). If the function has a name, the stack trace uses that name to help you determine where the error occurred. Without the name, JavaScript merely reports the location as anonymous.
-
-   - We typically assign a function expression to a variable or object property, pass it to another function, or return it to a calling function. 
-
-     ```js
-     let prompt = function() { // Assign to a variable
-     
-     };
-     
-     [1, 2, 3].forEach(function(elem) { // pass to another function
-       console.log(elem);
-     });
-     
-     
-     function makeIncrementer(increment) {
-       return function(value) { // return to caller
-         return value + increment;
-       }
-     }
-     ```
-
-3. **Arrow function**
-
-   - Arrow functions are always function expressions.
-     - No declaration syntax for arrow functions.
-     - Which means they have to be invoked by the variable name. 
-     - Also means we often pass them around or assign them to variables or properties. 
-   - Arrow functions are always anonymous: there's no way to name an arrow function.  
-   - Arrow functions are either immediately invoked, assigned to variables or properties, or passed around as arguments and return values. 
-
-   ```js
-   () => console.log("Good Morning!"); // 0 parameters
-   paramOne => console.log("Good Morning!"); // 1 parameter,
-   (paramOne, paramTwo) => console.log("Good Morning!") // 2
-   
-   let greetPeople = () => console.log("Good Morning!"); // 0 parameters
-   let greetPeople = paramOne => console.log("Good Morning!"); // 1 parameter,
-   let greetPeople = (paramOne, paramTwo) => console.log("Good Morning!") // 2 parameters
-   
-   greetPeople(); // Must invoke after defining the function. 
-   ```
-
-   - Arrow functions have an interesting feature: **implicit returns**: can omit return statement when function body contains a single expression, on a <u>**single line**</u>. 
-
-   ```js
-   [1, 2].map(element => return 1 ); // map invokes anonymous callback function here
-   ```
-
-   - If you use braces around the body of an arrow function, you must use an **explicit** `return` statement to provide a return value that isn't `undefined`. You don't need the `return` if the body does not include braces.
-
-   ```js
-   let sum = (number1, number2) => {
-     return number1 + number2; // needs explicit return statement here
-   };
-   ```
-
-   
-
-**Anonymous Function**: a function with no name. 
-
-- Call back functions p methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
-
-```js
-let name = function (x) { // function expression
-  
-});
-
-let name = () => console.log('My name is'); // arrow function
-```
-
-------
-
-#### Function Declarations vs Function Expressions
-
-- Functions defined with function declaration syntax can be invoked before the declaration in the program. 
-
-- This code works since the JavaScript engine runs our code in two passes. During the first pass, it does some preparatory work, while the second executes the code. 
-
-  - One action that occurs during the first pass is called **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
-
-  - **Hoisting** is an internal step performed by the engine; it doesn't actually move code around. 
-
-  - Hoisting isn't limited to function declarations. We'll discuss it in more detail later in the curriculum.
-
-    ```js
-    prompt('How are you today?');
-    
-    function prompt(message) {
-      console.log(`=> ${message}`);
-    }
-    ```
-
-    Acts like this
-
-    ```js
-    function prompt(message) {
-      console.log(`=> ${message}`);
-    }
-    
-    prompt('How are you today?');
-    ```
-
-- Function expressions are not **hoisted** : can't use function expressions before you define them. 
-
-  - You can test whether a function definition is a function declaration by trying to call it before the declaration. You can't call a function expression until after the expression is evaluated. 
-
-  - ```terminal
-    ReferenceError: Cannot access 'foo' before initialization
-    ```
-
-- 3 ways to do the same thing 
-
-  ```js
-  // variable 
-  function logNum(num) { // function declaration syntax, logNum is a variable
-    console.log('Number: ' + num);
-  }
-  
-  [1, 2, 3].forEach(logNum);
-  ```
-
-  ```js
-  // function expression 
-  [1, 2, 3].forEach(function logNum(num) {
-    console.log('Number: ' + num);
-  });
-  ```
-
-  ```js
-  // arrow function 
-  [1, 2, 3].forEach(num => {
-    console.log('Number: ' + num);
-  });
-  ```
-
-- Takeaways: 
-
-  - Don't invoke functions when you want to use them as values. Use invocation only when you need to run the code in the function. 
-  - Treat any function as any other JS value: remove the invocation syntax, and you got an expression whose value is a function. 
-
-#### Type of a Function Value
-
-```js
-let myFunc = function() {};
-typeof myFunc; // => "function"
-```
-
-- Functions are a kind of object: they are a compound type that has its own properties and methods. 
-- Definition of **function**: a kind of object with properties and methods.
-
-#### Summary
-
-- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
-- To use a function as an expression, write its name without the parentheses of invocation. 
-- All functions' type is  `function`, which is a kind of object with properties and methods.
-
-
-------
-
-## Higher-order functions 2
-
-- **Higher-order function**:  are functions that return another function or take another function as an argument. 
-- Higher-order functions let the programmer use powerful and flexible abstractions.
-  - abstracts away similar structures of functions and leave specific mapping up to function's caller. 
-  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. 
-  - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
-- Function factories are higher- order functions
-- All higher-order functions are first class functions. 
-
-#### First Class Functions
-
-- Have these charactersitics ( from summary)
-
-  - You can add them to objects and execute them in the respective object's context.
-  - You can remove them from their objects, pass them around, and execute them in entirely different contexts.
-  - **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
-
-- **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
-- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
-
-------
-
-## Method and property lookup sequence 2
+## Methods and properties; instance and static methods and properties 1, 3
 
  #### Methods
 
@@ -3834,61 +988,339 @@ const cat = {
 
 - If you access the method property without (), it will return the function definition.  
 
-#### What is prototype chain
+#### Overriding
 
-- The prototype chain is a chain of objects that are prototypes of an object. All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
+- If we add a new `play` method to the `Bingo` class, objects created by `Bingo` will use that method instead of looking up the prototype chain and finding it in the `Game` class. 
 
-##### What it's used for. 
+  ```js
+  class Game {
+    play() {
+      return 'Start the game!';
+    }
+  }
+  
+  class Bingo extends Game {
+    rulesOfPlay() {
+      // rules of play
+    }
+  }
+  ```
 
-- The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
-- **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
+- As soon as JavaScript finds a method, it calls it. When a class redefines a method that a superclass defines, we call this "**method overriding**."
 
-##### Example
+  - When method overriding occurs, instance object created by sub-type class will use that method instead of looking up the prototype chain and finding it in the super-type class.
 
-```js
-let foo = {
-  bar: 42,
-  qux() {
-    console.log("Pudding");
-  },
-};
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
 
-let baz = Object.create(foo);
-baz.qux()
-```
-
-- `baz`'s prototype object is `foo`. 
-
-```js
-Object.getPrototypeOf(baz) // foo
-```
-
-- `baz` delegates the invocation of `qux` to `foo`. 
-
-##### Property Access
-
-- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
-
-  - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
+  - An object can override a property of its parent by setting the property on itself.
   - A downstream object overrides an inherited property if it has a property with the same name. 
-  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
-- What happens when you set a property to a different value? 
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
 
-  - Property assignment creates a new "own " property in the object.
-    - It assumes that the property belongs to the object named to the left of the property name. 
-    - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
+- Method overriding can be prevented in class syntax by calling `Super` 
 
-##### Usefulness
+#### Property syntax : defining properties
 
-- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
-- Looking up a property in the prototype chain is the basis for prototypal inheritance. 
+- Syntax errors when trying to define properties in an object. 
 
-##### Implications
+  - `this` is an execution context that that refers to the calling method or function. 
 
-- Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
+  ```js
+  // All of these cause syntax error when trying to define the properties in the object. 
+  
+  let cat = {
+    this.name: "Butterscotch", // property names are strings and cannot be this.something
+    this.age: 13,
+  };
+  
+  let cat = {
+    name = "Butterscotch", // incorrect syntax to define property in an object.
+    age = 13
+  };
+  ```
 
+  ```js
+  // These work except `this` references the global object
+  function cat() {
+    this.name = 'Butterscotch';
+    this.age = 13;
+  }
+  
+  let cat = {
+    name: this.name; 
+  }
+  
+  function createPet(pet, name) {
+    return {
+      pet: pet, 
+      name: this.pet; 
+    }
+  }
+  ```
 
+- Can use short hand notation when property and variable have the same name. 
+
+  ```js
+  function createBook(title, author) {
+    return {
+      title: title,
+      author: author,
+  
+      getDescription: function() {
+        return `${this.title} was written by ${this.author}.`;
+      },
+    };
+  }
+  ```
+
+  ```js
+  function createBook(title, author) {
+    return {
+      title,     // same as `title: title,`
+      author,    // same as `author: author,`
+  
+      getDescription: function() {
+        return `${this.title} was written by ${this.author}.`;
+      },
+    };
+  }
+  ```
+
+#### Add property 
+
+- The correct terminology is **add** new properties to object by giving it a value 
+  - not "declare" or "assign" new properties. 
+  - assignment is when you assigns a value to a variable's left operand based on the value of its right operand. `this.property = value` 
+- The `delete` keyword deletes a property from an object
+
+#### Accessing Properties
+
+- **member access notation** (**dot notation**)
+
+  - Requires valid variable names. 
+
+- **computed member access notation** (**bracket notation**). 
+
+  - Can take any UTF-8-compatible string as the key. 
+  - Can be computed on the fly -- any expression between the brackets gets evaluated as a string and used to reference the property. 
+
+  ```js
+  obj['a-key'] = 'four';
+  
+  obj.a-key 						 // SyntaxError(a-key is not a valid variable name)
+  obj['a' + '-' + 'key'] // 'four'
+  ```
+
+#### Property Existence
+
+- We get `undefined` when accessing a non-existent property. However we also get same value if we try to access a property set to `undefined`. 
+
+- Two ways to distinguish a non-existent property from an property with value of `undefined`: 
+
+  - The **`in` operator** : returns `true` if the specified property is in the specified object or its prototype chain.
+
+    - prop: A string or symbol representing a property name or array index (non-symbols will be coerced to strings).
+
+    ```js
+    prop in object // syntax
+    'propertyName' in object
+    ```
+
+  - `hasOwnProperty` (is an instance method): Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+
+    - `Object.prototype.hasOwnProperty()` method
+
+    ```js
+    obj.hasOwnproperty() // syntax
+    ```
+
+    ```js
+    Object.keys(obj) = ['7', 'false', '1, 2, 3', 'a-key'];
+    
+    'false' in obj // true
+    'true'  in obj // false
+    
+    obj.hasOwnProperty('7') // true
+    obj.hasOwnProperty('8') // true
+    ```
+
+- Other ways to check for property existence is to **enumerate**(**iterate** over) the properties of an object.  
+
+  - `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
+  - `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
+  - `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
+
+  ```js
+  Object.keys(obj)                    // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
+  Object.getOwnPropertyNames(obj)     // [ '7', 'false', '1,2,3', 'a-key', 'undefinedKey' ]
+  ```
+
+|                              | Enumerable | Includes Non-Enumerable | Own  | Prototype Chain |
+| ---------------------------- | ---------- | ----------------------- | ---- | --------------- |
+| For … in loop                | ✅          |                         |      | ✅               |
+| Object.keys(obj)             | ✅          |                         | ✅    |                 |
+| Object.getOwnPropertyNames() |            | ✅                       | ✅    |                 |
+
+**Enumerable properties**: means the property can be **iterated** over. 
+
+- Not all properties are enumerable. In particular, most properties and methods of the built-in types are not. 
+- Usually, any properties or methods you define on for an object are enumerable. 
+- You can check whether a property is enumerable with the `Object.prototype.propertyIsEnumerable` method. ( don't have to remember this)
+- All properties created by simple assignment or property initializer are enumerable by default. 
+- Ownership of properties is determined by whether the property belongs to the object directly and not to its prototype chain. 
+
+#### Instance 
+
+- **Instance **: objects created using any means of defining multiple objects of the same kind. 
+
+  - Objects created by factory functions are considered instances, even if there's no way to test that in code. 
+
+- In JavaScript, "instance" does not have this technical meaning because JavaScript does not have this difference between classes and instances. However, in talking about JavaScript, "instance" can be used informally to mean an object created using a particular constructor function. 
+
+- Must use instance object to invoke instance properties or methods.
+
+- **Instance Properties** : properties of an instance.
+
+  - Properties of instances created by a constructor. 
+  - May be stored directly on the instance, or its prototype. Its prototype is `Constructor.prototype`
+  - For classes, instance properties must be defined in methods. 
+
+- **Instance Methods**:  (object methods / methods) :stored either as part of an object or anywhere in the object's prototype chain.
+
+  - Methods usually aren't stored directly in instances(on the instance object directly), but rather in the object's prototype object (the object referenced by **prototype** property). 
+  - Methods usually aren't stored in the object, but still operate on individual instances so we refer to them as instance methods. 
+  - Ordinary methods -- those defined on a prototype object -- are sometimes called **instance methods** or **object methods** since you need an instance of (an object) the type. More commonly, they are simply called **methods**.
+  - The methods that use this syntax: `Constructor.prototype.method` are the **instance** methods for the Constructor type. 
+    - `forEach` is an instance method of the`Array` constructor. 
+
+- Constructor and prototype pattern
+
+  ```js
+  function Rectangle(length, width) {
+    this.length = length; // instance properties
+    this.width = width;
+  }
+  
+  Rectangle.prototype.getArea = function() { // instance method
+    return this.length * this.width;
+  };
+  
+  Rectangle.prototype.value = 2; // instance property
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  
+  // notice that adding method to constructor.prototype is outside the constructor function
+  
+  // notice we are using instance object to invoke the method
+  ```
+
+- Class pattern
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+    	this.length = length; // instance properties
+    	this.width = width;
+    }
+    
+    getArea() { // instance method
+       return this.length * this.width;
+    }
+    
+    value = 2; // invalid code, instance properties must be defined in methods.
+  }
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  ```
+
+#### Static 
+
+- static keyword defines static properties and methods. 
+
+- Must use constructor name to invoke static properties and methods. 
+
+- invoking static methods on an instance of a class results in a `TypeError`. 
+
+- **Static properties** are defined and accessed directly on the <u>constructor</u>, not on an instance or a prototype.
+
+  - Static properties are properties about a constructor. 
+
+  - Typically, static properties belong to the **type** (e.g., `Dog`) rather than to the individual instances or the prototype object.
+
+  - One common use of static properties is to keep track of all of the objects created by a constructor.
+
+    ```js
+    function Dog(name, breed, weight) {
+      this.name = name;
+      this.breed = breed;
+      this.weight = weight;
+      Dog.allDogs.push(this);
+    }
+    
+    Dog.allDogs = [];
+    ```
+
+    - In this case, the static property `allDogs` contains an array with a reference to every dog object created while the program is running. 
+    - While `allDogs` maintains a list of all the dogs, it isn't information that is pertinent to a specific dog -- it's information about dogs in general. Therefore, it should be a static property.
+
+  - One well-known example of a static property is the `length` property used by the `String` type.
+
+- **Static methods**: are stored on the constructor or class. 
+
+  - ```js
+    Dog.showSpecies = function() {
+      console.log(`Dogs belong to the species ${Dog.species}`);
+    };
+    
+    Dog.showSpecies();
+    ```
+
+  - You've already seen examples of static methods on built-in JavaScript constructors. `Object.assign`, `Array.isArray`, and `Date.now` are all examples of static methods.
+
+  - Is `forEach`  static method of the `Array` constructor then?
+
+    - No, `forEach` is an instance method of the `Array` constructor, because you are using an object (array object) to invoke an instance method of the `Array` constructor, rather than calling the `Array` constructor directly. 
+
+- Constructor and prototype pattern
+
+  ```js
+  function Rectangle(length, width) {
+    this.length = length;
+    this.width = width;
+  }
+  
+  Rectangle.getDescription = function() { // static method
+    return 'A rectangle is a shape with 4 sides''
+  };
+  
+  Rectangle.description = 'A rectangle is a shape with 4 sides'; // static property 
+  
+  let rect = new Rectangle();
+  console.log(Rectangle.getDescription());
+  ```
+
+- Class Pattern
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+      this.length = length;
+      this.width = width;
+    }
+  
+  	static getArea() {
+      return 'A rectangle is a shape with 4 sides'; // static method
+    }
+    
+    static DESCRIPTION = 'A rectangle is a shape with 4 sides'; // static property 
+  }
+  
+  let rect = new Rectangle();
+  console.log(Rectangle.getArea());
+  ```
+
+------
 
 ## Implicit and explicit execution context 2
 
@@ -3898,12 +1330,14 @@ Object.getPrototypeOf(baz) // foo
 
   2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
 
-     3 ways to provide an implicit execution context. 
+     There are many ways that JS provides animplicit execution context. 
 
      - Regular function calls use <u>global object</u> as implicit execution context. 
      - Method calls use the <u>calling object</u> as its implicit execution context. 
      - A constructor call with `new` uses the <u>newly created object</u> as its implicit execution context. 
      - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
+     - When strict mode is enabled, the implicit execution context/ implicit `this` is assigned to `undefined` instead of the global object. 
+     - Outside of a function definition, the implicit execution context is the global object. 
 
 ------
 
@@ -3982,11 +1416,22 @@ Object.getPrototypeOf(baz) // foo
 
 Definition
 
-- The value of `this` is the current execution context (an object) of a function or method that is running. 
+-  `this` is  a **keyword**  that refers to an object that is the current **execution context** of a function or method that is running. 
+-  **Execution context**: the environment (an object) in which a function executes. 
+-  The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
 
-- The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
+Implications
 
-- When **strict mode** is enabled,  implicit `this` is assigned to `undefined` instead of the global object.
+- Every Javascript function call has its own execution context. 
+
+- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
+- `this` keyword is available to every function in JS, because every JS function call has an execution context.
+  - All JS functions and methods execute within an execution context , aka the `this` binding. 
+- Clarification: `this` is not a variable. It is a keyword.
+
+#### Execution context rules
+
+- When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for function calls is assigned to `undefined` instead of the global object.
 
   - CoderPad runs JavaScript code in *strict mode*. The implicit execution context is `undefined`, **not** the global object. 
 
@@ -4002,88 +1447,163 @@ Definition
     foo(); // undefined
     ```
 
-- `this` is not a variable. It is a keyword.
+- If `this` is <u>outside a function definition</u>, keyword `this` is bound to the global object. 
 
-Implications
-
-- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
-- `this` keyword is available to every function in JS, because every JS function call has an execution context.
-  - All JS functions and methods execute within an execution context , aka the `this` binding. 
-
-Clarifications about `this`
-
-- When is the execution context / `this`/ bound? 
-
-  - It is bound based on how function is invoked. 
-  - It is usually bound during function invocation /execution actually, there are exceptions such as `bind`, where the function is not immediately invoked and a copy of the function is returned with the execution context bound to the copy.
-
-- If `this` is <u>outside a function</u>
-
-  - Anywhere outside a function, the keyword `this` is bound to the global object.
+  - Even in strict mode, `this` at the top level scope, the global scope, is bound to the global object, not `undefined`. 
 
   ```js
-  let person = {
-    firstName: 'Rick ',
-    lastName: 'Sanchez',
-    fullName: this.firstName + this.lastName, // execution context is global
+  "use strict";
+  
+  let obj = {
+    foo: this,
   };
   
-  console.log(person.fullName); // logs NaN
+  console.log(obj.foo); // logs the global obejct, not undefined
   ```
 
-- But if `this` is inside a function,  then the execution context is dependent soley on how the function is invoked. 
+  - `this` in the global scope is still the global object. 
 
-  ```js
-  let person = {
-    firstName: 'Rick ',
-    lastName: 'Sanchez',
-    fullName() {
-      return this.firstName + this.lastName; // how is fullName invoked
-    },
-  };
-  
-  console.log(person.fullName()); // invoked as a method
-  ```
+    ```JS
+    let obj = { foo: this, }; // this is the this of the top-level scope
+    ```
 
-#### Execution Context Rules
+  - The braces of an object literal doesn't create a scope. Its simply a syntax that is a shorter version of saying
 
-- **Execution context**: the environment (an object) in which a function executes. 
+    ```JS
+    let obj = new Object();
+    obj.foo = this; // this of this top-level scope
+    ```
 
-- Every single javascript invocation/ call has its own **execution context**
+  - Inside a function `this` is is different depending on how the function is called. The function gets its own scope and its own `this` binding.
 
-- Execution context depends on how a function/method is invoked, not how or where it's defined.
+    ```JS
+    function foo() { console.log(this); } // the this here is inside the function, bound when called
+    foo(); // determines the value of this, in strict mode this call binds to undefined
+    ```
+
+- If `this`  is <u>used as part of a function definition</u>, and the execution context is dependent soley on how the function is invoked, not how or where you define it
+
+  - Context binding is not based on lexical scoping rules that variables use. `this` depends on how a function or method is invoked. 
 
   - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
+
     - In Node, global object is `global` and in browser, global object is `window`. 
-  - Invoking a function with `new` <u>implicitly</u> sets `this` to the instance object created by the constructor function. 
-  - You can override this behavior by setting the execution context <u>explicitly</u> with either `call`,  `apply`, or `bind`.   
-  - While a variable's scope is determined by lexical scoping, meaning where you write the code, `this` depends on how you invoke it. 
-  - Arrow functions are also exceptions to this rule. 
+    - In strict mode, regular function calls use `undefined` as their <u>implicit</u> execution context, while method calls <u>implicitly</u> use the calling object as their context. 
 
-- **Arrow functions** inherit execution context from the surrounding scope. 
-
-  -  Arrow functions are permanently bound to the execution context of the (surrouding scope)**enclosing function invocation** . 
-  -  **enclosing function invocation** (surrounding scope): the most <u>immediate</u> function scope in which the arrow function is defined. 
-     - This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
-     - The execution context of this enclosing function is determined by  how it is invoked. 
-     - Tricky: `forEach` is not considered the enclosing function for arrow functions, why? Because arrow functions are passed to `forEach` - it's not defined inside `forEach`. 
-  -  Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
-  -  Exception: don't use arrow functions as methods on an object, else it will take global object as the surrounding context. 
+    - Invoking a function with `new` <u>implicitly</u> sets `this` to the instance object created by the constructor function. 
+    - You can override the implicit execution context behavior by setting the execution context <u>explicitly</u> with either `call`,  `apply`, or `bind`.   
+    - Arrow functions are also exceptions. Arrow functions use lexical scoping. 
 
   ```js
-  let obj = {
-    a: 5,
+  // regular function call
+  function func() {
+    console.log(this);
+  }
   
-    foo: () => {
-      console.log(this.a);
-    },
-  };
-  
-  obj.foo(); // => undefined
-  // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+  func(); // undefined
   ```
 
-#### Context Loss & their solutions
+  ```js
+  // another form of regular function call 
+  let obj = {
+    func () {
+      console.log(this);
+    }
+  }
+  
+  let foo = obj.func;
+  foo(); // undefined
+  ```
+
+  ```js
+  // method invocation
+  let obj = {
+  	func() {
+      console.log(this);
+    }
+  };
+  
+  obj.func(); // logs { func: [Function: func] } which is obj
+  
+  ```
+
+- **Arrow functions** inherit execution context from the surrounding context. 
+
+  - That means that an arrow function defined inside another function always has the same context as the outer function's context. 
+
+  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**. 
+
+  - **enclosing function invocation** (surrounding scope): the most <u>immediate</u> function scope in which the arrow function is defined. 
+
+    - This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
+    - The execution context of this enclosing function is determined by  how it is invoked. 
+    - Tricky: `forEach` is not considered the enclosing function for arrow functions, why? Because arrow functions are passed as arguments to `forEach` - it's not defined inside `forEach`. 
+
+  -  An arrow function, once created, always has the same context as the function that surrounded it when it was created.
+
+    - Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
+
+  - My example: 
+
+    ```js
+    let obj = {
+      prop: function () {
+        let foo = () => {
+          console.log(this); // logs obj because obj is the surrounding context for the foo arrow function. 
+        }
+        foo();
+      },
+    };
+    
+    obj.prop();
+    ```
+
+  - Their example: 
+
+    ```js
+    let obj = {
+      a: 'hello',
+      b: 'world',
+      foo: function() {
+        let bar = () => {
+          console.log(this.a + ' ' + this.b);
+        }
+    
+        // some code
+        bar();
+    
+        // some more code
+        bar();
+    
+        // still more code
+      }
+    };
+    
+    obj.foo();
+    // => hello world
+    // => hello world
+    ```
+
+  - Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
+
+    ```js
+    let obj = {
+      a: 5,
+    
+      foo: () => {
+        console.log(this); // this refers to global object
+        console.log(this.a);
+      },
+    };
+    
+    obj.foo(); // => undefined
+    // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+    ```
+
+
+------
+
+## Context Loss & their solutions
 
 - Method is copied out of an object and used elsewhere. 
 
@@ -5435,9 +2955,64 @@ Uses
 
 ### Objects
 
+##### Object creation
+
+- Objects can be initialized using [`new Object()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/Object), [`Object.create()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create), or using the **object literal syntax** / *literal* notation (*initializer* notation). An object initializer is a comma-delimited list of zero or more pairs of property names and associated values of an object, enclosed in curly braces (`{}`).
+
+- **object-literal syntax** (object initializer)
+
+  - created with curly braces
+
+  - ```js
+    const object1 = { a : 'foo', b: 42, c: {}};
+    ```
+
+  - Function using object literal syntax
+
+    ```js
+    function makeObj() {
+      return {
+        propA: 10,
+        propB: 20,
+      };  
+    }
+    ```
 
 
-------
+  - Function NOT using object literal syntax
+
+    ```js
+    function makeObj() {
+      let obj = {};
+      obj.propA = 10;
+      obj.propB = 20;
+      return obj;
+    }
+    ```
+
+##### Object Factories
+
+- **Object factories** (factory functions): are functions that create and return objects of a particular type. 
+  - Object factories, or factory functions (also called the *Factory Object Creation Pattern*), provide a simple way to automate the creation related objects based on a predefined template. 
+  - **Type** means an object with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them arguments. 
+  - Each invocation of the factory function specifies the differences between the objects with arguments. 
+  - Is a creation type. 
+- Advantages of object factory
+  - Reduce code duplication
+  - Returns objects that represent data of a specific type.
+  - Create multiple objects of same "type" with a predefined "template". 
+  - Lets you automate the creation of objects:
+    - let you avoid most of the tedium and errors that result from copying and pasting to create multiple objects of the same type.
+  - Reuses code. 
+  - Create objects with private state. 
+- Disadvantage of object factory
+
+  - Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
+  - There is no way to tell which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
+    - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
+    - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics. 
+- Advantage of function factory
+  - An advantage of the factory pattern is that it lets us create objects with private state. If that doesn't make sense to you yet, don't worry. We'll return to this topic in a later course when we discuss closures.
 
 ## Object Creation Patterns
 
@@ -5445,13 +3020,13 @@ Uses
 
 ### Compare and Contrast
 
-| Object creation patterns                               | Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Object literals                                        | 1) simple, works with one object as a type.                  |                                                              |
-| Factory Function                                       | 1) create objects with private state                         | memory inefficient                                           |
-| pseudo-classical approach(constructors and prototypes) | 1) Like prototypal inheritance, uses prototypal delegation under the hood. 2) memory efficient | 1) only inherit properties and methods from parent constructor function's `prototype` object |
-| prototypal inheritance (OLOO)                          | 1) simpler, work with one object at time 2) memory efficient 3) uses prototypal delegation |                                                              |
-| ES6 classes                                            | 1) JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. 2) Subclasses inherit ALL methods and properties from parent class. | 1) JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together. |
+| Object creation patterns                                     | Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Object literals                                              | 1) simple, works with one object as a type.                  |                                                              |
+| Factory Function                                             | 1) create objects with private state                         | memory inefficient                                           |
+| prototypal inheritance (OLOO)                                | 1) simpler, work with one object at time 2) memory efficient 3) uses prototypal delegation |                                                              |
+| pseudo-classical approach(constructors and prototypes) (Constructor Functions) | 1) Like prototypal inheritance, uses prototypal delegation under the hood. 2) memory efficient | 1) only inherit properties and methods from parent constructor function's `prototype` object |
+| ES6 classes                                                  | 1) JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages. 2) Subclasses inherit ALL methods and properties from parent class. | 1) JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together. |
 
 - **Difference between prototypal inheritance and psuedo-classical inheritance**
   - Prototypal inheritance works with objects(one object at a time. Uses prototypal delegation. 
@@ -5741,8 +3316,6 @@ let carPrototype = { // is an object, not a function.
 - An advantage of the factory pattern is that it lets us create objects with private state. 
   - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
 
-##### Subtyping with OLOO
-
 #### Subtyping with OLOO
 
 - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
@@ -5822,7 +3395,7 @@ let subTypeObj = Object.create(SubType).init(property1, property2);
   - `new` keyword turns a function call into a constructor call. 
   - Use `this` to set object's properties and methods
   - Don't supply an explicit return value (we can, but usually don't).
-  - Has a `prototype` property called the function prottoype. 
+  - Has a `prototype` property called the function prototype. 
 - Return value of a constructor.
   - If there is an explicit return <u>object</u>, then that object is returned. 
   - In all other situations, constructor returns the newly created object (of the type associated with the constructor), provided <u>no errors</u> occur. 

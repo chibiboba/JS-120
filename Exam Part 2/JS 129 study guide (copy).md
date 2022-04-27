@@ -7,28 +7,65 @@
 ##### OOP
 
 - **OOP** (object oriented programming) is a programming **paradigm** in which we think about a problem in terms of objects,  by using objects to organize a program. 
-  -  Strive to understand the core concepts of OO before focusing on finding optimal designs. In this course, the core concepts are far more crucial; learning how to find optimal designs and architectures may take years.
+  - The idea is to model a program based on how objects in the real world interact. A real world object has **state** and **behavior**. State is properties related to the object, and Behavior is what that object can do in a verb sense.  
+  - The way we think about a program changes from a *series of steps* to a *collection of objects* that interact with each other.
   - Choosing an approach for an OO problem always comes down to making tradeoffs.
 
 ##### Advantage and Disadvantage of OOP
 
 - Advantages 
-  - Large, complex programs can be difficult to maintain due to dependencies throughout the program. OOP lets programmers write programs in a manner that reduces dependencies and makes maintenance easier.
-  - Complex coding problems are often difficult to break down and solve clearly and systematically. Using OOP to model objects and using real-world nouns to represent objects lets programmers think at a higher level of abstraction. That, in turn, helps them break down and solve problems.
-  - If done right, OOP makes code flexible, easy to understand, and easy to change. 
+  - OOP lets programmers write programs in a manner that reduces dependencies and makes maintenance easier.
+    - Large, complex programs can be difficult to maintain due to dependencies throughout the program. 
+  - It lets programmers think about a problem at a higher-level of abstraction, which helps them break down and solve the problem.
+    - Complex coding problems are often difficult to break down and solve clearly and systematically. Using OOP to model objects and using real-world nouns to represent objects lets programmers think at a higher level of abstraction. That, in turn, helps them break down and solve problems.
+  - Done right, OOP makes code flexible, easy to understand, and easy to change.. 
   - Large complex procedural programs end up with functions all throughout the code split up from the data they operate on. 
 - Disadvantages
   - OOP programs are often much larger than the equivalent procedural program. 
   - OOP may lead to less efficient code; OO programs may require more memory, disk space, and computing power.
 
+Example: 
+
+```js
+// procedural programs end up with functions throughout code, split up from the data they operate on.
+function game{}
+
+function state{}
+
+```
+
+```js
+// OOP
+class createState {}
+
+class Game {
+  constructor() {
+    let stateObj = new createState();
+  }
+  
+  behavior() {},
+}
+game.behavior(); // game.start();
+```
+
 ------
 
 ##### Encapsulation
 
-- **Encapsulation** is the idea of bundling data and operations related to that data in a cohesive unit called an object (grouping related properties and methods in a single object). 
-- bundle state(data) and behavior(operations related to data) into a single entity (an object). 
-- In OOP, encapsulation also refers to the idea of restricting access to state and some behavior, but JavaScript objects don't support that type of encapsulation.
+- Encapsulation is the idea of bundling data (state) and operations related to that data (behavior ) into a cohesive unit, single entity called an object. 
+
+- It is grouping related properties and methods in a single object.
+
+- Prompt: How does encapsulation in JavaScript differ from encapsulation in most OO languages?
+
+  Answer: 
+
+  - In other languages, encapsulation also refers to the idea of restricting access to state and behavior. 
+  - In other words, hiding details of an object from code that uses the object. An object should only expose the properties and methods that other objects need, to use the encapsulated object. 
+  - JavaScript objects don't support this type of encapsulation. They are ways to achieve a degree of access restriction, but it's not perfect.
+
 - **Interface of an object**: the state and behaviors exposed by the object for other objects to use.
+  
   - Encapsulation has a broader purpose in most OOP languages. It also refers to restricting access to the state and certain behaviors. An object only exposes the data and behaviors that other parts of the application need to work.  
   - Objects expose a **public interface** for interacting with other objects and keep their implementation details hidden. Thus, other objects can't change the data of an object without going through the proper interface. Unfortunately, JS doesn't support access restrictions. 
 
@@ -36,32 +73,17 @@
 
 ##### Compact Method Syntax
 
+- It is a short hand syntax to use methods in objects.
+
 - Using functions as object values (methods) is so common that there's short hand syntax called compact syntax for it. 
 
 ```js
-let raceCar = {
-  make: 'BMW',
-  fuelLevel: 0.5,
-  engineOn: false,
-
-  startEngine() {
-    raceCar.engineOn = true;
+let obj = {
+  prop() {
+    
   },
-
-  drive() {
-    raceCar.fuelLevel -= 0.1;
-  },
-
-  stopEngine() {
-    raceCar.engineOn = false;
-  },
-
-  refuel(percent) {
-    if ((raceCar.fuelLevel + (percent / 100)) <= 1) {
-      raceCar.fuelLevel += (percent / 100);
-    } else {
-      raceCar.fuelLevel = 1;
-    }
+  prop: function () {
+    
   },
 };
 ```
