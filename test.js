@@ -1,20 +1,20 @@
-function createCar(make, model, year) {
-  return {
-    make,             // Same as "make: make"
-    model,            // Same as "model: model"
-    year,             // Same as "year: year"
-    started: false,
+let superType = {
+  initialize(property1) {
+    this.property1 = property1;
+    return this;
+  }
+};
 
-    start() {         // Same as "start: function() {"
-      this.started = true;
-    },
+let subType = Object.create(superType);
 
-    stop() {          // Same as "stop: function() {"
-      this.started = false;
-    },
-  };
-}
+subType.init = function (property1, property2) {
+  let copyOfSuperType = this.initialize(property1);
+  this.property2 = property2;
+  Object.assign(this, copyOfSuperType);
+  return this;
+};
 
-let car = createCar(`um`, `ok`, 2021);
-console.log(car.make); // um
-console.log(car.model); // ok
+// creating a subType object
+// code essentially does what super() does in class syntax
+let subTypeObj = Object.create(subType).init('hi', 'hello');
+console.log(subTypeObj);

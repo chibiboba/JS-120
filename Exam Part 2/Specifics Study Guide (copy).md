@@ -2775,8 +2775,8 @@ Let's see another example:
 
 - Definition: 
 
-  - The **`Object.assign()`** method copies all [enumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable) [own properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) from one or more *source objects* to a *target object*. It returns the modified <u>target</u> object
   - Merges two or more objects into a single object and returns a reference to the modified object. 
+  - The **`Object.assign()`** method copies all [enumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable) [own properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) from one or more *source objects* to a *target object*. It returns the modified <u>target</u> object
   - Target object is mutated!
 
 - Syntax 
@@ -2833,7 +2833,52 @@ Uses
   console.log(humans('emily', 21)); // example humans object
   ```
 
+- `Object.assign` overrides methods and properties with same name, based on the latest argument obj passed. 
+
+  ```js
+  function robots (modelNumber) {
+    return {
+      modelNumber: modelNumber, 
+      walk () {
+        console.log(`cannot walk`);
+      }
+    };
+  }
   
+  let mixIn = {
+    walk() {
+      console.log(`can walk`);
+    }, 
+    
+    talk() {
+      console.log(`can talk`);
+    },
+  }
+  
+  function humanoids(modelNumber) {
+    let obj = {};
+    let robot = robots(modelNumber);
+    Object.assign(obj, robot, mixIn);
+    return obj;
+  }
+    
+   
+  function humans(name, age) {
+  	let obj = {};
+    Object.assign(obj, mixIn);
+    obj.name = name; 
+    obj.age = age;
+    return obj;
+  }
+  
+  let robot = robots(100);
+  robot.walk(); // cannot walk
+  
+  let humanoid = humanoids(101);
+  humanoid.walk(); // can walk
+  
+  // console.log(humans('emily', '21'));
+  ```
 
   
 
@@ -3323,19 +3368,19 @@ let carPrototype = { // is an object, not a function.
 - See Practice.js 
 
 ```js
-let SuperType = {
+let superType = {
   initialize(property) {
     this.property = property;
     return this;
   }
-}
+};
 
-let SubType = Object.create(superType);
+let subType = Object.create(superType);
 
-SubType.init = function() {
+subType.init = function() {
   return this.initialize(property); // think of this as super, we are calling on parent method
   // use different initializer method names to prevent infinite loop here
-}
+};
 
 // creating a subType object
 // code essentially does what super() does in class syntax
@@ -3346,25 +3391,25 @@ let subTypeObj = Object.create(SubType).init(property);
   - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
 
 ```js
-let SuperType = {
+let superType = {
   initialize(property1) {
     this.property1 = property1;
     return this;
   }
-}
+};
 
-let SubType = Object.create(superType);
+let subType = Object.create(superType);
 
-SubType.init = function(property1, property2) {
+subType.init = function(property1, property2) {
   let copyOfSuperType = this.initialize(property1); 
   this.property2 = property2;
-  let newObj = Object.assign(copyOfSuperType, this);
-  return newObj;
-}
+  Object.assign(this, copyOfSuperType);
+  return this;
+};
 
 // creating a subType object
 // code essentially does what super() does in class syntax
-let subTypeObj = Object.create(SubType).init(property1, property2);
+let subTypeObj = Object.create(subType).init(property1, property2);
 ```
 
 
@@ -4309,21 +4354,23 @@ Note that this most recent example uses class expressions instead of class decla
 - Objects linked to other objects (OLOO) is a JavaScript Design Pattern that lets us define a parent object from which we can create other objects with shared behavior. All shared properties will be defined on this parent object. 
 - Think of `init` as the `constructor` method. 
 - See Practice.js 
+  - Chaining subtypes requires different `init` method names to prevent infinite looping. 
+
 
 ```js
-let SuperType = {
+let superType = {
   initialize(property) {
     this.property = property;
     return this;
   }
-}
+};
 
-let SubType = Object.create(superType);
+let subType = Object.create(superType);
 
-SubType.init = function() {
+subType.init = function(property) {
   return this.initialize(property); // think of this as super, we are calling on parent method
   // use different initializer method names to prevent infinite loop here
-}
+};
 
 // creating a subType object
 // code essentially does what super() does in class syntax
@@ -4334,25 +4381,25 @@ let subTypeObj = Object.create(SubType).init(property);
   - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
 
 ```js
-let SuperType = {
+let superType = {
   initialize(property1) {
     this.property1 = property1;
     return this;
-  }
-}
+  },
+};
 
-let SubType = Object.create(superType);
+let subType = Object.create(superType);
 
-SubType.init = function(property1, property2) {
+subType.init = function(property1, property2) {
   let copyOfSuperType = this.initialize(property1); 
   this.property2 = property2;
-  let newObj = Object.assign(copyOfSuperType, this);
-  return newObj;
-}
+  Object.assign(this, copyOfSuperType);
+  return this;
+};
 
 // creating a subType object
 // code essentially does what super() does in class syntax
-let subTypeObj = Object.create(SubType).init(property1, property2);
+let subTypeObj = Object.create(subType).init(property1, property2);
 ```
 
 
@@ -4434,9 +4481,11 @@ let subTypeObj = Object.create(SubType).init(property1, property2);
 - An object's internal `[[Prototype]]` property points to another object, and the object can delegate method calls to that other object. 
 - Use `object.create` to create a new object that inherits properties from the prototype object.  
   - It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
-  - The newly created object has access to all properties and methods that the prototype object provides. 
+  - The newly created object has access to all properties and methods on the prototype object. 
 - OLOO uses prototypal inheritance. 
 - We've seen plenty of prototypal inheritance. For example: 
+
+
 
 ```js
 // notice we're working with an object
@@ -4469,7 +4518,7 @@ will.toString(); // => My name is William and I'm 28 years old.
 - Syntax
 
   - Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then <u>restore the constructor</u> property of the **sub-type**'s prototype object back to the **sub-type** function. 
-    - This must be done before you add new methods to the `subtype.prototype
+    - This must be done before you add new methods to the `subtype.prototype`
   
   ```js
   Square.prototype = Object.create(Rectangle.prototype);

@@ -275,13 +275,29 @@ Answer:
 
 # Lesson 4
 
+# Specifics Study guide
+
+## Prototypes
+
+------
+
+Prompt: 
+
+Answer: 
+
+------
+
 # Main focus
+
+## This
 
 ##### Prompt: What is `this`?
 
 Answer: `this` is a keyword that refers to an object that is the current execution context of a function or method that is running. 
 
 ------
+
+## Execution Context Rules
 
 ##### Prompt: What are execution context rules?
 
@@ -933,31 +949,174 @@ func(); // 1
 
 ------
 
+## Object Creation Patterns
+
 ##### Prompt: List the different object creation patterns, and the 3 features in each.
 
 Answer:  Factory Functions, Objects Linking Other Objects, Constructor Functions, and ES6 Classes. The features are inheritance, mix-ins, and polymorphism. 
 
 ------
 
-Prompt: 
+##### Prompt: What is polymorphism?
+
+Answer: 
+
+- Definition: refers to the ability of objects of different types to respond in different ways to the same method invocation. 
+
+------
+
+##### Prompt: What is an *object type*
+
+Answer: An object type is a specific category of objects with a specific set of methods and properties. They use the same method name and take the same number of arguments.
+
+------
+
+##### Prompt: What is is a mix-in?
 
 Answer: 
 
 ------
 
-Prompt: 
+##### Prompt: (practice) List the different object creation patterns, and the 3 features in each. And how to implement them using a hierarchy of objects.
 
-Answer: 
+Answer: So the four different object creation patterns are Factory functions, OLOO, constructor prototype pattern, ES6 classes. I will also demonstrate how to implement the 3 features of inheritance, mix-ins, and polymorphism in each of the object creation patterns, using a hierarchy of objects.
+
+First, let's create a template of a hierarchy of objects. 
+
+- animals 
+  - property: name
+  - method: makeNoise : 'growls'
+- cats --> should inherit from animals object
+  - property: name
+  - method: makeNoise: meows
+- humans 
+  - property: name
+  - method: makeNoise: talks
+- mix-In
+  - house: cats and humans live in house. 'has - a ' relationship vs 'is - a' relationship. Cats and humans both have this capability, but are not related to each other. 
+
+First let's discuss factory functions, and the 3 features. 
+
+- Inheritance: 
+  - This is not inheritance, but factory function can reuse another factory function by using `Object.assign` to mix an object returned by one factory function into the instance object of another factory function
+  - Factory functions can create objects using prototypal inheritance, to reuse code from another factory function. 
+- Mix-ins: objects that define common behavior shared by otherwise unrelated classes
+  - implemented by using `Object.assign` to mix the mix-in object into the instance object of a factory function.
+- Polymorphism:  the ability of objects of different types to respond in different ways to the same method invocation. Will demonstrate this using the `makeNoise` method 
+  - polyphorism through inheritance
+    - implemented through overriding a method inherited from a super-type. 
+  - polymorphism through duck-typing
+    - objects of unrelated types, use the same method name, to perform related but different functions. 
+
+```js
+function animals (name) {
+  return {
+    name: name, 
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    }
+  };
+}
+
+function cats(name) {
+  let obj = {};
+  let animal = animals(name);
+  Object.assign(obj, animal, mixIn); // reusing code from animals factory function
+  obj.makeNoise = function () { // polymorphism through inheritance
+    console.log(`${this.name} meows`);
+  }
+  return obj;
+}
+
+function humans (name) {
+  let obj = {
+    name: name,
+    walk () {
+
+    }
+  };
+  Object.assign(obj, mixIn);
+  obj.makeNoise = function() { // polymorphism through duck-typing
+    console.log(`${this.name} talks`);
+  }
+  return obj;
+}
+
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives in a house`);
+  },
+};
+
+let animal = animals('bobo');
+animal.makeNoise(); // 
+
+let cat = cats('fluffy');
+cat.makeNoise(); 
+cat.house();
+
+let human = humans('sara');
+human.makeNoise(); 
+human.house();
+```
+
+```js
+function animals (name) {
+  return {
+    name: name, 
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    }
+  };
+}
+
+function cats(name) {
+  let animal = animals(name);
+  let obj = Object.create(animal); // prototypal inheritance
+  Object.assign(obj, mixIn); // mix-ins
+  obj.makeNoise = function () { // polymorphism through inheritance
+    console.log(`${this.name} meows`);
+  }
+  return obj;
+}
+
+function humans (name) {
+  let obj = {
+    name: name,
+    walk () {
+
+    }
+  };
+  Object.assign(obj, mixIn);
+  obj.makeNoise = function() { // polymorphism through duck-typing
+    console.log(`${this.name} talks`);
+  }
+  return obj;
+}
+
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives in a house`);
+  },
+};
+
+let animal = animals('bobo');
+animal.makeNoise(); // 
+
+let cat = cats('fluffy');
+cat.makeNoise(); 
+cat.house();
+
+let human = humans('sara');
+human.makeNoise(); 
+human.house();
+```
+
+
 
 ------
 
-Prompt: 
-
-Answer: 
-
-------
-
-Prompt: 
+Prompt: Compare and contrast the different object creation patterns, the advantages and disadvantages of each. 
 
 Answer: 
 
@@ -1830,7 +1989,7 @@ obj.foo();
 
 - The assessment requires detailed knowledge of all of these object creation patterns, including how to implement them and their nuances.
 - Needless to say, being able to demonstrate this knowledge with examples on the fly requires a lot of practice.
-- A good way to practice is to start from scratch and try to produce a functionally identical hierarchy of objects using each different object creation pattern. This practice is most effective if the hierarchy includes features such as inheritance, mix-ins, and polymorphism in order to illustrate how to implement these aspects in the different patterns.
+- A good way to practice is to start from scratch and try to produce a functionally identical <u>hierarchy of objects</u> using each different object creation pattern. This practice is most effective if the hierarchy includes features such as inheritance, mix-ins, and polymorphism in order to illustrate how to implement these aspects in the different patterns.
 - Lacking any and all creativity, I usually practiced with something like creating a hierarchy of vehicles using Factory Functions, Objects Linking Other Objects, Constructor Functions, and ES6 Classes. 
 
 ------
@@ -1839,41 +1998,84 @@ obj.foo();
 
 ##### Inheritance
 
-- Definition: Making one function, constructor, or class a subtype of another. 
+- Definition: Each object creation type has its own form of inheritance. 
 - Inheritance with factory functions
   - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
-- Inheritance with OLOO(prototypal inheritance)
-- Inheritance with constructors and prototypes
-- Inheritance with Classes
+  - Factory functions can create objects using  prototypal inheritance.
+- OLOO: prototypal inheritance
+- constructors and prototypes: pseudo- classical inheritance
+  - Subtyping: Making one function, constructor, or class a subtype of another. 
+- Classes: class inheritance
+
+###### Prototypal inheritance
+
+- A simple form of inheritance that works with one object at a time, which is why it's often called **object inheritance**
+
+- Use `Object.create` to create an object that inherits properties from from a prototype object. The newly created object has access to all properties and methods that the prototyp
+- An objects internal `[[prototype]]` property points to the prototype object, and the object can delegate method calls to the prototype object. 
 
 ##### Mix-Ins: 
 
-- Definition: A Mix-in is an object that defines methods to be "mixed in" to a function, constructor, or class. 
+- Definition: A mix-in is an object that defines the common behavior between multiple classes. 
 
-  - `Object.assign` is used to *mix*(copy the methods and properties of source object) into another (target) object. 
+- Definition:  Mix-ins are used to share behavior between otherwise unrelated classes.
 
-    - The **`Object.assign()`** Merges two or more objects into a single object returns a reference to the modified object. 
+-  It defines the methods to be "mixed in " to a function, constructor, or class. This grants that class access to all of the methods in the object. 
 
+  - The **`Object.assign()`** Merges two or more objects into a single object returns a reference to the modified object. 
+    - `Object.assign` is used to copy the methods and properties of source objects into the target object. 
+  
     - copying all [enumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable) [own properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) from one or more *source objects* to a *target object*. It returns a reference to the modified <u>target</u> object
-
+  
     - Syntax
+  
 
-      ```js
-      Object.assign(targetObj, ...sources)
-      Object.assign(Constructor.prototype, mixIn, mixIn...)
-      ```
-
+  ```
+  Object.assign(targetObj, ...sources)
+  Object.assign(Constructor.prototype, mixIn, mixIn...)
+  ```
+  
   - This grants the function/constructor/class access to all the methods in the object.
 
 ##### Polymorphism
 
+- Definition: Polymorphism refers to the ability of objects of <u>different types</u> to respond <u>in different ways to</u> the <u>same</u> method invocation. 
+  - It's a crucial concept that can lead to more maintainable code. 
+
+- Polymorphism through inheritance: 
+
+  - Definition:  **overriding** a method inherited from a superclass.
+  - An example is the `toString()` method
+    - `toString()` returns a string representation of an object `[object Type]`
+    - `toString()` can be overridden by creating a function in place of it. 
+
+- Polymorphism through **Duck-typing**: 
+  - Definition: Objects of <u>different unrelated types</u> use the same method ***name*** to perform different but related functions. 
+  - 
 
 
-#### Factory Functions
+#### Hierarchy of objects template
 
-- Definition: Factory functions are functions that create and return objects of a particular type (set of methods and properties). 
-  - Each invocation of the factory function specifies the differences between the objects with arguments. 
+- animals 
+  - property: name
+  - method: makeNoise : 'growls'
+- cats --> (inheritance)
+  - property: name
+  - method: makeNoise: `meows` (polymorphism through inheritance)
+- humans 
+  - property: name
+  - method: makeNoise: `talks` (polymorphism through duck-typing)
+- mix-in
+  - house: cats and humans live in house. 'has - a ' relationship vs 'is - a' relationship. Cats and humans both have this capability, but are not related to each other. 
+
+#### Factory Functions (11 & 12)
+
+- Definition: Factory functions create and return objects of a particular type: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments.
+  - provide a simple way to automate the creation related objects based on a predefined template. 
+  - are functions that create and return objects of a particular type. 
+    - **Type** means an object with a particular set of methods and properties. 
   - One factory function can reuse another factory function by mixing the object created by that factory function into itself using `Object.assign`. 
+
 - Advantages of factory function
   - Automates the creation of objects, creating multiple objects of a particular type.
   - Reuses Code
@@ -1881,19 +2083,208 @@ obj.foo();
 - Disadvantage of object factory
   - Can't identify what factory function created the object, so we can't be sure we are working with the right **type** of object.
   - Wastes memory: Each object created by the factory function has a copy of all the methods, which can be redundant and memory intensive.
-- Inheritance with factory functions
+- ###### Inheritance with factory functions
+  
   - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
+  - Factory functions can create objects with prototypal inheritance.
 - Mix-ins with factory functions
-  - Can use `Object.assign` to mix-
+  - Can use `Object.assign` to mix the return object of one factory function into the instance object of another factory function. 
 - Code Example
 
 ```js
-function human
+function animals (name) {
+  return {
+    name: name, 
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    }
+  };
+}
+
+function cats(name) {
+  let animal = animals(name);
+  let obj = Object.create(animal); // prototypal inheritance
+  Object.assign(obj, mixIn); // mix-ins
+  obj.makeNoise = function () { // polymorphism through inheritance
+    console.log(`${this.name} meows`);
+  }
+  return obj;
+}
+
+function humans (name) {
+  let obj = {
+    name: name,
+    walk () {
+      console.log(`${this.name} can walk.`);
+    }
+  };
+  Object.assign(obj, mixIn);
+  obj.makeNoise = function() { // polymorphism through duck-typing
+    console.log(`${this.name} talks`);
+  }
+  return obj;
+}
+
+// functions are hoisted.
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives in a house`);
+  },
+};
+
+let animal = animals('bobo'); 
+animal.makeNoise();  // bobo growls
+
+let cat = cats('fluffy');
+cat.makeNoise(); // fluffy meows
+cat.house(); // fluffy lives in a house
+
+let human = humans('sara');
+human.makeNoise();  // sara talks
+human.house(); // sara lives in a house
 ```
 
-
-
 #### Objects Linking Other Objects (OLOO)
+
+- Short: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An `init` method defined on the prototype is used to customize the state of each object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
+
+- Create new objects using that object prototype with this code
+
+  ```js
+  let newObj = Object.create(obj).init(state)
+  ```
+
+- Detail:   OLOO lets us define a parent object from which we can create objects with shared behavior. 
+
+  - all shared properties are defined on this parent object. 
+  - Other objects can be created from the parent object using `Object.create(obj)`. 
+  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties . 
+
+  - Note that OLOO doesn't use functions. Instead it uses a parent object as prototype, then `Object.create` to create new objects that inherit from that prototype. 
+
+- Compare the two creation patterns
+
+  ```js
+  // OLOO
+  let newObj = Object.create(obj).init();
+  
+  // pseudo-classical(constructor inheritance)
+  let newObj = new Obj(); // newObj is an instance of Obj
+  ```
+
+
+###### Inheritance with OLOO
+
+- OLOO uses prototypal inheritance in two ways. It uses prototypal inheritance to create new objects, and it also uses prototypal inheritance to make a prototype object inherit from another prototype object.
+
+- Syntax: 
+
+  - Chaining subtypes requires different `init` method names to prevent infinite looping. 
+
+  ```js
+  let superType = {
+    initialize(property) {
+      this.property = property;
+      return this;
+    }
+  };
+  
+  let subType = Object.create(superType);
+  
+  subType.init = function(property) {
+    return this.initialize(property); // think of this as super, we are calling on parent method
+    // use different initializer method names to prevent infinite loop here
+  };
+  
+  // creating a subType object
+  // code essentially does what super() does in class syntax
+  let subTypeObj = Object.create(SubType).init(property);
+  ```
+
+- Syntax 2:  If subType has its own properties to be set
+
+  - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
+
+  ```js
+  let superType = {
+    initialize(property1) {
+      this.property1 = property1;
+      return this;
+    },
+  };
+  
+  let subType = Object.create(superType);
+  
+  subType.init = function(property1, property2) {
+    let copyOfSuperType = this.initialize(property1); 
+    this.property2 = property2;
+    Object.assign(this, copyOfSuperType);
+    return this;
+  };
+  
+  // creating a subType object
+  // code essentially does what super() does in class syntax
+  let subTypeObj = Object.create(subType).init(property1, property2);
+  ```
+
+- Code Example
+
+  ```js
+  let animals = {
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    },
+  
+    init(name) {
+      this.name = name;
+      return this;
+    },
+  };
+  
+  let mixIn = {
+    house() {
+      console.log(`${this.name} lives in a house.`);
+    }
+  };
+  
+  let cats = Object.create(animals);
+  Object.assign(cats, mixIn);
+  
+  cats.initialize = function(name) {
+    return this.init(name);
+  };
+  
+  cats.makeNoise = function() {
+    console.log(`${this.name} meows`);
+  };
+  
+  let humans = {
+    makeNoise() {
+      console.log(`${this.name} talks`);
+    }, 
+  
+    init(name) {
+      this.name = name;
+      return this;
+    }
+  };
+  
+  Object.assign(humans, mixIn);
+  
+  
+  let animal = Object.create(animals).init('Bobo');
+  animal.makeNoise(); // Bobo growls
+  
+  let cat = Object.create(cats).initialize('Fluffy');
+  cat.makeNoise(); // Fluffy meows
+  cat.house(); // Fluffy lives in a house.
+  
+  let human = Object.create(humans).init('Sara');
+  human.makeNoise(); // Sara talks
+  human.house(); // Sara lives in a house.
+  ```
+
+  
 
 #### Constructor Functions
 
