@@ -1998,21 +1998,35 @@ obj.foo();
 
 ##### Inheritance
 
-- Definition: Each object creation type has its own form of inheritance. 
-- Inheritance with factory functions
-  - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
-  - Factory functions can create objects using  prototypal inheritance.
-- OLOO: prototypal inheritance
-- constructors and prototypes: pseudo- classical inheritance
-  - Subtyping: Making one function, constructor, or class a subtype of another. 
-- Classes: class inheritance
+- Inheritance describes two related but distinct forms of inheritance: prototypal and pseudo-classical inheritance
 
 ###### Prototypal inheritance
 
-- A simple form of inheritance that works with one object at a time, which is why it's often called **object inheritance**
+- A simple form of inheritance that works with one object at a time, which is why it's often called **object inheritance** or **prototypal delegation**. 
 
-- Use `Object.create` to create an object that inherits properties from from a prototype object. The newly created object has access to all properties and methods that the prototyp
+- Use `Object.create` to create an object that inherits properties from from a prototype object. The newly created object has access to all properties and methods on the prototype object. 
 - An objects internal `[[prototype]]` property points to the prototype object, and the object can delegate method calls to the prototype object. 
+- Factory functions, OLOO use prototypal inheritance.
+
+###### pseudo-classical inheritance
+
+- In pseudo-classical inheritance, a constructor's prototype object (the object referenced by its `prototype` property) inherits from another constructor's prototype. That is, a sub-type inherits from a super-type.
+
+- Also known as **constructor inheritance**
+
+- Syntax
+
+  - Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then <u>restore the constructor</u> property of the **sub-type**'s prototype object back to the **sub-type** function. 
+    - This must be done before you add new methods to the `subtype.prototype`
+
+  ```js
+  Square.prototype = Object.create(Rectangle.prototype);
+  Square.prototype.constructor = Square;
+  ```
+
+- `class` and the `extends` keyword is an alternative form of pseudo-classical inheritance. 
+
+- The constructor/prototype object creation pattern and class pattern use pseudo-classical inheritance.
 
 ##### Mix-Ins: 
 
@@ -2146,9 +2160,9 @@ human.house(); // sara lives in a house
 
 #### Objects Linking Other Objects (OLOO)
 
-- Short: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An `init` method defined on the prototype is used to customize the state of each object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
+- Defintion: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An `init` method defined on the prototype is used to customize the state of each object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
 
-- Create new objects using that object prototype with this code
+- Syntax
 
   ```js
   let newObj = Object.create(obj).init(state)
@@ -2284,9 +2298,15 @@ human.house(); // sara lives in a house
   human.house(); // Sara lives in a house.
   ```
 
-  
-
 #### Constructor Functions
+
+- Definition: Constructors are functions that create and return an instance object of the constructor function. 
+  - Constructors functions define state and a prototype object defines shared behaviors. 
+  - We use the `new` keyword preceding a function invocation to treat the function as a constructor. 
+  - Calling `new` on a function creates a new object. The code within the function executes with the execution context (`this`) set to the new object. The newly created object’s `__proto__` property is set to point at the object referenced by the function's `prototype` property. The newly created object is then implicitly returned.
+  - Constructors use the **constructor/prototype pattern**, also known as **pseudo-classical** object construction:
+    - In this pattern, we use a constructor and a prototype object to create objects and provide common methods for those objects. 
+- Inheritance with constructors: Pseudo-classical inheritance Pattern
 
 #### ES6 Classes
 
