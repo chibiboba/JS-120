@@ -3900,23 +3900,26 @@ human.house(); // Sara lives indoors.
 
 ##### Definition
 
+- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
+
+- The **class syntax** is **syntactic sugar** (syntax designed to be easier to read or use) for creating objects that use constructors and prototypes.
+
+  - ES6 classes provide a cleaner, more compact alternative to constructors and prototypes.
+  - As with functions, they are first-class citizens and come in the form of declarations and expressions. 
+  - Functionally, classes behave almost identically to the constructors and prototypes they aim to replace. 
+
+  - Classes allow for static methods by using the `static` modifier.
+  - Using classes, it's possible to do everything you can with the constructor and prototype pattern. However, the class syntax is easier to read and write, and the enforced `new` keyword helps prevent bugs.
+
+More Info
+
 - ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
 
   ```js
   typeof Class // function
   ```
 
-- Naming convention: use **PascalCase** for constructor functions and classes. 
-
-- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
-
-- classes act like **syntactic sugar** -- syntax designed to be easier to read or use. 
-
-  - In essence, they provide little more than a more natural and possibly familiar way to create constructors and prototypes.
-  - Cleaner, more compact alternative to constructors and prototypes.
-  - Similar to functions that they are first-class citizens and come in in the form of declarations and expressions. 
-  - Behave similar to constructors and prototypes.
-  - Classes allow for static methods by using the `static` modifier. 
+- Naming convention: Like constructors and prototypes, class names are capitalized. Use **PascalCase** for constructor functions and classes. 
 
 ##### Precision of Language
 
@@ -3974,7 +3977,7 @@ console.log(rec.getArea());            // 50
 
 - Similarities between class and constructor/prototype pattern
 
-  - anything in the constructor method is the instance object's own properties, like the constructor prototoype pattern
+  - anything in the constructor method is the instance object's own properties, like the constructor prototype pattern
 
   - In most situations, instantiating a new object from a class is identical to creating one with the constructor/prototype pattern:
 
@@ -4088,11 +4091,9 @@ class Sheep extends Parent() {
 
 let theParent = new A();
 let eep = new Sheep();
-let meep = new Child();
+let meep = new Chid();
 meep.print();
 ```
-
-- Class expressions are not hoisted. 
 
 ##### Static Methods and Properties
 
@@ -4335,7 +4336,7 @@ Reducing Complexity
 
 ##### `Super`
 
-- The `super()` method refers to the parent class. 
+- Outside the `constructor` method, `super` keyword refers to the parent class.  
 
 - When called inside the `constructor` method, the `super` keyword refers to the <u>constructor method</u> for the parent class. We call the parent's constructor method and get access to the parent's properties and methods. 
 
@@ -4394,7 +4395,8 @@ Reducing Complexity
 
 -  Also, you must call `super` in subclass' constructor  before you use `this` in that constructor.  
 
-  **<u>Don't want method overriding</u>**
+
+**<u>Don't want method overriding</u>**
 
 - To prevent method overriding, `super` keyword can also be used to call functions on the parent object, so we can use some functionality form parent class in the subtype class. 
 
@@ -4584,7 +4586,7 @@ let subTypeObj = Object.create(subType).init(property1, property2);
 - OLOO
 
   ```JS
-  let Rectangle = {
+  let rectangle = {
     init(length, width) {
   		this.length = length;
       this.width = width;
@@ -4592,8 +4594,8 @@ let subTypeObj = Object.create(subType).init(property1, property2);
     },
   };
   
-  let Square = Object.create(Rectangle);
-  Square.init = function() {
+  let square = Object.create(rectangle);
+  square.initialize = function() {
     return this.init(length, width);
   }
   ```
