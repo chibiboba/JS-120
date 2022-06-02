@@ -2947,9 +2947,9 @@ Uses
 
 - Is a static method of the Object Function
 
-- Definition: Creates a new object that inherits properties from an existing object (the prototype object).
+- Definition: The function creates a new object that inherits properties from an existing object (the prototype object).
 
-  - Creates a new object whose `[[Prototype]]` property references the argument.
+  - Creates a new object whose `[[Prototype]]` property references the argument (prototype object). 
 
   ```js
   Object.create(obj)

@@ -1,17 +1,165 @@
 
 
+# Questions
+
+- Why do we use prototypes
+- Why do we use prototypal delegation
+
+# Part 2 Exam 
+
+##### Note For CoderPad
+
+CoderPad runs JavaScript code in *strict mode*, which we discuss in depth in the next course. While you don't need to be familiar with all facets of strict mode, there is one aspect that may arise during this assessment: the implicit execution context is `undefined`, **not** the global object. That means that the value of `this` may be `undefined` at times. For instance:
+
+```js
+function foo() {
+  console.log(this);
+}
+
+foo(); // undefined
+```
+
+Be prepared for this change before the interview. If you wish to practice on your own system instead of on CoderPad, add `"use strict";` to the top of your JavaScript code:
+
+```js
+"use strict"; // the quotes are required
+
+function foo() {
+  console.log(this);
+}
+
+foo(); // undefined
+```
+
+------
+
+##### Areas of Focus
+
+- General knowledge of OOP concepts as they pertain to JavaScript.
+- Conventional techniques for constructing objects, including the use of prototypal inheritance.
+- The ability to come up with code examples to illustrate concepts. Be prepared! Know what examples you want to use.
+- The ability to integrate what you've learned and put it to work to understand unusual situations.
+- An ability to speak clearly and with precision.
+
+##### Problems
+
+- Prompt: See if an Object came from a constructor.
+
+```js
+// Example constructors
+function Car(color, year) {
+  this.color = color;
+  this.year = year; 
+}
+function Dog(name) {
+  this.name = name;
+}
+
+// Objects to test with
+let myCar = new Car('blue', 2020);
+let myDog = new Dog('Fido');
+
+// Possible solutions
+
+// Using 'instanceof' operator
+console.log(myCar instanceof Car); // logs true
+console.log(myDog instanceof Car); // logs false
+
+// Using 'isPrototypeOf' method
+console.log(Car.prototype.isPrototypeOf(myCar)); // logs true
+console.log(Car.prototype.isPrototypeOf(myDog)); // logs false
+
+// Compare the constructor property of the created object to the constructor function
+console.log(myCar.constructor === Car); // logs true
+console.log(myDog.constructor === Dog); // logs true
+console.log(myDog.constructor === Car); // logs false
+```
+
+- This example illustrates that there are several ways to complete the task and provides code examples of how they work. That’s enough to get to the conscious competence level, but it still might be difficult to completely explain what is going on.
+
+- The next step is to think about *how* the code does what it does, with the goal of understanding well enough to teach it. A good way to develop that understanding is to create functions to duplicate the behavior provided by built-in abstractions like `isPrototypeOf` and `instanceof`
+
+- For example, here’s what I came up with for `instanceof`. This function iterates through the prototype chain of `obj`, comparing each prototype to the `prototype` property of `constructorFunction`. It returns true if any of them match and false if no match is found:
+
+  ```js
+  function isInstanceOf(obj, constructorFunction) {
+    while (obj) {
+      obj = Object.getPrototypeOf(obj);
+      if (obj === constructorFunction.prototype) return true;
+    }
+  
+    return false;
+  }
+  ```
+
+- For example, the JS120 exercise called “*Ancestors*” involves developing a method to return the prototype chain of an object. Similarly, there’s a question in the lesson material that requires searching a prototype chain for a property and returning the object that owns it. 
+
+Additional Examples
+
+- See if an object contains a property as one of its own -> create your own `hasOwnProperty`
+
+- Return all the property names of an object -> create your own `Object.getOwnPropertyNames`
+
+- Copy all properties from one object to another -> create your own `Object.assign`
+
+
+1. this
+   - Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
+2. Understanding context loss
+   - “What are the ways that context can be lost, and how can context loss be prevented in these situations?”
+   - A complete response needs to clearly indicate the differences between “Implicit” and “Explicit” execution context.
+3. `Function` Prototype methods and context
+   - The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
+4. Object creation patterns
+   - The assessment requires detailed knowledge of all of these object creation patterns, including how to implement them and their nuances.
+   - Needless to say, being able to demonstrate this knowledge with examples on the fly requires a lot of practice.
+   - A good way to practice is to start from scratch and try to produce a functionally identical hierarchy of objects using each different object creation pattern. This practice is most effective if the hierarchy includes features such as inheritance, mix-ins, and polymorphism in order to illustrate how to implement these aspects in the different patterns.
+   - Lacking any and all creativity, I usually practiced with something like creating a hierarchy of vehicles using Factory Functions, Objects Linking Other Objects, Constructor Functions, and ES6 Classes. 
+5. Applying knowledge in unusual ways
+   - All that said, one thing that can help is to keep a running list of anything that seems unusual while going through the course materials
+     - Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
+     - Unusual things about the `new` keyword
+     - Unusual things about arrow functions
+     - Pass a class as an argument and return a new object from a function
+
 # Miscellaneous
 
 - Pi is `Math.PI` 
+
 - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
+
 - Javascript can't find __ in the prototype chain of ___ 
+
 - **Variable**:
   - Variables declared with `let`, `const`
   - Function parameters
   - Function names
   - Class names
   - object property names **are not** variables.
+  
 - `[[Prototype]]` not `[[prototype]]`
+
+- Default parameters
+
+  ```js
+  function createInvoice(services = {}) { // default parameter in case no object is passed to the function. 
+    let phoneCharge = services.phone || 3000;
+    let internetCharge = services.internet || 5500;
+  
+    return {
+      phone: phoneCharge,
+      internet: internetCharge,
+  
+      total: function() {
+        return this.phone + this.internet;
+      }
+    };
+  }
+  ```
+
+  
+
+
 
 # Precision of Language
 
@@ -35,12 +183,11 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
 
 #### OOP
 
-- Definition: OOP (object oriented programming) is a programming **paradigm** in which we think about problems in terms of objects,  by using objects to organize a program. 
-
+- Definition: OOP (object oriented programming) is a programming **paradigm** in which we think about problems in terms of objects,  by using objects to <u>organize</u> a program. 
 - The idea is to model a program based on how objects in the real world interact. A real world object has **state** and **behavior**. State is properties related to the object, and Behavior is what that object can do in a verb sense.  
-  - State/ data/ properties
-  - Behavior/ operations / methods
-
+  - State/ Behavior
+  - data / operations
+  - properties / methods
 - The way we think about a program changes from a *series of steps* to a *collection of objects* that interact with each other.
 - Choosing an approach for an OO problem always comes down to making tradeoffs.
 
@@ -100,9 +247,8 @@ game.behavior(); // game.start();
 
 Prompt: How does encapsulation in JavaScript differ from encapsulation in most OO languages?
 
-- In other languages, encapsulation also refers to the idea of restricting access to state and behavior. 
-- In other words, hiding details of an object from code that uses the object. An object should only expose the properties and methods that other objects need, to use the encapsulated object. 
-- JavaScript objects don't support this type of encapsulation. They are ways to achieve a degree of access restriction, but it's not perfect.
+- In other languages, encapsulation also refers to the idea of restricting access to state and behavior. In other words, hiding details of an object from code that uses the object. An object should only expose the properties and methods that other objects need, to use the encapsulated object. JavaScript objects don't support this type of encapsulation.  JavaScript does not directly provide the means to limit exposure of methods and properties. There are ways to achieve a degree of access restriction, but it's not perfect.
+
 - **Interface of an object**: the state and behaviors exposed by the object for other objects to use.
   - Encapsulation has a broader purpose in most OOP languages. It also refers to restricting access to the state and certain behaviors. An object only exposes the data and behaviors that other parts of the application need to work.  
   - Objects expose a **public interface** for interacting with other objects and keep their implementation details hidden. Thus, other objects can't change the data of an object without going through the proper interface. Unfortunately, JS doesn't support access restrictions. 
@@ -167,7 +313,7 @@ let pets = {
 #### Compact Method Syntax
 
 - Using functions as object values (methods) is so common that there's short hand syntax called compact syntax for it. 
-- You can omit the `:` and the `function` keyword and use parenthesis to denote a method. There is a subtle difference between these two syntaxes, however. We'll cover that later when we talk about prototypes. ?? 
+- You can omit the `:` and the `function` keyword and use parenthesis to denote a method. There is a subtle difference between these two syntaxes, however. We'll cover that later when we talk about prototypes(??)
 
 ```JS
 let obj = {
@@ -190,7 +336,15 @@ let obj = {
 
 ```js
 let obj = {
-  prop () { // property name is `prop`, the value is an anonymous function. 
+  prop () { // property name is `prop`, the value is an anonymous function. Compact method syntax
+    
+  }
+};
+```
+
+```js
+let obj = {
+  prop: function() { // property name is `prop`, the value is an anonymous function.
     
   }
 };
@@ -238,15 +392,25 @@ let obj = {
      };
      ```
 
-   - Wrapping what looks like a function declaration in parentheses creates a function expression
+   - Wrapping what looks like a function declaration in parentheses creates a function expression. 
 
      ```js
      // Function expression, not declaration
      (function greetPeople() {
        console.log("Good Morning!");
      }); 
-     // this code is actually throws an error: expected function call but instead saw an expression. 
      ```
+
+     - This code is actually throws an error: expected function call but instead saw an expression. 
+     - No code statement here because it gets wrapped into an expression LOL, needs a let something = function expression to make it a statement. 
+
+     ```js
+     let a = (function greetPeople() {
+       console.log("Good Morning!");
+     }); 
+     ```
+
+     - This function expression has a name and is not anonymous, but the name is unusable because it's not in the same scope as other code, since the function expression gets wrapped in parenthesis, and is thus part of a statement. 
 
      ```js
      function makeGreeter(name) {
@@ -265,7 +429,9 @@ let obj = {
      }); // => [1, 4, 9]
      ```
 
-   - Function expressions **<u>don't</u>** have to be anonymous: You can name a function expression. 
+   - Function expressions **<u>don't</u>** have to be anonymous: 
+
+     - You can name a function expression by wrapping a function declaration in parenthesis. 
 
      - `Function` keyword can be used to define a function inside an expression. 
 
@@ -349,10 +515,10 @@ let obj = {
 
 **Anonymous Function**: a function with no name. 
 
-- Call back functions p methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
+- Call back functions in methods like `forEach` and `map` are **<u>often</u>** anonymous functions, but <u>don't have to be!</u>   
 
 ```js
-let name = function (x) { // function expression
+let name = function (x) { // anonymous function expression
   
 });
 
@@ -406,7 +572,7 @@ let name = () => console.log('My name is'); // arrow function
 - 3 ways to do the same thing 
 
   ```js
-  // variable 
+  // function declaration, function is bound to a variable identifier
   function logNum(num) { // function declaration syntax, logNum is a variable
     console.log('Number: ' + num);
   }
@@ -464,14 +630,14 @@ typeof myFunc; // => "function"
 
 #### First Class Functions
 
-- Have these charactersitics ( from summary)
+- **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
+- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
+
+- First class functions have these characteristics ( from summary)
 
   - You can add them to objects and execute them in the respective object's context.
   - You can remove them from their objects, pass them around, and execute them in entirely different contexts.
-  - **<u>They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
-
-- **first-class functions** or **first-class objects**:   means that functions are treated like any other variable: functions in JavaScript are values that we can assign to variables and properties, pass them to other functions, or return them from another function.
-- Functions in JavaScript are first-class values, just like any other value in JavaScript. You can use them any place that you can use an expression. 
+  - Execution context of functions: **They're initially unbound</u>** but dynamically bound to a context object at **execution time**.
 
 ------
 
@@ -479,19 +645,48 @@ typeof myFunc; // => "function"
 
 ### Prototypes
 
-- All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits. 
 - **prototype**: the object that you inherit properties and methods from.
 
+- All objects in JavaScript inherit from another object called the prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits. 
 - Although factory functions are useful to extract code into one place so multiple objects can use it, JavaScript relies heavily on prototypes. 
 - In JavaScript, objects can inherit properties and behavior from other objects. If another object, for instance, has a `language` property and a `speak` behavior, a new object can access and use `language` and `speak` without explicitly defining them in the new object. 
+- Methods used
+
+  - `Object.create()`: creates a new object that inherits properties from a prototype object.
+  - `Object.setPrototypeOf()`: `Object.setPrototypeOf(obj, prototype obj)`: sets the prototype object of an object.
+  - `Object.getPrototypeOf()`: takes an object as an argument and returns its prototype object:
+  - `Object.prototype.hasOwnProperty()` to prove that an object doesn't have a property of its own.
 
 ##### prototypal inheritance & prototypal delegation
 
-- **Prototypal delegation**: objects lower in the prototype chain can delegate responsibility to prototypes higher up in the prototype chain. 
+- Example
 
-  - inherting objects delegate property and method access to its prototype. 
-  - Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above.  
+  ```js
+  let a = {property1: 1};
+  let b = {};
+  
+  Object.setPrototypeOf(b, a); // a is the prototype object
+  console.log(b.property1); // 1
+  console.log(b.hasOwnProperty(`property1`)); // false
+  console.log(Object.getPrototypeOf(b)); // object referenced by a
+  
+  let c = Object.create(b);
+  console.log(c.hasOwnProperty(`property1`)); // false
+  console.log(c.property1); // 1 
+  ```
 
+- Q: Why prototypal inheritance / delegation? 
+  - Prototypal inheritance allows for memory efficiency. It saves memory when an object inherits from another object, rather than objects having an own copy of every property. 
+  - One example is how constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+    - constructors have a prototype property that references an object that instance objects inherit from. 
+    - So properties defined on the constructor `prototype` object are shared through the prototype chain. 
+    - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
+
+- **Prototypal delegation**: inheriting objects delegate property and method access to its prototype. 
+
+  - objects lower in the prototype chain can delegate property and method access to prototypes higher up in the prototype chain. 
+  - Objects lower in the chain inherit properties and behaviors from objects in the chain above.  
+  - Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain.
   - Process
     - If the requested property isn't found, the object delegates the request to the object's prototype object.
     - If the requested property isn't there either, the prototype object delegates the request to its own prototype object. 
@@ -505,8 +700,8 @@ typeof myFunc; // => "function"
 
     - It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
     - The newly created object has access to all properties and methods that the prototype object provides. 
+    - unusual aspect is that the **inheriting object** (b) doesn't receive properties or methods of its own. Instead, it **delegates** property and method access to its prototype. 
 
-  - unusual aspect is that the **inheriting object** (b) doesn't receive properties or methods of its own. Instead, it **delegates** property and method access to its prototype. 
 
     ```js
     let a = {
@@ -517,7 +712,7 @@ typeof myFunc; // => "function"
     let b = Object.create(a);
     b.foo; // => 1
     ```
-
+    
     ```js
     > let a = { foo: 1, bar: 2 }
     undefined
@@ -551,6 +746,8 @@ typeof myFunc; // => "function"
   - An object's internal `[[Prototype]]` property points to its prototype object, and the object can delegate method calls to that prototype object. 
 
 ##### `[[Prototype]]`  property
+
+- Definition: objects hold a *reference* to their prototype objects through their internal `[[Prototype]]` property. 
 
 - JavaScript objects use an internal `[[Prototype]]` property to keep track of their prototype. When you create an object with `Object.create`, the new object's `[[Prototype]]` property gets assigned to the prototype object.
   - `[[Prototype]]` is an *internal property* : you cannot access it directly in your code. 
@@ -606,7 +803,7 @@ console.log(b.baz); // => 12
 
 - The default prototype object is the prototype of all objects created using object literal syntax `{}` or `{a:2}`
 
-- The default prototype is the prototype object of the `Object` constructor 
+- The default prototype is the prototype object of the `Object` constructor. 
 
   - For now, know that `Object.prototype`  provides the default prototype object. 
   - That means the default prototype is the object referenced by `.prototype` property of the `Object` constructor. 
@@ -669,71 +866,98 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 ##### Reminder: Functions are objects
 
-- JS does not have classes, and functions are actually objects. The difference is that function objects are callable. 
+- JS does not have classes, and functions are actually objects. 
+- The difference between objects and function objects is that function objects are callable. 
 
-##### The Prototype Chain (what is it, what is it used for)
+##### What is prototype chain
 
-##### What is prototype chain (summary)
+###### Definition
 
-- The prototype chain is a chain of objects that are prototypes of an object. The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. The object referenced by `Object.prototype` is at the top of all JavaScript prototype chains.
+- **prototype chain**: is a chain of objects that are prototypes of an object. 
 
-- The prototype chain is  used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
+  - The complete prototype chain also includes the default prototype, which is the prototype of object `a` in this case. 
+  - The prototype chain ends with `Object.prototype`.
+  - Since the prototype of `Object.prototype` is `null`, the complete prototype chain looks like this: 
+  
+  ```
+  c --> b --> a --> Object.prototype --> null
+  ```
+  
+  - `null` has no prototype and acts as the final link in the prototype chain. (??)
 
-- If we try to access a property on an object and it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain. 
+###### Summary
 
-  - In detail JavaScript searches  object's prototype, which is the object pointed to by the internal `[[Prototype]]` or `__proto__`  property. Then if JavaScript can't find it ,the next port of call is the prototype's prototype. This process continues until it finds the property or it reaches the default prototype object referenced by `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
-  - ```js
-    let a = {
-      prop1: 1,
-    }
-    
-    let b = Object.create(a);
-    b.prop2 = 2;
-    
-    console.log(b.prop1); // 1
-    ```
+###### What it's used for
 
-  - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
+- The prototype chain is used to look up and access properties, which is done through **prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain.
 
-- The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+###### Advantage / Why prototype Chain
 
-##### What it's used for. 
+- The prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. 
+- The prototype chain increases memory efficiency because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
+- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
-- The prototype chain is used to look up and access properties, and this is done through **prototypal delegation**. 
-- **Prototypal delegation**: objects lower in the prototype chain delegate property and method access to prototypes higher up in the prototype chain. 
+###### Property Look up Sequence
 
-##### Property Look up Sequence
+- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
-- When you access a property on an object, JavaScript looks for the property first in the object, then its prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
-- If we try to access a property on an object and it's not a property directly owned by that object, the next port of call is the object pointed to by the __proto__ property. 
-  - In more detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. If the object does not define the specified property, JavaScript looks for it in the object's prototype(the object pointed to by the internal `[[prototype]]` or dunder proto property) then if it can't find, it looks for it in the prototype's prototype.  This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+- When you access a property on an object, JavaScript looks for the property first in the object, and if it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+- In detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. 
+  - If the object does not define the specified property, JavaScript looks for it in through the prototype chain. 
+  - This means searching object's prototype(the object pointed to by the internal `[[prototype]]`  or `__proto__`  property) then if it can't find, it looks for it in the prototype's prototype.  
+  - This process continues until it finds the property or it reaches `Object.prototype`. If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
+
 - When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence.
+
+  - An object can override a property of its parent by setting the property on itself.
   - A downstream object overrides an inherited property if it has a property with the same name. 
+    - An object lower in the prototype chain overrides an inherited property if it has a property with the same name.
   - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties). 
+
 - What happens when you set a property to a different value? 
 
   - Property assignment creates a new "own " property in the object.
     - It assumes that the property belongs to the object named to the left of the property name. 
     - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
 
-##### Usefulness
+- ```js
+  let a = {
+    prop1: 1,
+  }
+  
+  let b = Object.create(a);
+  b.prop2 = 2;
+  
+  console.log(b.prop1); // 1
+  ```
 
-- This means that the prototype chain allows us to store an object's data and behaviors not just directly in the object itself, but anywhere in the prototype chain. It saves memory because properties can be shared through the prototype chain, rather than every object needing an own copy of each property. 
-- Looking up a property in the prototype chain is the basis for prototypal inheritance. 
+  - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
 
-##### Implications
+- ```js
+  let a = {
+    foo: 1,
+  };
+  
+  let b = {
+    foo: 2,
+  };
+  
+  Object.setPrototypeOf(b, a);
+  
+  let c = Object.create(b);
+  console.log(c.foo); // => 2;
+  // Line 12 logs the value of property `foo` in object c. Object c is lowest in the prototype chain and inherits property `foo` from it's prototype object b. A property with same name `foo` also exists in object a, which is the prototype object of b. Since b is closer to the calling object than a, it takes precedence and the value of property `foo` in object b is logged to the console. 
+  
+  // A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
+  ```
+
+###### Implications
 
 - Objects hold a reference to their prototype objects. If the object's prototype changes in some way, the changes are observable in the inheriting object as well.
 
-------
-
-##### Prototype Chain
-
-https://dev.to/aman_singh/an-easy-explanation-to-prototypal-delegation-in-javascript-3ok2
-
-- All JavaScript objects could inherit from another object using the prototype model. 
-- Since the prototype of an object is itself an object, the prototype can also have a prototype from which it inherits. 
+Code Example
 
 ```js
 let a = {
@@ -759,19 +983,9 @@ console.log(c.foo); // => 1
 
   - Stated differently, `b` is the prototype of `c` and `a` is the prototype of `b`
   - All properties that you can access on `a` or `b` are now available on `c`.
-
 - We say that objects `b` and `a` are part of the **prototype chain** of object `c`
 
-- **prototype chain**: is a chain of objects that are prototypes of an object. 
-
-  - The complete prototype chain also includes the default prototype, which is the prototype of object `a` in this case. 
-  - Since the prototype of `Object.prototype` is `null`, the complete prototype chain looks like this: 
-
-  ```
-  c --> b --> a --> Object.prototype --> null
-  ```
-
-  - `null` has no prototype and acts as the final link in the prototype chain. 
+------
 
 ##### The `__proto__` Property 
 
@@ -781,35 +995,7 @@ console.log(c.foo); // => 1
   - The `__proto__` property is a *deprecated*, non-hidden version of the `[[Prototype]]` property.
 - As a rule, you should only use `__proto__` if you need to support very old browsers or old versions of Node, or as a convenient shortcut with temporary code or debugging operations. 
 
-##### Property Look-Up in the Prototype Chain 
-
-- Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
-- When you access a property on an object, JavaScript first looks for an "own" property with that name on the object. 
-  - If the object does not define the specified property, JavaScript looks for it in the object's prototype, then if it can't find, it looks for it through the prototype chain. 
-  - The process continues until it finds the property or it reaches `Object.prototype`. 
-  - If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`.
-- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
-  - An object can override a property of its parent by setting the property on itself.
-  - A downstream object overrides an inherited property if it has a property with the same name. 
-  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
-
-```js
-let a = {
-  foo: 1,
-};
-
-let b = {
-  foo: 2,
-};
-
-Object.setPrototypeOf(b, a);
-
-let c = Object.create(b);
-console.log(c.foo); // => 2;
-// Line 12 logs the value of property `foo` in object c. Object c is lowest in the prototype chain and inherits property `foo` from it's prototype object b. A property with same name `foo` also exists in object a, which is the prototype object of b. Since b is closer to the calling object than a, it takes precedence and the value of property `foo` in object b is logged to the console. 
-
-// A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
-```
+------
 
 ##### Property Assignment
 
@@ -825,7 +1011,7 @@ What happens when you set a property to a different value?
 console.log(c.hasOwnProperty('foo')); // => true, foo becomes an "own" property of c. 
 ```
 
-- Inheriting properties from other objects also applies to methods. Methods in JS are merely properties that refer to functions. So when we discuss object properties, that also means methods. 
+- Inheriting properties from other objects also applies to methods. Methods in JS are merely properties that refer to functions (object properties with function values). So when we discuss object properties, that also means methods. 
 
 ```js
 let a = {
@@ -866,6 +1052,61 @@ console.log(b.foo);
   - `Object.prototype.isPrototypeOf(obj)` determines whether the object is part of another object's prototype chain.
   - `Object.prototype.hasOwnProperty(prop)` determines whether the object contains the property.
 
+###### `toString()` method
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
+
+- Syntax
+
+  ```js
+  toString();
+  ```
+
+- Return value: a string representing the object. 
+
+- An object's `toString()` method is most commonly invoked when that object undergoes...
+
+  - explicit [type conversion](https://developer.mozilla.org/en-US/docs/Glossary/Type_Conversion) to a string 
+
+    ```js
+    String(obj);
+    ```
+
+  - implicit [type coercion](https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion) into a string
+
+    ```js
+    let obj = [];
+    console.log(`${obj}`); // implicit type coeorcion in string interpolation
+    ```
+
+- While not as common, the method can be invoked directly (for example, `myObject.toString()`).
+
+- By default `toString()` returns `"[object Type]"`, where `Type` is the object type.
+
+  ```
+  const o = new Object().toString() // o is "[object Object]";
+  ```
+
+- Can override `toString` by creating a function in place of it. 
+
+  - creating a custom `toString` inside of the constructor / class of the instance object. 
+
+  ```js
+  // from OO 21.js
+  toString() {
+   if (this.isHidden()) return "Hidden";
+   return `${this.getRank()} of ${this.getSuit()}`;
+  }
+  ```
+
+- array.toString()
+
+  ```js
+  [1, 2, 3].toString(); // 1,2,3
+  ```
+
+  
+
 ##### Objects Without Prototypes
 
 - Several times we've said that JavaScript objects all have a prototype object and that the prototype chain ends with `Object.prototype`
@@ -902,7 +1143,7 @@ null
 
   - Side note
     - `Object.getPrototypeOf(obj)` static method
-    - `obj.isPrototypeOf` instance method
+    - `Object.prototype.isPrototypeOf` instance method
   - If you don't first check whether `obj` has a non-`null` prototype, this code will raise an exception if `obj` has a `null` prototype. Even this code won't work properly if `obj` inherits from an object whose prototype is `null`.
 
 ##### Summary
@@ -1018,23 +1259,35 @@ console.log(dog.says); // woof
 
 - **Methods**  are object properties that have function values. 
 - You can use any valid JavaScript value, including a function object (method ) or another object, as the value of a property in an object.
+- If you access the method property without function invocation syntax `()`, it will return the function definition.
 
 
 ```js
 const cat = {
-  name() { // property key is name, and value is the function. 
+  name() { // property key is name, and value is a function. 
     return "Butterscotch";
   },
 
-  age() {
+  age() { // property name is age, and value is a function. 
     return 13;
   },
 };
 ```
 
-- If you access the method property without (), it will return the function definition.  
+```js
+let b = {};
+
+let a = {
+  prop1: 1, 
+  prop2: b, // property value is an object
+};
+
+console.log(a);
+```
 
 #### Overriding
+
+- Definition: When an object lower in the prototype chain redefines a method or property that an object higher in the prototype chain defines. 
 
 - If we add a new `play` method to the `Bingo` class, objects created by `Bingo` will use that method instead of looking up the prototype chain and finding it in the `Game` class. 
 
@@ -1062,13 +1315,13 @@ const cat = {
   - A downstream object overrides an inherited property if it has a property with the same name. 
   - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
 
-- Method overriding can be prevented in class syntax by calling `Super` 
+- Method overriding can be prevented in class syntax by calling `Super` . 
 
 #### Property syntax : defining properties
 
 - Syntax errors when trying to define properties in an object. 
 
-  - `this` is an execution context that that refers to the calling method or function. 
+  - `this` is a keyword that refers to an object that is the current **execution context** of a function or method that is running. 
 
   ```js
   // All of these cause syntax error when trying to define the properties in the object. 
@@ -1144,6 +1397,21 @@ const cat = {
 
   - Requires valid variable names. 
 
+  - Don't use this notation if the property is supposed to be a variable!!
+
+  - ```js
+    // my solution, doesn't work
+    function assignProperty(obj, prop, value) {
+      while (obj !== null) {
+      	if (obj.hasOwnProperty(prop)) {
+          obj.prop = value; // bug here!! Dot notation doesn't work for variable properties
+          break;
+        }
+        obj = Object.getPrototypeOf(obj);
+    	}
+    }
+    ```
+
 - **computed member access notation** (**bracket notation**). 
 
   - Can take any UTF-8-compatible string as the key. 
@@ -1160,15 +1428,17 @@ const cat = {
 
 - We get `undefined` when accessing a non-existent property. However we also get same value if we try to access a property set to `undefined`. 
 
-- Two ways to distinguish a non-existent property from an property with value of `undefined`: 
+- Two ways to distinguish a non-existent property from a property with value of `undefined`: 
 
   - The **`in` operator** : returns `true` if the specified property is in the specified object or its prototype chain.
 
     - prop: A string or symbol representing a property name or array index (non-symbols will be coerced to strings).
 
     ```js
-    prop in object // syntax
+    // syntax, remember the quotes
+    'prop' in object 
     'propertyName' in object
+    arrayIndex in array
     ```
 
   - `hasOwnProperty` (is an instance method): Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
@@ -1214,6 +1484,54 @@ const cat = {
 - All properties created by simple assignment or property initializer are enumerable by default. 
 - Ownership of properties is determined by whether the property belongs to the object directly and not to its prototype chain. 
 
+```js
+let b = {
+  prop4: 4,
+};
+
+let a = {
+  prop1: 1, 
+  prop2: 2, 
+  prop3: 3
+};
+
+Object.setPrototypeOf(a, b);
+
+// Prompt: Check whether property exists in an object
+// check whether `prop4` exists in a
+
+// using in operator
+console.log('prop4' in a); // true
+
+// Prompt: see if an object contains a property as one of its own. 
+// using hasOwnProperty
+console.log(a.hasOwnProperty('prop4')); // false
+
+// using Object.keys
+let arr = Object.keys(a);
+let answer = arr.some(element => element === 'prop4');
+console.log(answer); // false
+
+// using for... in loop
+let own = false; // own represents whether object contains property as its own
+for (let prop in a) {
+  if (a.hasOwnProperty(prop)) {
+    if (a === 'prop4') {
+      own = true;
+      break;
+    }
+  }
+}
+console.log(own); // false
+
+// using Object.getOwnPropertyNames
+let arr2 = Object.getOwnPropertyNames(a);
+answer = arr2.some(element => element === 'prop4');
+console.log(answer); // false
+```
+
+------
+
 #### Instance 
 
 - **Instance **: objects created using any means of defining multiple objects of the same kind. 
@@ -1222,13 +1540,13 @@ const cat = {
 
 - In JavaScript, "instance" does not have this technical meaning because JavaScript does not have this difference between classes and instances. However, in talking about JavaScript, "instance" can be used informally to mean an object created using a particular constructor function. 
 
-- Must use instance object to invoke instance properties or methods.
+- Must use instance object to invoke instance properties or methods of a constructor, rather than call the constructor directly. 
 
-- **Instance Properties** : properties of an instance.
+- **Instance Properties** : properties of an instance object, either as part of an object or anywhere in the object's prototype chain. 
 
   - Properties of instances created by a constructor. 
   - May be stored directly on the instance, or its prototype. Its prototype is `Constructor.prototype`
-  - For classes, instance properties must be defined in methods. 
+  - For classes, instance properties must be defined in methods. (see example below)
 
 - **Instance Methods**:  (object methods / methods) :stored either as part of an object or anywhere in the object's prototype chain.
 
@@ -1269,8 +1587,12 @@ const cat = {
     	this.width = width;
     }
     
-    getArea() { // instance method
+    getArea() { // instance method, compact method syntax
        return this.length * this.width;
+    }
+    
+    getArea2 = function() {
+      // not using compact method syntax also works
     }
     
     value = 2; // invalid code, instance properties must be defined in methods.
@@ -1282,9 +1604,11 @@ const cat = {
 
 #### Static 
 
+[Exam part 1 question 3](https://launchschool.com/exams/19f6d031#qna)
+
 - static keyword defines static properties and methods. 
 
-- Must use constructor name to invoke static properties and methods. 
+- <u>Must use constructor name</u> to invoke static properties and methods. 
 
 - invoking static methods on an instance of a class results in a `TypeError`. 
 
@@ -1326,7 +1650,7 @@ const cat = {
 
   - Is `forEach`  static method of the `Array` constructor then?
 
-    - No, `forEach` is an instance method of the `Array` constructor, because you are using an object (array object) to invoke an instance method of the `Array` constructor, rather than calling the `Array` constructor directly. 
+    - No, `forEach` is an instance method of the `Array` constructor, because you are using an instance object (array object) to invoke an instance method of the `Array` constructor, rather than calling the `Array` constructor directly. 
 
 - Constructor and prototype pattern
 
@@ -1372,7 +1696,7 @@ const cat = {
 
 #### The `Array` constructor
 
-- Simplest way to create an array object uses the bracket syntax:
+- Simplest way to create an array object uses the **bracket syntax**:
 
   ```js
   > let numbers = [1, 2, 3, 4]
@@ -1461,7 +1785,7 @@ const cat = {
 
   - In particular, that means that all arrays can use methods like `forEach`, `map`, `includes`, as well as all the other methods defined on `Array.prototype`:
 
-- The methods that use this syntax: `Array.prototype.method` are the **instance** methods for the Array type. 
+- The methods that use this syntax: `Array.prototype.method` are the **instance** methods for the Array constructor / type. 
 
   ```js
   > numbers.map(number => number * number);
@@ -1506,10 +1830,16 @@ const cat = {
 
 - The `Array.from` method takes an **array-like object** as an argument and returns a new array with the equivalent element values. 
 
+- Can be used to convert string to an array, to use array methods.
+
 - An **array like object** is  all objects that have a `length` property. 
 
   - any object that has a `length` property (most important) and provides indexed access to some of its properties with the `[index]` notation. 
   - All objects that have a `length` property is an array like object. 
+  - A string object is an array like object.  
+    - `String` objects also have a `length` property and use index-based element access.
+    - We are able to use a string primitive value to access the properties and methods defined for `String` objects.
+
 
   ```node
   > Array.from({length: 3})
@@ -1519,6 +1849,11 @@ const cat = {
   ```node
   > Array.from({0: 'a', 1: 'b', 2: 'c', length: 3})
   ['a', 'b', 'c']
+  ```
+
+  ```node
+  > Array.from('string')
+  [‘s’, ‘t’, ‘r’, ‘i’, ‘n’, ‘g’]
   ```
 
 - In many cases, the `length` property won't self-update if you add or remove properties to or from the object.
@@ -1545,7 +1880,7 @@ Why would somebody need to do that? It seems silly to create an object that look
 
 - The use case shown isn't particularly useful, but there are other use cases for `Array.from`. In particular, some functions and methods return objects that resemble arrays in some ways but serve some other purpose. 
 - For instance, if you use JavaScript to request a list of elements from your browser, the *DOM* (more on that much later) may return an array-like object called a *node list*. Such objects can store *live* data -- dynamic data that can change without intervention by your code. A simple array wouldn't do the trick here, but a node list does. Better yet, the node list is an array-like object, so `Array.from` can create an array based on its content.
-- In the degenerate(??) case, all arrays are themselves array-like objects.
+- In the degenerate case, all arrays are themselves array-like objects.
   - **Degenerate**: in the `simplest case`
 
 #### The `Object` constructor
@@ -1596,11 +1931,13 @@ Why would somebody need to do that? It seems silly to create an object that look
     let bareObj = Object.create(null); // creates an object without a prototype
     ```
 
-  - Another oft-used  method is `Object.prototype.toString`. It returns a string representation of the object that it's called on. Since `toString` is a method on `Object.prototype`, all JavaScript objects -- including arrays, functions, and dates -- inherit this method.
+    
 
+  - Another oft-used  method is `Object.prototype.toString`. It returns a string representation of the object that it's called on. Since `toString` is a method on `Object.prototype`, all JavaScript objects -- including arrays, functions, and dates -- inherit this method.
+  
     - However, the default behavior of `Object.prototype.toString` is not very useful; it merely returns `[object Object]` for objects that don't override this method to provide smarter behavior:
     - Can override the default`toString()` method by creating a function in place of it. 
-
+  
     ```terminal
     > let obj = { a: 1, b: 2 }
     > obj.toString()
@@ -1614,6 +1951,59 @@ Why would somebody need to do that? It seems silly to create an object that look
     'function hello() {}'
     ```
 
+##### `toString()` method
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
+
+- Syntax
+
+  ```js
+  toString();
+  ```
+
+- Return value: a string representing the object. 
+
+- An object's `toString()` method is most commonly invoked when that object undergoes...
+
+  - explicit [type conversion](https://developer.mozilla.org/en-US/docs/Glossary/Type_Conversion) to a string 
+
+    ```js
+    String(obj);
+    ```
+
+  - implicit [type coercion](https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion) into a string
+
+    ```js
+    let obj = [];
+    console.log(`${obj}`); // implicit type coeorcion in string interpolation
+    ```
+
+- While not as common, the method can be invoked directly (for example, `myObject.toString()`).
+
+- By default `toString()` returns `"[object Type]"`, where `Type` is the object type.
+
+  ```
+  const o = new Object().toString() // o is "[object Object]";
+  ```
+
+- Can override `toString` by creating a function in place of it. 
+
+  - creating a custom `toString` inside of the constructor / class of the instance object. 
+
+  ```js
+  // from OO 21.js
+  toString() {
+   if (this.isHidden()) return "Hidden";
+   return `${this.getRank()} of ${this.getSuit()}`;
+  }
+  ```
+
+- array.toString()
+
+  ```js
+  [1, 2, 3].toString(); // 1,2,3
+  ```
+
 #### Static `Object` Methods
 
 - The list below shows some commonly used static `Object` methods. You've already seen and used several. Feel free to follow the links and read more about these methods, but you don't have to memorize them. Instead, learn what's available. You can look them up later when you need to use them:
@@ -1625,74 +2015,6 @@ Why would somebody need to do that? It seems silly to create an object that look
   - [`Object.isFrozen`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
   - [`Object.keys`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
   - [`Object.values`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
-
-#### The Date Constructor
-
-- The `Date` constructor creates objects, commonly called a **date object**, that represent a specific date and time. 
-
-  - Calling `Date` without arguments returns a date object that represents the creation date and time of the object:
-
-    ```node
-    > let now = new Date()
-    > now
-    2019-06-07T05:03:26.813Z
-    ```
-
-  - You can create date objects that represent any given date and time by passing additional arguments to the `Date` constructor. For instance, to create a date object that represents "May 1, 1983", you can write:
-
-    ```node
-    > let birthday = new Date("May 1, 1983")
-    > birthday
-    1983-05-01T07:00:00.000Z
-    ```
-
-  - You can get even more specific by including the time:
-
-    ```node
-    > birthday = new Date("May 1, 1983 05:03 am")
-    > birthday
-    1983-05-01T12:03.00.000Z
-    ```
-
-  - The dates shown by the above code may appear as 1983-05-02. This issue is caused by the time zone of the environment where you run the code. Working with time zones is messy; we won't get into that in this course.
-
-  - There are several other ways to specify the date and time, including variations on the date strings shown above, and by providing other arguments to the `Date` constructor. Check the [MDN documentation for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) to learn more.
-
-#### `Date.prototype` 
-
-- The `Date` prototype object provides a variety of convenient methods for working with dates. We'll mention a few here.
-
-- `Date.prototype.toString`
-
-  The `toString` method returns a string that represents the date (it's pretty verbose):
-
-  ```terminal
-  > let now = new Date()
-  > now.toString()
-  'Sat Jun 01 2019 01:15:06 GMT+0500 (Pakistan Standard Time)'
-  ```
-
-- `Date.prototype.getFullYear`
-
-  The `getFullYear` method returns the year from the date as a number:
-
-  ```terminal
-  > now.getFullYear()
-  2019
-  ```
-
-- `Date.prototype.getDay`
-
-  The `getDay` method returns a number that represents the day of the week that corresponds to the date object. 
-
-  - The return value is `0` for Sunday, `1` for Monday, and so on until it returns `6` for Saturday.
-
-  ```terminal
-  > now.getDay()
-  4 // (represents Thursday)
-  ```
-
-  The `Date` prototype has a bunch of useful methods for working with dates and times. Be sure to check the [MDN documentation page for Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) and explore a few more methods.
 
 #### The `String` constructor
 
@@ -1712,29 +2034,55 @@ Why would somebody need to do that? It seems silly to create an object that look
   > arr1 === arr2      // true
   # objects are compare by identity, not value
   ```
-
-```
   
-Interestingly, we can access properties and call methods on strings:
+    Interestingly, we can access properties and call methods on strings:
   
-  ```node
+  ```terminal
   > 'abc'.length
   3
-  
+    
   > 'abc'.toUpperCase()
   'ABC'
-```
-
-How is that possible given that strings are primitive values? Primitive values aren't objects, so where does JavaScript find those properties and methods?
+  ```
+  
+  How is that possible given that strings are primitive values? Primitive values aren't objects, so where does JavaScript find those properties and methods?
 
 We'll return to those questions shortly. 
 
+##### Exam question
+
+Q: What is the difference between string primitives and `String` objects? Explain why you can use a string primitive value to access the properties and methods defined for `String` objects.
+
+A: A string primitive's type is `'string'`, but the `String` object's type is `'object'`. JavaScript considers the two types of string as different types. Two string primitives that have the same value are equal, two `String` objects with the same value are not. For example
+
+```terminal
+> 'xyz' === 'xyz'
+true
+
+> new String('xyz') === new String('xyz')
+false
+```
+
+We can call use a string primitive value to access the properties and methods defined for String objects, because when we try to access a property or invoke a method on a string primitive, JavaScript wraps the string primitive in a `String` object, then uses the object to access properties or call methods. When the wrapping object has served its purpose, JavaScript discards that wrapping object. Properties and methods will always return strings as primitives.
+
 ##### String primitive vs `String` object
+
+- A string primitive's type is `'string'`, but the `String` object's type is `'object'`. JavaScript considers the two types of string as different types. Two string primitives that have the same value are equal, two `String` objects with the same value are not. String objects are compare by identity/ reference, not value. For example
+
+```terminal
+> 'xyz' === 'xyz'
+true
+
+> new String('xyz') === new String('xyz')
+false
+```
+
+----
 
 - First, though, we need to learn that JavaScript has two kinds of strings: string primitives and `String` objects. 
 - Thus far, all the strings we've created and used have been string primitives. We create string primitives by using quotes (single or double) or back-tick characters to define a string's value. To create a `String` object, on the other hand, we must use the `String` constructor:
 
-```node
+```terminal
 > let strPrimitive = 'abc'
 > typeof strPrimitive
 'string'
@@ -1746,7 +2094,7 @@ We'll return to those questions shortly.
 
 That's interesting: a string primitive's type is `'string'`, but the `String` object's type is `'object'`. It's clear that JavaScript considers the two types of string as different types. That difference has implications. Consider this code:
 
-```node
+```terminal
 > 'abc' === 'abc'
 true
 
@@ -1760,17 +2108,25 @@ That still leaves us with a big question: why in the world do we need a `String`
 
 ##### How can we call methods on string primitives?
 
+- A: JavaScript invisibly wraps primitives in objects to access methods and properties. 
+
 - Functionally, both string primitive and string object act like objects when you call a method on it such as `'abc'.toLowerCase()` or `(new String('abc')).toLowerCase()`. 
 
-- The answer is that when you try to access a property or invoke a method on a string primitive, JavaScript *wraps* the string primitive in a `String` object behind the scenes. 
-  - The process sounds complicated and costly in computing resources, but the implementation is reasonably lightweight; there is little impact on your program. Best of all, the process is invisible.
-- Once JavaScript has wrapped your string primitive in a `String` object, it then uses the object to access the property or call the method. When the wrapping object has served its purpose, JavaScript <u>discards</u> it.
-- Properties and Methods always return strings as primitive, so you also don't have to worry about converting `String` objects to primitives.
+- Q: Why are we able to use a string primitive value to access the properties and methods defined for `String` objects? 
+
+  - The answer is that when you try to access a property or invoke a method on a string primitive, JavaScript *wraps* the string primitive in a `String` object behind the scenes. 
+
+  - Once JavaScript has wrapped your string primitive in a `String` object, it then uses the object to access properties or call methods. When the wrapping object has served its purpose, JavaScript <u>discards</u> it.
+
+  - Properties and Methods always return strings as primitive, so you also don't have to worry about converting `String` objects to primitives. 
+
 - As a general rule, you should not create `String` objects explicitly. That's where you're likely to run into problems with the distinction between string primitives and `String` objects. 
   - However, if you're writing code where you may have to operate on `String` objects, you can use `String.prototype.valueOf()` to retrieve the value of the `String` object as a primitive.
 - We are able to call non-mutating array methods on string primitives using `call` or `apply`. 
 
 #### `String` without `new` 
+
+- `String` constructor is not scope safe.
 
 - As with most constructors, with the notable exception of `Array` and `Object`, calling the constructor without the `new` keyword does *not* create an object. In the case of `String`, it simply returns a new string primitive, not an object, when you omit the `new` keyword:
 
@@ -1805,7 +2161,7 @@ That still leaves us with a big question: why in the world do we need a `String`
 - The `Number` and `Boolean` constructors work in much the same way as the `String` constructor (if called with `new`, an object is created, otherwise, it returns the same type as the constructor)
 
   - When called with `new`, they create `Number` and `Boolean` **<u>objects.</u>** 
-  - When called without `new`, the `Number` function converts its argument to a number, and the `Boolean` function converts its argument to a boolean.
+  - When called without `new`, the `Number` function converts its argument to a number, and the `Boolean` function converts its argument to a Boolean.
 
   ```node
   > Number('123');
@@ -1818,7 +2174,7 @@ That still leaves us with a big question: why in the world do we need a `String`
   true
   ```
 
-- As with strings, numbers and booleans both have primitive and object forms, and JavaScript invisibly wraps primitives in objects to access methods and properties. 
+- As with strings, numbers and Booleans both have primitive and object forms, and JavaScript invisibly wraps primitives in objects to access methods and properties. 
 
 - You should also avoid creating `Number` and `Boolean` objects explicitly.
 
@@ -1850,7 +2206,7 @@ That still leaves us with a big question: why in the world do we need a `String`
 
   - The `call` and `apply` functions don't change a function's logic or return values; they merely change what object the method uses for its context. 
   - Array methods that return an array will still do so even when called on a string value. If you need a string result, you can use `join` to convert the array to a string:
-  - Strings are immutable, so can only use non-mutating array methods. 
+  - Array methods that mutate the array won't work with strings. Again, that makes sense: <u>strings are immutable.</u>
 
   ```JS
   // syntax 
@@ -1877,6 +2233,48 @@ That still leaves us with a big question: why in the world do we need a `String`
   ```
 
   - `string.split("")` to convert string to array. 
+
+------
+
+##### Example Problem
+
+[Question 9](https://launchschool.com/quizzes/03e8241a) 0 / 1 Points
+
+Your program needs to change the case of all letters in a string to the opposite case. That is, `Naveed Fida` should be converted to `nAVEED fIDA`. You already have a function called `convertCase` that does this for a single character. It takes a single character as an argument and returns the translated result.
+
+Given the `convertCase` function, which of the following code snippets can be used to convert the string contained by `str`? Select all answers that apply.
+
+- [x] **A** 
+
+```
+str = [1, 2, 3].map.call(str, convertCase).join("");
+```
+
+This code uses `call` to invoke `map` with `str` as its context, a process that allows `map` to process the individual characters of `str`. Note that we use the array `[1, 2, 3]` to invoke `call`; any array will do.
+
+**B**
+
+```
+str = str.map(convertCase).join("");
+```
+
+This code attempts to call a `map` method on a string. However, strings don't have a `map` method, and they won't use `Array.prototype.map` without more specific instructions, so this code raises a `TypeError`.
+
+- [x] **C** 
+
+```
+str = Array.from(str).map(convertCase).join("");
+```
+
+This code uses the `Array.from` static method to convert `str` to an array of characters. That lets us use `Array.prototype.map` and `Array.prototype.join` to translate the characters and recombined them as a string.
+
+**D**
+
+```
+str = str.split("").map(convertCase);
+```
+
+This code returns an array, not a string.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2125,9 +2523,11 @@ Uses
 
 #### Object.create
 
-- Is a static method of the Object Function
+- Is a static method of the Object Constructor
 
-- Definition: Creates a new object that inherits properties from an existing object (the prototype object).
+- It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
+
+- Definition: The function takes a prototype object as argument, and creates a new object that inherits properties from the prototype. 
 
   - Creates a new object whose `[[Prototype]]` property references the argument.
 
@@ -2175,6 +2575,33 @@ Uses
 
 ------
 
+# Methods and functions; method invocation vs. function invocation 1,2 
+
+- **Regular function** calls (**standalone** function) <u>implicitly</u> use the **global object** as their execution context
+- **method calls** <u>implicitly</u> use the calling object as their context.
+  - When you call a method on an object, JavaScript binds`this` to the calling object. If it doesn't find the method in that object, but does find it in the prototype, that doesn't change the value of `this`. 
+
+------
+
+# Implicit and explicit execution context 2
+
+- **Execution context**:  the **environment** in which a function executes.
+
+- There are two basic ways to set the context when calling a function or method
+
+  1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. 
+
+  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+
+     There are many ways that JS provides an implicit execution context. 
+
+     - Regular function calls use <u>global object</u> as implicit execution context. 
+     - Method calls use the <u>calling object</u> as its implicit execution context. 
+     - A constructor call with `new` uses the <u>newly created object</u> as its implicit execution context. 
+     - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
+     - When strict mode is enabled, the implicit execution context/ implicit `this` is assigned to `undefined` instead of the global object. 
+     - Outside of a function definition, the implicit execution context is the global object. 
+
 # Function execution context and `this` (2)
 
 - Every JavaScript call has an execution context. 
@@ -2218,7 +2645,7 @@ Uses
 
 ##### Value of `this` / execution context rules
 
-- When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for function calls is assigned to `undefined` instead of the global object.
+- When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for <u>function calls</u> is assigned to `undefined` instead of the global object.
 
   - CoderPad runs JavaScript code in *strict mode*. The implicit execution context is `undefined`, **not** the global object. 
 
@@ -2236,7 +2663,7 @@ Uses
 
 - If `this` is <u>outside a function definition</u>, keyword `this` is bound to the global object. 
 
-  - Even in strict mode, `this` at the top level scope, the global scope, is bound to the global object, not `undefined`. 
+  - Even in strict mode, `this` at the top level scope, the global scope. So it's bound to the global object, not `undefined`. 
 
   ```js
   "use strict";
@@ -2389,32 +2816,145 @@ Uses
 
 ------
 
-# Methods and functions; method invocation vs. function invocation 1,2 
+# `Function` Prototype methods and context
 
-- **Regular function** calls (**standalone** function) <u>implicitly</u> use the **global object** as their execution context
-- **method calls** <u>implicitly</u> use the calling object as their context.
-  - When you call a method on an object, JavaScript binds`this` to the calling object. If it doesn't find the method in that object, but does find it in the prototype, that doesn't change the value of `this`. 
+- The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
 
-------
+- In practice, you use the `call`, `apply`, and `bind` methods to set an explicit execution context. You can also set the execution context explicitly with functions that accept an argument that specifies the context for a callback function. For instance, `Array.prototype.forEach` (and several other `Array.prototype` methods) take a `thisArg` argument that lets you set the context for the callback explicitly.
 
-# Implicit and explicit execution context 2
+##### `call`
 
-- **Execution context**:  the **environment** in which a function executes.
+- Definition: `call` invokes a function or method with an explicit execution context - the first argument passed to it 
 
-- There are two basic ways to set the context when calling a function or method
+  - `call` and `apply` don't change a function's logic or return values; they merely change what object the method uses for its context.
 
-  1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. 
+- Syntax
 
-  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+  ```js
+  someObject.someMethod.call(context, arg1, arg2 …)
+  someObject.someMethod.call(context, ...args);
+  function.call(context)
+  
+  // using non-mutating array methods on strings
+  string = anyArray.arrayMethod.call(string, callbackFn).join('');
+  string = [].arrayMethod.call(string, callbackFn).join('');
+  ```
 
-     There are many ways that JS provides an implicit execution context. 
+- Can also pass a second array argument using spread operator. 
 
-     - Regular function calls use <u>global object</u> as implicit execution context. 
-     - Method calls use the <u>calling object</u> as its implicit execution context. 
-     - A constructor call with `new` uses the <u>newly created object</u> as its implicit execution context. 
-     - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
-     - When strict mode is enabled, the implicit execution context/ implicit `this` is assigned to `undefined` instead of the global object. 
-     - Outside of a function definition, the implicit execution context is the global object. 
+  ```js
+  function.call(context, ...args);
+  ```
+
+##### `apply`
+
+- Definition: `apply` calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
+
+  - Arguments are passed as an array, whereas in `call`, arguments are passed separately. 
+
+- Syntax
+
+  ```js
+  someObject.someMethod.apply(context, [arg1, arg2, arg3…])
+  function.apply(context)
+  ```
+
+##### `bind`
+
+- Definition: `Bind` returns a new function that is permanently bound to the context passed to  it as first argument. 
+
+  - Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`
+  - Hard binds a function to an explicit execution context. 
+  - We have to call on the new function using `()`. 
+
+- Syntax
+
+  ```js
+  newFunc = someObject.someMethod.bind(context)
+  // Or 
+  function.bind(context)
+  ```
+
+- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
+
+  - What's important is to recognize that `bind`'s context is the <u>original</u> function and it <u>returns a new function</u> that is permanently bound to the context passed to `bind` as first argument. 
+  - When we call this new function using `()`, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
+  - `bind`'s execution context is the original function, because it is invoked using method invocation. Method invocations always use the calling function as its implicit execution context. But `bind` explicitly sets the execution context for the new function. 
+
+- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+
+  ```js
+  function sumNum(num1) {
+    return this.num + num1;
+  }
+  
+  let obj = {
+    num: 42
+  };
+  
+  let sumNum2 = sumNum.bind(obj);
+  sumNum2(5); // => 47
+  // new function sumNum2 is permanently bound to obj. 
+  ```
+
+- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
+
+  ```js
+  let object = {
+    a: 'hello',
+    b: 'world',
+    foo: function() {
+      return this.a + ' ' + this.b;
+    },
+  };
+  
+  let bar = object.foo;
+  bar();                                // "undefined undefined" 
+  																			// undefined because there is no 'a' property in the global object
+  
+  let baz = object.foo.bind(object);
+  baz();                                // "hello world"
+  																			// baz is permanently bound to object, so the context / 'this' now refers to object 
+  // baz calls on foo, passing permanent object context to it. 
+  ```
+
+  ```js
+  let object2 = {
+    a: 'hi',
+    b: 'there',
+  };
+  
+  baz.call(object2);  // "hello world" - `this` still refers to `object`
+  ```
+
+- JavaScript implements `bind` method like this: 
+
+  ```js
+  Function.prototype.bind = function (...args) {
+    let fn = this; // bind's context is the original function function ()
+    let context = args.shift();
+  
+    return function () {  										// bind returns a function function(), which is permanently bound to context. 
+      return fn.apply(context, args); // this function calls the original function fn. using apply. 
+    };
+  };
+  ```
+
+  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
+
+- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
+
+  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
+  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
+
+> - A trap is thinking that `bind` permanently alters the original function. 
+> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
+> - The original function isn't changed and doesn't have its context changed. 
+
+##### Advantage and disadvantage of `bind`
+
+- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
+- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
 
 ------
 
@@ -2729,10 +3269,12 @@ obj.foo();
 - Passing a function as an argument to another function also strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
 
 - `Bind` needs to be used on an outer function, it won't work if you use `bind` on a function that is being passed as argument. That function will lose its context and `this` will refer to the global object. 
+  - It doesn't work because the function that is bound to `this` gets passed as an argument itself. 
+  - `this` binding isn't set until a method is INVOKED. Execution context is set during a method invocation. So when the function is invoked, `this` references global object instead of `turk` as we intended it to. 
+
 
 ```js
 // this solution doesn't work
-// It doesn't work because the function that is bound to `this` gets passed as an argument itself. 
 let turk = {
   firstName: 'Christopher',
   lastName: 'Turk',
@@ -2749,6 +3291,26 @@ function logReturnVal(func) {
 }
 
 logReturnVal(turk.getDescription); // undefined undefined is a undefined. 
+```
+
+```js
+// also doesn't work work
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription: function() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }.bind(turk) // ReferenceError: cannot access turk before initialization
+};
+
+function logReturnVal(func) {
+  let returnVal = func();
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription);
 ```
 
 ```js
@@ -2837,146 +3399,6 @@ obj.foo();
 // => 3 hello world
 ```
 
-# `Function` Prototype methods and context
-
-- The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
-
-- In practice, you use the `call`, `apply`, and `bind` methods to set an explicit execution context. You can also set the execution context explicitly with functions that accept an argument that specifies the context for a callback function. For instance, `Array.prototype.forEach` (and several other `Array.prototype` methods) take a `thisArg` argument that lets you set the context for the callback explicitly.
-
-##### `call`
-
-- Definition: `call` invokes a function or method with an explicit execution context - the first argument passed to it 
-
-  - `call` and `apply` don't change a function's logic or return values; they merely change what object the method uses for its context.
-
-- Syntax
-
-  ```js
-  someObject.someMethod.call(context, arg1, arg2 …)
-  someObject.someMethod.call(context, ...args);
-  function.call(context)
-  
-  // using non-mutating array methods on strings
-  string = anyArray.arrayMethod.call(string, callbackFn).join('');
-  string = [].arrayMethod.call(string, callbackFn).join('');
-  ```
-
-- Can also pass a second array argument using spread operator. 
-
-  ```js
-  function.call(context, ...args);
-  ```
-
-##### `apply`
-
-- Definition: `apply` calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
-
-  - Arguments are passed as an array, whereas in `call`, arguments are passed separately. 
-
-- Syntax
-
-  ```js
-  someObject.someMethod.apply(context, [arg1, arg2, arg3…])
-  function.apply(context)
-  ```
-
-##### `bind`
-
-- Definition: `Bind` returns a new function that is permanently bound to the context passed to  it as first argument. 
-
-  - Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`
-  - Hard binds a function to an explicit execution context. 
-  - We have to call on the new function using `()`. 
-
-- Syntax
-
-  ```js
-  newFunc = someObject.someMethod.bind(context)
-  // Or 
-  function.bind(context)
-  ```
-
-- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
-
-  - What's important is to recognize that `bind`'s context is the <u>original</u> function and it <u>returns a new function</u> that is permanently bound to the context passed to `bind` as first argument. 
-  - When we call this new function using `()`, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
-  - `bind`'s execution context is the original function, because it is invoked using method invocation. Method invocations always use the calling function as its implicit execution context. But `bind` explicitly sets the execution context for the new function. 
-
-- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
-
-  ```js
-  function sumNum(num1) {
-    return this.num + num1;
-  }
-  
-  let obj = {
-    num: 42
-  };
-  
-  let sumNum2 = sumNum.bind(obj);
-  sumNum2(5); // => 47
-  // new function sumNum2 is permanently bound to obj. 
-  ```
-
-- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
-
-  ```js
-  let object = {
-    a: 'hello',
-    b: 'world',
-    foo: function() {
-      return this.a + ' ' + this.b;
-    },
-  };
-  
-  let bar = object.foo;
-  bar();                                // "undefined undefined" 
-  																			// undefined because there is no 'a' property in the global object
-  
-  let baz = object.foo.bind(object);
-  baz();                                // "hello world"
-  																			// baz is permanently bound to object, so the context / 'this' now refers to object 
-  // baz calls on foo, passing permanent object context to it. 
-  ```
-
-  ```js
-  let object2 = {
-    a: 'hi',
-    b: 'there',
-  };
-  
-  baz.call(object2);  // "hello world" - `this` still refers to `object`
-  ```
-
-- JavaScript implements `bind` method like this: 
-
-  ```js
-  Function.prototype.bind = function (...args) {
-    let fn = this; // bind's context is the original function function ()
-    let context = args.shift();
-  
-    return function () {  										// bind returns a function function(), which is permanently bound to context. 
-      return fn.apply(context, args); // this function calls the original function fn. using apply. 
-    };
-  };
-  ```
-
-  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
-
-- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
-
-  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
-  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
-
-> - A trap is thinking that `bind` permanently alters the original function. 
-> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
-> - The original function isn't changed and doesn't have its context changed. 
-
-##### Advantage and disadvantage of `bind`
-
-- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
-- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
-
 # Concepts for Object Creation Patterns
 
 # Inheritance
@@ -3009,6 +3431,8 @@ Syntax
   - It takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
 
   - The newly created object has access to all properties and methods on the prototype object. 
+
+  - unusual aspect is that the **inheriting object** (b) doesn't receive properties or methods of its own. Instead, it **delegates** property and method access to its prototype. 
 
     
 
@@ -3841,7 +4265,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
   [1, 2, 3].toString(); // 1,2,3
   ```
 
-  
 
 #### Polymorphism Through Duck Typing
 
@@ -4072,20 +4495,22 @@ let preparers = [new Chef(), new Decorator(), new Musician()];
 
 ## Factory Functions (object factories)
 
-- Definition: Factory functions create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. 
-
+- Definition: Factory functions create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of the factory function specifies the differences between the objects with arguments. 
+  - So the factory function handles the similarities (similar methods) , while each invocation specifies the differences between the object properties with arguments. 
   - Each object created by a factory function has an own copy of all the methods, which is redundant and memory intensive. 
   - Factory functions provide a simple way to automate the creation related objects based on a predefined template. 
-  - Each invocation of the factory function specifies the differences between the objects with arguments. 
   - One factory function can reuse another factory function by mixing the object created by that factory function into itself using `Object.assign`. 
-
+  - Factory functions do not use prototypes.
+  
+- Why factory functions
+  - factory functions are useful to extract code into one place so multiple objects can use it
+  
 - Advantages of factory function
 
   - Automates the creation of objects, creating multiple objects of a particular type.
   - Reuses Code
   - Can create objects with private state
     - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
-
 - Disadvantage of object factory
 
   - Wastes memory: Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. 
@@ -4514,7 +4939,7 @@ Summary: Like factory functions, constructors are also functions that create obj
 
   ```js
   let rex = new Terrier();
-  let spot = new rex.constructor;
+  let spot = new rex.constructor(); // remember the invocation syntax here! 
   // is the equivalent of calling new Terrier();
   // Can use this method if we don't know the name of an object's constructor. 
   ```
@@ -4561,15 +4986,24 @@ Summary: Like factory functions, constructors are also functions that create obj
 
 - `instanceof`   
 
-  - This operator tests whether the object is an instance of this constructor function then returns  a boolean value.
+  - The `instanceof` operator tests whether the object is an instance of this constructor function then returns  a boolean value.
 
-  - Detailed explanation: This operator tests to see if the prototype property of a constructor appears anywhere in the prototype chain of an object. 
+  - Detailed explanation: This operator tests to see if the prototype property of a constructor appears anywhere in the prototype chain of an object. The return value is a Boolean value.
 
   - Syntax
 
     ```md
-    Object instanceof function
+    Object instanceof Constructor
     ```
+
+  ```js
+  let Animal = {};
+  let Cat = Object.create(Animal);
+  let fluffy = Object.create(Cat);
+  console.log(fluffy instanceof Animal); // TypeError: Right-hand side of 'instanceof' is not callable
+  ```
+
+  - The `instanceof` operator requires the object to the right to have a `prototype` property, such as a function object. In most causes, that means the object on the right is a constructor or class. 
 
 - `Constructor.name` 
 
@@ -4584,7 +5018,8 @@ Summary: Like factory functions, constructors are also functions that create obj
 ##### Advantage of constructor 
 
 - Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
-- Memory efficiency: Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+- Constructors use prototypal inheritance which allows for memory efficiency. 
+- Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
   - constructors have a prototype property that references an object that instance objects inherit from. 
   - So properties defined on the constructor `prototype` object are shared through the prototype chain. 
   - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
@@ -4601,10 +5036,10 @@ Summary: Like factory functions, constructors are also functions that create obj
   - The **constructor's prototype object** is the object that the the instance object(inheriting object) created by a constructor inherits from. 
     - When you call a function `Foo` with the `new` keyword, JavaScript sets the new object's prototype to the current value of `Foo`'s `prototype` property. 
     - The inheriting object's prototype references `Foo.prototype`.
-    - Even if you assign `constructor.prototype` to a different object, the inheriting object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
+    - Even if you assign `constructor.prototype` to a different object, the instance object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
+    - Even if we define a methods on the constructor's`prototype` object after we create an instance object, it becomes available to that instance object. That is because objects hold a reference to their prototype object, if the prototype object changes in some way, the changes are reflected in the inheriting object as well. 
   - Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
   - Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
-
 - <u>**An object's prototype**</u>: 
 
   - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
@@ -4624,15 +5059,36 @@ Summary: Like factory functions, constructors are also functions that create obj
   - Object's `__proto__` or hidden `[[prototype]]` references an object's prototype. It also references `constructor.prototype`.
 - A constructor's `[[prototype]]` !== `constructor.prototype` , but the inheriting object's `[[prototype]]` references `constructor.prototype`. 
 
-#### Constructor / prototype pattern
+#### Object creation with constructors: constructor/prototype pattern
 
-- Constructors use the **constructor/prototype pattern** to create objects, also known as **pseudo-classical** object construction. 
+- Constructors use the **constructor/prototype pattern** to create objects, also known as **pseudo-classical** object construction.
 
-- In this pattern, we use a constructor function to define <u>state</u> and prototype object to define <u>shared behaviors</u> (common methods) for the created objects. 
+- In this pattern, we use a constructor function to define <u>state</u> and prototype object to define <u>shared behaviors</u> (common methods) in the instance objects. 
 
   -  A constructor creates an instance object with its own properties.
+  - The instance object inherits methods from the constructor's prototype object, referenced by `Constructor.prototype`. 
 
-  -  The instance object inherits methods from the constructor's prototype object, referenced by `Constructor.prototype`. 
+- Example1: 
+
+  ```js
+  function Rectangle(length, width) {
+    this.length = length; // instance properties
+    this.width = width;
+  }
+  
+  Rectangle.prototype.getArea = function() { // instance method
+    return this.length * this.width;
+  };
+  
+  Rectangle.prototype.value = 2; // instance property
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  
+  // notice that adding method to constructor.prototype is outside the constructor function
+  
+  // notice we are using instance object to invoke the method
+  ```
 
 - Example: 
 
@@ -4642,12 +5098,17 @@ Summary: Like factory functions, constructors are also functions that create obj
     this.age = age;
   }
   
-  Cat.prototype.info = function () { 
-    console.log(`My name is ${this.name}. My age is ${this.age}`);
+  Cat.prototype.info = function () {
+    console.log(`My name is ${this.name}. My age is ${this.age}.`);
   }
+  
+  let cat = new Cat('Fluffy', 3); // Instantiating a new Cat object.
+  cat.info(); // My name is Fluffy. My age is 3.
   ```
 
-- Example 2
+  In this code, `cat` object inherits from the `Cat`
+  
+- Example 3
 
   - Can call the `Rectangle` constructor without `new` keyword.  However, if you do, the constructor won't work properly. It's possible to write constructors that work with or without the `new` keyword, but most JavaScript developers won't bother.
 
@@ -4668,36 +5129,8 @@ Summary: Like factory functions, constructors are also functions that create obj
   console.log(rec.getArea());            // 50
   ```
 
-  - This code is straightforward and easy to follow, and the outputs should be exactly what you expect. In particular, the object created by the `Rectangle` constructor, `rec`, is an instance of the `Rectangle` type, and we can call the `getArea` method from its prototype to calculate the area.
+  - This code is straightforward and easy to follow, and the outputs should be exactly what you expect. In particular, the object created by the `Rectangle` constructor, `rec`, is an instance of the `Rectangle` type, and we can call the `getArea` method from its prototype to calculate the area. 
 
-  
-
-#### Object creation with constructors: constructor/prototype pattern
-
-- Constructors use the **constructor/prototype pattern** to create objects, also known as **pseudo-classical** object construction: 
-
-- In this pattern, we use a constructor function to define <u>state</u>, and prototype object to define <u>shared behaviors</u> (common methods) in the instance objects. 
-
-  -  A constructor creates an instance object with its own properties.
-  - The instance object inherits methods from the constructor's prototype object, referenced by `Constructor.prototype`. 
-
-- Example: 
-
-  ```js
-  function Cat(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  
-  Cat.prototype.info = function () {
-    console.log(`My name is ${this.name}. My age is ${this.age}.`);
-  }
-  
-  let cat = new Cat('Fluffy', 3); // Instantiating a new Cat object.
-  cat.info(); // My name is Fluffy. My age is 3.
-  ```
-
-  In this code, `cat` object inherits from the `Cat`
 
 #### Inheritance with constructors
 
@@ -5460,6 +5893,8 @@ console.log(func.constructor.constructor); // [Function: Function]
 
 - Use mix-ins to enhance a commonality that multiple classes share 
 
+- Invocation syntax `()`
+
 - Careful to use `.constructor` or `.constructor.name`. 
 
 - **Refering** to an object or function vs is a !!
@@ -5539,19 +5974,88 @@ console.log(func.constructor.constructor); // [Function: Function]
 
 ------
 
+# Redo Exam Part 1
+
+- [ ] 1
+- [x] 2
+- [x] 3 - static variables.
+
+- [x] 4
+- [x] 5
+- [x] 6
+- [ ] 7
+- [ ] 8
+- [x] 9
+- [ ] 10
+- [ ] 11
+- [ ] 12
+- [ ] 13
+- [x] 14
+- [ ] 15
+
 # Redo Quizzes
 
 #### Lesson 1
 
+[reference](https://launchschool.com/lessons/fb892747/assignments/271844ae)
+
 #### Lesson 2
 
-##### Quiz 1
+<u>**Quiz 1: [reference](https://launchschool.com/lessons/1eaf5e37/assignments/39b60e49)**</u>https://launchschool.com/lessons/1eaf5e37/assignments/39b60e49)
 
-##### Quiz 2
+<u>**Quiz 2: [reference](https://launchschool.com/lessons/1eaf5e37/assignments/69e660e6)**</u>
 
 #### Lesson 3
 
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/cb0a5ff7)
+
+9. 
+
+[Question 9](https://launchschool.com/quizzes/03e8241a) 0 / 1 Points
+
+Your program needs to change the case of all letters in a string to the opposite case. That is, `Naveed Fida` should be converted to `nAVEED fIDA`. You already have a function called `convertCase` that does this for a single character. It takes a single character as an argument and returns the translated result.
+
+Given the `convertCase` function, which of the following code snippets can be used to convert the string contained by `str`? Select all answers that apply.
+
+Toggle Answer Display
+
+### Your Answer
+
+- [x] **A** 
+
+```
+str = [1, 2, 3].map.call(str, convertCase).join("");
+```
+
+This code uses `call` to invoke `map` with `str` as its context, a process that allows `map` to process the individual characters of `str`. Note that we use the array `[1, 2, 3]` to invoke `call`; any array will do.
+
+**B**
+
+```
+str = str.map(convertCase).join("");
+```
+
+This code attempts to call a `map` method on a string. However, strings don't have a `map` method, and they won't use `Array.prototype.map` without more specific instructions, so this code raises a `TypeError`.
+
+- [x] **C** 
+
+```
+str = Array.from(str).map(convertCase).join("");
+```
+
+This code uses the `Array.from` static method to convert `str` to an array of characters. That lets us use `Array.prototype.map` and `Array.prototype.join` to translate the characters and recombined them as a string.
+
+**D**
+
+```
+str = str.split("").map(convertCase);
+```
+
+This code returns an array, not a string.
+
 #### Lesson 4
+
+[reference**](https://launchschool.com/lessons/d5964d17/assignments/b3268d0b)
 
 # Quizzes
 
@@ -6217,7 +6721,7 @@ console.log(fooC.hasOwnProperty("qux")); // false
 function assignProperty(obj, property, value) {
   while (obj !== null) { // loops until obj reaches the null prototype
     if (obj.hasOwnProperty(property)) { 
-      obj[property] = value;
+      obj[property] = value; // make sure to use bracket notation instead of dot notation. 
       break; // don't need this, loop ends with object is not null.
     }
 
@@ -6275,6 +6779,10 @@ Object.prototype.ancestors = function() {
 let bareObj = Object.create(null);
 ```
 
+#### Q: What is a bare object?
+
+Object without a prototype. 
+
 #### **Q: How can you determine whether an object has a prototype?**
 
 ```js
@@ -6288,6 +6796,136 @@ if (Object.getPrototypeOf(obj)) {
 ####  **Q: What value does `Object.getPrototypeOf({})` return?**
 
 The default prototype object.
+
+#### Q: What does this code mean?
+
+```js
+if (Object.getPrototypeOf(obj) && obj.isPrototypeOf(car)) {
+  // obj has a non-null prototype AND
+  // obj is in the prototype chain of car
+}
+```
+
+# Prompts
+
+### Their prompts
+
+Prompt: See if an Object came from a constructor.
+
+```js
+// Example constructors
+function Car(color, year) {
+  this.color = color;
+  this.year = year; 
+}
+function Dog(name) {
+  this.name = name;
+}
+
+// Objects to test with
+let myCar = new Car('blue', 2020);
+let myDog = new Dog('Fido');
+
+// Possible solutions
+
+// Using 'instanceof' operator
+console.log(myCar instanceof Car); // logs true
+console.log(myDog instanceof Car); // logs false
+
+// Using 'isPrototypeOf' method
+console.log(Car.prototype.isPrototypeOf(myCar)); // logs true
+console.log(Car.prototype.isPrototypeOf(myDog)); // logs false
+
+// Compare the constructor property of the created object to the constructor function
+console.log(myCar.constructor === Car); // logs true
+console.log(myDog.constructor === Dog); // logs true
+console.log(myDog.constructor === Car); // logs false
+```
+
+- This example illustrates that there are several ways to complete the task and provides code examples of how they work. That’s enough to get to the conscious competence level, but it still might be difficult to completely explain what is going on.
+- The next step is to think about *how* the code does what it does, with the goal of understanding well enough to teach it. A good way to develop that understanding is to create functions to duplicate the behavior provided by built-in abstractions like `isPrototypeOf` and `instanceof`
+- For example, here’s what I came up with for `instanceof`. This function iterates through the prototype chain of `obj`, comparing each prototype to the `prototype` property of `constructorFunction`. It returns true if any of them match and false if no match is found:
+
+------
+
+Prompt: See if an object contains a property as one of its own -> create your own `hasOwnProperty`
+
+Answer: 
+
+------
+
+Prompt: Return all the property names of an object -> create your own `Object.getOwnPropertyNames`
+
+Answer: 
+
+------
+
+Prompt: Copy all properties from one object to another -> create your own `Object.assign`
+
+Answer: 
+
+### My Prompts
+
+Prompt: Create your own `Array.from` 
+
+Answer: 
+
+```js
+```
+
+------
+
+Prompt: string vs string object
+
+
+
+------
+
+Prompt: how can we call object or array methods on string primitives?
+
+------
+
+Prompt: What does this code log, and why does it log what it does?
+
+```js
+let obj = {
+  foo() {
+    return this;
+  }
+};
+
+let foo = obj.foo;
+console.log(foo());
+```
+
+Answer : This code logs undefined. On line 7, `foo` is assigned to the `foo` method in `obj`. On line 8, `foo` is invoked as a standalone function, or regular function call. Regular function calls, when in strict mode, have an implicit execution context of `undefined`. The function call returns `this`, which references the implicit execution context of `undefined`. 
+
+# Applying knowledge in unusual ways
+
+- All that said, one thing that can help is to keep a running list of anything that seems unusual while going through the course materials
+
+  - Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
+  - Unusual things about the `new` keyword
+  - Unusual things about arrow functions
+  - Pass a class as an argument and return a new object from a function
+
+- `forEach` is not considered the enclosing function for arrow functions, why?
+
+- Unusual: don't use arrow functions as methods on an object, else it will take global object (even in strict mode) as the surrounding context. 
+
+  ```js
+  let obj = {
+    a: 5,
+  
+    foo: () => {
+      console.log(this); // this refers global object
+      console.log(this.a);
+    },
+  };
+  
+  obj.foo(); // => undefined
+  // Arrow functions ignore method invocation rule for implicit execution context, and use lexical scoping instead. The surrouding context here is the global object, not obj. 
+  ```
 
 # Question
 
