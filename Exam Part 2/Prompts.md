@@ -1,3 +1,21 @@
+# To Do
+
+Important
+
+- [ ] Exercise Sets
+- [ ] Their prompts
+- [ ] Area of Focus
+
+Extra
+
+- [ ] My own Exercises
+
+- [ ] Quizzes?
+
+- [ ] Rest of exam 1?
+
+  
+
 # Questions
 
 - Practice problems Factory functions # 4
@@ -95,7 +113,25 @@ Answer:
   - Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
   - Unusual things about the `new` keyword
   - Unusual things about arrow functions
-  - Pass a class as an argument and return a new object from a functio
+  - Pass a class as an argument and return a new object from a function. 
+  
+- `forEach` is not considered the enclosing function for arrow functions, why?
+  
+- Unusual: don't use arrow functions as methods on an object, else it will take global object (even in strict mode) as the surrounding context. 
+
+  ```js
+  let obj = {
+    a: 5,
+  
+    foo: () => {
+      console.log(this); // this refers global object
+      console.log(this.a);
+    },
+  };
+  
+  obj.foo(); // => undefined
+  // Arrow functions ignore method invocation rule for implicit execution context, and use lexical scoping instead. The surrouding context here is the global object, not obj. 
+  ```
 
 # Problems about prototypes
 
@@ -293,6 +329,161 @@ false
 Answer: 
 
 We can call use a string primitive value to access the properties and methods defined for String objects, because when we try to access a property or invoke a method on a string primitive, JavaScript wraps the string primitive in a `String` object, then uses the object to access properties or call methods. When the wrapping object has served its purpose, JavaScript discards that wrapping object. Properties and methods will always return strings as primitives.
+
+# My Own Exercises
+
+##### Maybe redo
+
+- [ ] JS 120 exercises easy # 11 https://launchschool.com/exercises/2b521c67
+- [ ] 
+
+
+
+##### Q: Rewrite these two classes to use constructor/prototype pattern. 
+
+```js
+class Person {
+  greeting (text) {
+    console.log(text);
+  }
+}
+
+class Shouter extends Person {
+  greeting (text) {
+    super.greeting(text.toUpperCase());
+  }
+}
+
+let person = new Person();
+let shouter = new Shouter();
+
+person.greeting("Hello. It's very nice to meet you."); // Hello. It's very nice to meet you
+shouter.greeting("Hello my friend."); // HELLO MY FRIEND.
+```
+
+```js
+// solution
+function Person() {
+}
+Person.prototype.greeting = function(text) {
+  console.log(text);
+}
+
+function Shouter() {
+  Person.call(this);
+}
+Shouter.prototype = Object.create(Person.prototype)
+Shouter.prototype.greeting = function(text) {
+  Person.prototype.greeting.call(this, text.toUpperCase());
+}
+
+let person = new Person();
+let shouter = new Shouter();
+
+person.greeting("Hello. It's very nice to meet you."); // Hello. It's very nice to meet you
+shouter.greeting("Hello my friend."); // HELLO MY FRIEND.
+```
+
+##### Q: 
+
+Without calling the `Cat` constructor, create an object that looks and acts like a `Cat` instance that doesn't have a defined name.
+
+```js
+class Cat {
+  constructor(name) {
+    this.name = name;
+  }
+  speaks() {
+    return `${this.name} says meowwww.`;
+  }
+}
+
+let fakeCat = // your implementation
+console.log(fakeCat instanceof Cat); // logs true
+console.log(fakeCat.name);           // logs undefined
+console.log(fakeCat.speaks());       // logs undefined says meowwww.
+```
+
+# Redo Quizzes
+
+#### Lesson 1
+
+[reference](https://launchschool.com/lessons/fb892747/assignments/271844ae)
+
+#### Lesson 2
+
+<u>**Quiz 1: [reference](https://launchschool.com/lessons/1eaf5e37/assignments/39b60e49)**</u>https://launchschool.com/lessons/1eaf5e37/assignments/39b60e49)
+
+<u>**Quiz 2: [reference](https://launchschool.com/lessons/1eaf5e37/assignments/69e660e6)**</u>
+
+#### Lesson 3
+
+[reference](https://launchschool.com/lessons/e3c64e3f/assignments/cb0a5ff7)
+
+[Question 9](https://launchschool.com/quizzes/03e8241a) 0 / 1 Points
+
+Your program needs to change the case of all letters in a string to the opposite case. That is, `Naveed Fida` should be converted to `nAVEED fIDA`. You already have a function called `convertCase` that does this for a single character. It takes a single character as an argument and returns the translated result.
+
+Given the `convertCase` function, which of the following code snippets can be used to convert the string contained by `str`? Select all answers that apply.
+
+Toggle Answer Display
+
+- [x] **A** 
+
+```
+str = [1, 2, 3].map.call(str, convertCase).join("");
+```
+
+This code uses `call` to invoke `map` with `str` as its context, a process that allows `map` to process the individual characters of `str`. Note that we use the array `[1, 2, 3]` to invoke `call`; any array will do.
+
+**B**
+
+```
+str = str.map(convertCase).join("");
+```
+
+This code attempts to call a `map` method on a string. However, strings don't have a `map` method, and they won't use `Array.prototype.map` without more specific instructions, so this code raises a `TypeError`.
+
+- [x] **C** 
+
+```
+str = Array.from(str).map(convertCase).join("");
+```
+
+This code uses the `Array.from` static method to convert `str` to an array of characters. That lets us use `Array.prototype.map` and `Array.prototype.join` to translate the characters and recombined them as a string.
+
+**D**
+
+```
+str = str.split("").map(convertCase);
+```
+
+This code returns an array, not a string.
+
+#### Lesson 4
+
+[reference**](https://launchschool.com/lessons/d5964d17/assignments/b3268d0b)
+
+
+
+# Redo Exam Part 1
+
+- [ ] 1
+- [x] 2
+- [x] 3 - static variables.
+
+- [x] 4
+- [x] 5
+- [x] 6
+- [ ] 7
+- [ ] 8
+- [x] 9
+- [ ] 10
+- [ ] 11
+- [ ] 12
+- [ ] 13
+- [x] 14
+- [ ] 15
 
 # Exam Part 1 Redo
 
@@ -2558,15 +2749,508 @@ This code also raises a `TypeError`. The `hi` method is defined on `Hello.protot
 
 ### Easy
 
-1. 
+1. ```js
+   class Rectangle {
+     constructor(width, length) {
+       this.width = width;
+       this.length = length;
+   	}
+     
+     getWidth() {
+       return this.width;
+     }
+     
+     getLength() {
+       return this.Length
+     }
+     
+     getArea() {
+       return this.width * this.length;
+     }
+   }
+   ```
 
-2. 
+2. ```js
+   class Square extends Rectangle {
+     constructor(size) {
+       super(size, size);
+     }  
+   }
+   ```
 
-3. 
-4. 
-5. 
+3. ```js
+   class Cat {
+     constructor(name) {
+       this.name = name;
+     }
+     speaks() {
+       return `${this.name} says meowwww.`;
+     }
+   }
+   
+   let fakeCat = Object.create(Cat.prototype);
+   console.log(fakeCat instanceof Cat); // logs true
+   console.log(fakeCat.name);           // logs undefined
+   console.log(fakeCat.speaks());       // logs undefined says meowwww.
+   ```
+
+4. ```js
+   class Pet {
+     constructor(name, age) {
+       this.name = name;
+       this.age = age;
+     }
+   }
+   
+   class Cat extends Pet {
+   
+   }
+   
+   let pudding = new Cat('Pudding', 7, 'black and white');
+   let butterscotch = new Cat('Butterscotch', 10, 'tan and white');
+   
+   console.log(pudding.info());
+   console.log(butterscotch.info());
+   ```
+
+5. ```js
+   class Animal {
+     constructor(name, age, legs, species, status) {
+       this.name = name;
+       this.age = age;
+       this.legs = legs;
+       this.species = species;
+       this.status = status;
+     }
+     introduce() {
+       return `Hello, my name is ${this.name} and I am ${this.age} years old and ${this.status}.`;
+     }
+   }
+   
+   class Cat extends Animal {
+     constructor(name, age, status) {
+       super(name, age, 4, 'cat', status);
+     }
+   
+     introduce() {
+       return `Hello, my name is ${this.name} and I am ${this.age} years old and ${this.status}. Meow meow!`
+     }
+   }
+   
+   class Dog extends Animal {
+     constructor(name, age, status, master) {
+       super(name, age, 4, 'dog', status);
+       this.master = master;
+     }
+   
+     greetMaster() {
+       return `Hello ${this.master}! Woof, woof!`;
+     }
+   }
+   let cat = new Cat("Pepe", 2, "happy");
+   console.log(cat.introduce() === "Hello, my name is Pepe and I am 2 years old and happy. Meow meow!");
+   // logs true
+   ```
+
+6. ```js
+   class Vehicle {
+     constructor(make, model) {
+       this.make = make;
+       this.model = model;
+     }
+   
+     info() {
+       return `${this.make} ${this.model}`;
+     }
+   }
+   
+   class Car extends Vehicle {
+     getWheels() {
+       return 4;
+     }
+   }
+   
+   class Motorcycle extends Vehicle {
+     getWheels() {
+       return 2;
+     }
+   }
+   
+   class Truck extends Vehicle {
+     constructor(make, model, payload) {
+       super(make, model);
+       this.payload = payload;
+     }
+     getWheels() {
+       return 6;
+     }
+   }
+   ```
+
+7. ```js
+   class Something {
+     constructor() {
+       this.data = "Hello";
+     }
+   
+     dupData() {
+       return this.data + this.data;
+     }
+   
+     static dupData() {
+       return "ByeBye";
+     }
+   }
+   
+   let thing = new Something();
+   console.log(Something.dupData());
+   console.log(thing.dupData());
+   ```
+
+   ```
+   ByeBye
+   HelloHello
+   ```
+
+   
+
+8. ```js
+   class Person {
+     greeting (text) {
+       console.log(text);
+     }
+   }
+   
+   class Shouter extends Person {
+     greeting (text) {
+       super.greeting(text.toUpperCase());
+     }
+   }
+   
+   let person = new Person();
+   let shouter = new Shouter();
+   
+   person.greeting("Hello. It's very nice to meet you."); // Hello. It's very nice to meet you
+   shouter.greeting("Hello my friend."); // HELLO MY FRIEND.
+   ```
+
+9. ```js
+   let mixIn = {
+     walk() {
+       return `${this.name} ${this.gait()} forward`;
+     }
+   };
+   
+   class Person {
+     constructor(name) {
+       this.name = name;
+     }
+   
+     gait() {
+       return "strolls";
+     }
+   }
+   
+   Object.assign(Person.prototype, mixIn);
+   
+   class Cat {
+     constructor(name) {
+       this.name = name;
+     }
+   
+     gait() {
+       return "saunters";
+     }
+   }
+   
+   Object.assign(Cat.prototype, mixIn);
+   
+   class Cheetah {
+     constructor(name) {
+       this.name = name;
+     }
+   
+     gait() {
+       return "runs";
+     }
+   }
+   
+   Object.assign(Cheetah.prototype, mixIn);
+   
+   let mike = new Person("Mike");
+   console.log(mike.walk());
+   // "Mike strolls forward"
+   
+   let kitty = new Cat("Kitty");
+   console.log(kitty.walk());
+   // "Kitty saunters forward"
+   
+   let flash = new Cheetah("Flash");
+   console.log(flash.walk());
+   // "Flash runs forward"
+   ```
+
+10. ```js
+    let butterscotch = new Pet('cat', 'Butterscotch');
+    let pudding      = new Pet('cat', 'Pudding');
+    let darwin       = new Pet('bearded dragon', 'Darwin');
+    let kennedy      = new Pet('dog', 'Kennedy');
+    let sweetie      = new Pet('parakeet', 'Sweetie Pie');
+    let molly        = new Pet('dog', 'Molly');
+    let chester      = new Pet('fish', 'Chester');
+    
+    let phanson = new Owner('P Hanson');
+    let bholmes = new Owner('B Holmes');
+    
+    let shelter = new Shelter();
+    shelter.adopt(phanson, butterscotch);
+    shelter.adopt(phanson, pudding);
+    shelter.adopt(phanson, darwin);
+    shelter.adopt(bholmes, kennedy);
+    shelter.adopt(bholmes, sweetie);
+    shelter.adopt(bholmes, molly);
+    shelter.adopt(bholmes, chester);
+    shelter.printAdoptions();
+    console.log(`${phanson.name} has ${phanson.numberOfPets()} adopted pets.`);
+    console.log(`${bholmes.name} has ${bholmes.numberOfPets()} adopted pets.`);
+    ```
+
+11. ```js
+    class Pet {
+      constructor(animal, name) {
+        this.animal = animal;
+        this.name = name;
+      }
+    }
+    
+    class Owner {
+      constructor(name) {
+        this.name = name;
+        this.pets = [];
+      }
+    
+      addPet(pet) {
+        this.pets.push(pet);
+      }
+    
+      numberOfPets() {
+        return this.pets.length;
+      }
+    }
+    
+    class Shelter {
+      constructor() {
+        this.owners = {};
+      }
+    
+      adopt(owner, pet) {
+        owner.addPet(pet);
+        if (!this.owners[owner.name]) {
+          this.owners[owner.name] = owner;
+        }
+      }
+    
+      printAdoptions() {
+        for (let ownerName in this.owners) {
+          let owner = this.owners[ownerName];
+          console.log(`${ownerName} has adopted the following pets:`);
+          owner.pets.forEach(pet => {
+            console.log(`a ${pet.animal} named ${pet.name}`);
+          });
+          console.log();
+        }
+      }
+    }
+    
+    let butterscotch = new Pet('cat', 'Butterscotch');
+    let pudding      = new Pet('cat', 'Pudding');
+    let darwin       = new Pet('bearded dragon', 'Darwin');
+    let kennedy      = new Pet('dog', 'Kennedy');
+    let sweetie      = new Pet('parakeet', 'Sweetie Pie');
+    let molly        = new Pet('dog', 'Molly');
+    let chester      = new Pet('fish', 'Chester');
+    
+    let phanson = new Owner('P Hanson');
+    let bholmes = new Owner('B Holmes');
+    
+    let shelter = new Shelter();
+    shelter.adopt(phanson, butterscotch);
+    shelter.adopt(phanson, pudding);
+    shelter.adopt(phanson, darwin);
+    shelter.adopt(bholmes, kennedy);
+    shelter.adopt(bholmes, sweetie);
+    shelter.adopt(bholmes, molly);
+    shelter.adopt(bholmes, chester);
+    shelter.printAdoptions();
+    console.log(`${phanson.name} has ${phanson.numberOfPets()} adopted pets.`);
+    console.log(`${bholmes.name} has ${bholmes.numberOfPets()} adopted pets.`);
+    ```
+
+12. ```js
+    class Banner {
+      constructor(message) {
+        this.message = message;
+        this.length = this.message.length;
+      }
+    
+      displayBanner() {
+        console.log([this.horizontalRule(), this.emptyLine(), this.messageLine(), this.emptyLine(), this.horizontalRule()].join("\n"));
+      }
+    
+      horizontalRule() {
+        return `+-${'-'.repeat(this.length)}-+`;
+      }
+    
+      emptyLine() {
+        return `| ${' '.repeat(this.length)} |`;
+      }
+    
+      messageLine() {
+        return `| ${this.message} |`
+      }
+    }
+    
+    let banner1 = new Banner('To boldly go where no one has gone before.');
+    banner1.displayBanner();
+    // +--------------------------------------------+
+    // |                                            |
+    // | To boldly go where no one has gone before. |
+    // |                                            |
+    // +--------------------------------------------+
+    
+    // let banner2 = new Banner('');
+    // banner2.displayBanner();
+    // +--+
+    // |  |
+    // |  |
+    // |  |
+    // +--+
+    ```
 
 ### Objects
+
+##### 1: buggy code
+
+##### 2: buggy code : mutating object
+
+```js
+let item = {
+  name: 'Foo',
+  description: 'Fusce consequat dui est, semper.',
+  price: 50,
+  quantity: 100,
+  discount: function(percent) {
+    let discount = this.price * percent / 100;
+    this.price -= discount; // error here
+    
+    return this.price;
+  },
+};
+```
+
+```terminal
+> item.discount(20)   // should return 40
+= 40
+> item.discount(50)   // should return 25
+= 20
+> item.discount(25)   // should return 37.5
+= 15
+```
+
+```js
+let item = {
+  name: 'Foo',
+  description: 'Fusce consequat dui est, semper.',
+  price: 50,
+  quantity: 100,
+  discount: function(percent) {
+    let discount = this.price * percent / 100;  
+    return this.price - discount;
+  },
+};
+```
+
+##### 3: Testing Object Equality ( key/ value pairs)
+
+[reference](https://launchschool.com/exercises/f387cdf5)
+
+In JavaScript, comparing two objects either with `==` or `===` checks for object identity. In other words, the comparison evaluates as true if it's the same object on either side of `==` or `===`. This is a limitation, in a sense, because sometimes we need to check if two objects have the same key/value pairs. JavaScript doesn't give us a way to do that.
+
+Write a function `objectsEqual` that accepts two object arguments and returns `true` or `false` depending on whether the objects have the same key/value pairs.
+
+```js
+console.log(objectsEqual({a: 'foo'}, {a: 'foo'}));                      // true
+console.log(objectsEqual({a: 'foo', b: 'bar'}, {a: 'foo'}));            // false
+console.log(objectsEqual({}, {}));                                      // true
+console.log(objectsEqual({a: 'foo', b: undefined}, {a: 'foo', c: 1}));  // false
+```
+
+```js
+// my solution
+function objectsEqual(obj1, obj2) {
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  return checkKeys(obj1, obj2) && checkValues(obj1, obj2);
+}
+
+function checkKeys(obj1, obj2) {
+  let keys1 = Object.getOwnPropertyNames(obj1).sort();
+  let keys2 = Object.getOwnPropertyNames(obj2).sort();
+
+  if (keys1.length !== keys2.length) return false;
+
+  return keys1.every((_, index) => {
+    return keys1[index] === keys2[index];
+  });
+}
+
+function checkValues(obj1, obj2) {
+  for (let key in obj1) {
+    if (obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+```js
+// solution
+function objectsEqual(a, b) {
+  if (a === b) {
+    return true;
+  }
+
+  return (keysMatch(a, b) && valuesMatch(a, b));
+}
+
+function keysMatch(a, b) {
+  let aKeys = Object.getOwnPropertyNames(a).sort();
+  let bKeys = Object.getOwnPropertyNames(b).sort();
+
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
+
+  return aKeys.every((key, index) => {
+    return key === bKeys[index];
+  });
+}
+
+function valuesMatch(a, b) {
+  let aKeys = Object.getOwnPropertyNames(a).sort();
+
+  return aKeys.every(key => a[key] === b[key]);
+}
+```
+
+##### 4: Student
+
+
+
+##### 5: School
 
 ### Function Context
 
