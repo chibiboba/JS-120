@@ -1395,6 +1395,12 @@ console.log(a);
 
 - **member access notation** (**dot notation**)
 
+  - Syntax
+
+    ```js
+    objectName.propertyName
+    ```
+
   - Requires valid variable names. 
 
   - Don't use this notation if the property is supposed to be a variable!!
@@ -1414,7 +1420,15 @@ console.log(a);
 
 - **computed member access notation** (**bracket notation**). 
 
+  - can use string or variable
+
+    ```js
+    objectName["propertyName"]
+    objectName[propertyVariable]
+    ```
+
   - Can take any UTF-8-compatible string as the key. 
+
   - Can be computed on the fly -- any expression between the brackets gets evaluated as a string and used to reference the property. 
 
   ```js
@@ -5731,6 +5745,22 @@ console.log(func.constructor.constructor); // [Function: Function]
   - Methods that have both a side effect and a meaningful return value or that try to perform multiple actions are generally not recommended. 
 
   - It should return a useful value or have a side-effect, not both. 
+  
+- Logical or statement
+
+  ```js
+  let obj = {};
+  obj[length] = obj[length] + 1 || length;
+  ```
+
+- Reduce: sums up an array.
+
+  ```js
+  reduce ((a, b) => a + b, 0) 
+  // need initial value in case array is empty
+  ```
+
+  
 
 ------
 
