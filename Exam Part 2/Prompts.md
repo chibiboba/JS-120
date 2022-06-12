@@ -2,7 +2,7 @@
 
 Important
 
-- [ ] Exercise Sets
+- [x] Exercise Sets
 - [ ] Their prompts
 - [ ] Area of Focus
 
@@ -28,6 +28,8 @@ Extra
   ```
 
 # Their prompts
+
+[reference](https://medium.com/launch-school/my-study-tips-for-the-js129-assessment-646b7f652c9f)
 
 ##### Q: See if an Object came from a constructor.
 
@@ -65,11 +67,148 @@ console.log(myDog.constructor === Car); // logs false
 - The next step is to think about *how* the code does what it does, with the goal of understanding well enough to teach it. A good way to develop that understanding is to create functions to duplicate the behavior provided by built-in abstractions like `isPrototypeOf` and `instanceof`
 - For example, here’s what I came up with for `instanceof`. This function iterates through the prototype chain of `obj`, comparing each prototype to the `prototype` property of `constructorFunction`. It returns true if any of them match and false if no match is found:
 
+```js
+function isInstanceOf(obj, constructorFunction) {
+  while (obj) {
+    obj = Object.getPrototypeOf(obj);
+    if (obj === constructorFunction.prototype) return true;
+  }
+
+  return false;
+```
+
+##### Q: See if an Object came from a constructor (practice)
+
+```js
+// Example constructors
+function Cat() {}
+
+function Dog() {}
+
+let fluffy = new Cat();
+let bobo = new Dog();
+
+// instanceof
+console.log(fluffy instanceof Cat);
+console.log(bobo instanceof Dog);
+
+// isPrototypeOf
+console.log(Cat.prototype.isPrototypeOf(fluffy)); 
+console.log(Dog.prototype.isPrototypeOf(bobo));
+
+// constructor property
+console.log(fluffy.constructor === Cat);
+console.log(bobo.constructor === Dog);
+```
+
+
+
+------
+
+##### Q: See if an Object came from a constructor --> create your own `instanceof`
+
+Answer: 
+
+- Definition: The operator `instanceof` tests to see if the prototype property of a constructor appears anywhere in the prototype chain of an object. The return value is a `boolean` value. Thus it requires the object to the right to be a constructor function or class. 
+
+- Syntax
+
+  ```js
+  object instanceof Constructor
+  ```
+
+- my own `instanceOf`
+
+  ```js
+  function isInstanceOf(obj, constructorFunction) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeof(obj);
+      if (obj === constructorFunction.prototype) return true;
+    }
+    
+    return false;
+  }
+  ```
+
+------
+
+##### Q: See if an object is in the prototype chain of another object --> create your own `isPrototypeOf`
+
+Answer: 
+
+- Definition: `Object.prototype.isPrototypeOf()` is an instance object method that determines whether the object is part of another object’s prototype chain. 
+
+- Syntax
+
+  ```js
+  obj2.isPrototypeOf(obj1)
+  ```
+
+- my own `isPrototypeOf`
+
+  ```js
+  function prototypeOf (obj, prototypeObj) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeOf(obj);
+      if (obj === prototypeObj) return true;
+    }
+    
+    return false;
+  }
+  ```
+
+- Testing
+
+  ```js
+  // Example constructors
+  function Cat() {}
+  
+  let fluffy = new Cat();
+  
+  function isPrototypeOf (obj, prototypeObj) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeOf(obj);
+      if (obj === prototypeObj) return true;
+    }
+    
+    return false;
+  }
+  
+  console.log(isPrototypeOf(fluffy, Cat.prototype)); // true
+  ```
+
 ------
 
 ##### Q: See if an object contains a property as one of its own -> create your own `hasOwnProperty`
 
 Answer: 
+
+- Definition: `Object.prototype.hasOwnProperty()` is an instance method that takes name of a property as string and returns a `boolean` indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+
+- Syntax
+
+  ```js
+  obj.hasOwnProperty(string)
+  ```
+
+- My own
+
+  ```js
+  // Object.getOwnPropertyNames
+  function hasOwnProperty(obj, property) {
+    let arr = Object.getOwnPropertyNames(obj);
+    return arr.includes(property);
+  }
+  ```
+
+- Test code
+
+  ```js
+  let a = {1: 1};
+  console.log(hasOwnProperty(a, '1')); // true
+  ```
+
+  
 
 ------
 
@@ -77,11 +216,62 @@ Answer:
 
 Answer: 
 
+- Definition: `Object.getOwnPropertyNames()` is a static Object method that returns an array of all of the object's “own” properties (keys) regardless if they’re enumerable or not. 
+
+- Syntax
+
+  ```js
+  Object.getOwnPropertyNames(obj)
+  ```
+
+- own version
+
+  ```js
+  function getOwnPropertyNames(obj) {
+    
+  }
+  ```
+
+  
+
 ------
 
 ##### Q: Copy all properties from one object to another -> create your own `Object.assign`
 
 Answer: 
+
+- Definition: `Object.assign` is a static object method that copies all enumerable own properties from one or more *source objects* to a *target object*. It then returns the a reference to the modified target object, or the same object is only one argument is passed. 
+
+- Syntax
+
+  ```js
+  Object.assign(targetObj, obj)
+  Object.assign(Constructor.prototype, mixIn, mixIn ...)
+  ```
+
+- own `Object.assign`
+
+  ```js
+  function assignObj(targetObj, sourceObj = {}) { // in case one object is passed
+    let sourceObjKeys = Object.keys(sourceObj);
+    sourceObjkeys.forEach(key => {
+      targetObj[key] = sourceObj[key];
+    });
+    return targetObj;
+  }
+  ```
+
+- Test code
+
+  ```js
+  function Cat() {}
+  let fluffy = new Cat();
+  
+  console.log(assignObj({1: 1}, {2: 2})); // {'1': 1, '2': 2}
+  console.log(assignObj(Cat.prototype, {2: 2})) // {'2': 2}
+  ```
+
+  
 
 ------
 
@@ -136,7 +326,7 @@ Answer:
 
 # Problems about prototypes
 
-##### Searching prototype chain
+##### Q: Searching prototype chain
 
 (from practice problems: lesson 2)
 
@@ -171,7 +361,7 @@ function assignProperty(obj, property, value) {
 }
 ```
 
-##### Prototypal inheritance
+##### Q: Return prototype chain of an object
 
 (from exercise sets: Object creation patterns) [reference](https://launchschool.com/exercises/7f3cd322)
 
@@ -330,6 +520,30 @@ false
 Answer: 
 
 We can call use a string primitive value to access the properties and methods defined for String objects, because when we try to access a property or invoke a method on a string primitive, JavaScript wraps the string primitive in a `String` object, then uses the object to access properties or call methods. When the wrapping object has served its purpose, JavaScript discards that wrapping object. Properties and methods will always return strings as primitives.
+
+##### Q: Log the name of constructor to which the code belongs to. What "type" is this code?
+
+```js
+console.log("Hello");
+console.log([1,2,3]);
+console.log({name: 'Srdjan'});
+```
+
+Expected Output
+
+```
+String
+Array
+Object
+```
+
+```js
+console.log("Hello".constructor.name);
+console.log([1,2,3].constructor.name);
+console.log({name: 'Srdjan'}.constructor.name);
+```
+
+The `constructor` property returns a reference to the `Object` constructor function that created the instance object. This constructor function has access to `name` property which returns the function's name as specified when it was created.
 
 # My Own Exercises
 
@@ -1200,17 +1414,682 @@ function createSchool() {
 
 ### Function Context
 
+https://launchschool.com/exercise_sets/59a39649
+
+1. ```js
+   let person = {
+     firstName: 'Rick ',
+     lastName: 'Sanchez',
+     fullName: this.firstName + this.lastName,
+   };
+   
+   console.log(person.fullName);
+   ```
+
+​		`NaN` is logged because `undefined + undefined` evaluates to `NaN`. `this` refers to the global object, because although we are in strict mode, `this` is outside of a function definition, so its bound to the global object. There are no `firstName` or `lastName` properties on the global object so they evaluate to `undefined`.
+
+2. The method `franchise.allMovies` is supposed to return the following array:
+
+   ```javascript
+   [
+     'How to Train Your Dragon 1',
+     'How to Train Your Dragon 2',
+     'How to Train Your Dragon 3'
+   ]
+   ```
+
+   Explain why this method will not return the desired object? Try fixing this problem by taking advantage of JavaScript lexical scoping rules.
+
+   ```javascript
+   let franchise = {
+     name: 'How to Train Your Dragon',
+     allMovies: function() {
+       return [1, 2, 3].map(function(number) {
+         return this.name + ' ' + number;
+       });
+     },
+   };
+   ```
+
+Solution: 	
+
+Function as arguments lose their surrounding execution context.
+
+```js
+let franchise = {
+  name: 'How to Train Your Dragon',
+  allMovies: function() {
+    return [1, 2, 3].map(function(number) {
+      return this.name + ' ' + number;
+    }, this);
+  },
+};
+```
+
+3. ```js
+   // passing a hard bound function to map
+   let franchise = {
+     name: 'How to Train Your Dragon',
+     allMovies: function() {
+       return [1, 2, 3].map(function(number) {
+         return this.name + ' ' + number;
+       }.bind(this));
+     },
+   };
+   ```
+
+4. In this exercise, we'll update an implementation of `myFilter` by adding the functionality of accepting an optional `thisArg` just like the original [Array.prototype.filter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#Parameters).
+
+   Here's an implementation. We also show an example of how we want to call our modified function: the 3rd argument, `filter`, supplies the desired context (`thisArg`).
+
+   ```javascript
+   function myFilter(array, func) {
+     let result = [];
+   
+     array.forEach(function(value) {
+       if (func(value)) {
+         result.push(value);
+       }
+     });
+   
+     return result;
+   }
+   
+   let filter = {
+     allowedValues: [5, 6, 9],
+   }
+   
+   myFilter([2, 1, 3, 4, 5, 6, 9, 12], function(val) {
+     return this.allowedValues.indexOf(val) >= 0;
+   }, filter); // returns [5, 6, 9]
+   ```
+
+   Modify the implementation such that the expected result is returned. Don't use the `thisArg` argument of `Array.prototype.forEach`.
+
+   ```js
+   function myFilter(array, func, thisArg) {
+     let result = [];
+   
+     array.forEach(function(value) {
+       if (func.call(thisArg, value)) {
+         result.push(value);
+       }
+     });
+   
+     return result;
+   }
+   ```
+
+   The solution is straightforward. Since there is always only one argument at a time passed to the callback function of `myFilter`, the solution uses `Function.prototype.call` on it and passes it the `thisArg` and `value` arguments.
+
 ### OO Basics: Classes
 
+https://launchschool.com/exercise_sets/f675a2e9
+
+##### 1: Name the Constructor
+
+```js
+console.log("Hello");
+console.log([1,2,3]);
+console.log({name: 'Srdjan'});
+```
+
+```
+String
+Array
+Object
+```
+
+```js
+console.log("Hello".constructor.name);
+console.log([1,2,3].constructor.name);
+console.log({name: 'Srdjan'}.constructor.name);
+```
+
+The `constructor` property returns a reference to the `Object` constructor function that created the instance object. This constructor function has access to `name` property which returns the function's name as specified when it was created.
+
+2. ```js
+   class Cat {
+     
+   }
+   ```
+
+3. ```js
+   let kitty = new Cat();
+   ```
+
+4. ```js
+   class Cat {
+     constructor() {
+       console.log(`I'm a cat!`);
+     }
+   }
+   
+   let kitty = new Cat();
+   ```
+
+   When defining a class, you usually need to define the `constructor` method.
+
+   Adding this method lets us execute certain statements when a new `Cat` object is initialized. In this case, we want to log `I'm a cat!`. We accomplish this by using `console.log()`.
+
+5. ```js
+   class Cat {
+     constructor() {
+     }
+   }
+   
+   let kitty = new Cat('Sophie');
+   ```
+
+   ```js
+   class Cat {
+     constructor(name) {
+       this.name = name;
+       console.log(`Hello! My name is ${this.name}!`);
+     }
+   }
+   
+   let kitty = new Cat('Sophie');
+   ```
+
+   The `Cat` constructor expects one parameter: `name`. When it is called with the `new` keyword, it assigns the received parameter to the `name` property of the current instance. The property `name` can be accessed anywhere within the class using `this` keyword.
+
+   To appease the exercise requirements, we only need to reference property `name` immediately following its initialization. We use `console.log()` to log `Hello! My name is Sophie` to the console. In this object, `'Sophie'` is dynamic, which means we used property `name` to print the value. `'Sophie'` could just as easily be `'Oliver'` if that string was passed instead of `'Sophie'`, like this:
+
+   ```js
+   class Cat {
+     constructor(name) {
+       this.name = name; // => Oliver
+     }
+   }
+   
+   let kitty = new Cat('Oliver');
+   ```
+
+   
+
+6. ```js
+   class Cat {
+     constructor(name) {
+       this.name = name;
+       console.log(`Hello! My name is ${this.name}!`);
+     }
+   }
+   
+   let kitty = new Cat('Sophie');
+   kitty.greet();
+   ```
+
+   ```js
+   class Cat {
+     constructor(name) {
+       this.name = name;
+     }
+     greet() {
+        console.log(`Hello! My name is ${this.name}!`);
+     }
+   }
+   
+   let kitty = new Cat('Sophie');
+   kitty.greet();
+   ```
+
+7. ```js
+   class Person {
+     constructor(name = 'John Doe') {
+       this.name = name;
+    
+     }
+   }
+   ```
+
+8. ```js
+   class Cat {
+     constructor(name) {
+       this.name = name;
+     }
+     
+     rename(newName) {
+       this.name = newName;
+     }
+   }
+   
+   let kitty = new Cat('Sophie');
+   console.log(kitty.name); // Sophie
+   kitty.rename('Chloe');
+   console.log(kitty.name); // Chloe
+   ```
+
+9. ```js
+   class Cat {
+    static genericGreeting() {
+      console.log(`Hello! I'm a cat!`);
+    }
+   }
+   
+   Cat.genericGreeting();
+   ```
+
+10. ```js
+    class Cat {
+      constructor(name) {
+        this.name = name;
+      }
+      
+      static genericGreeting() {
+        console.log(`Hey I'm a cat`);
+      }
+      
+      personalGreeting() {
+        console.log(`Hi my name is ${this.name}`);
+      }
+    }
+    
+    let kitty = new Cat("Sophie");
+    Cat.genericGreeting();
+    kitty.personalGreeting();
+    ```
+
 ### OO Basics: Inheritance and Mixins
+
+https://launchschool.com/exercise_sets/80d91cb2
+
+1. ```js
+   class Vehicle {
+     constructor(year) {
+       this.year = year;
+     }
+   }
+   
+   Truck extends Vehicle {}
+   
+   Car extends Vehicle {}
+   
+   let truck = new Truck(2003);
+   console.log(truck.year); // 2003
+   
+   let car = new Car(2015);
+   console.log(car.year); // 2015
+   ```
+
+2. ```js
+   class Vehicle {
+     constructor(year) {
+       this.year = year;
+     }
+   }
+   
+   class Truck extends Vehicle {
+     constructor(year) {
+       super(year);
+       this.startEngine();
+     }
+     
+     startEngine() {
+       console.log('Ready to go!')
+     }
+   }
+   
+   let truck = new Truck(2003);
+   console.log(truck.year); // 2003
+   ```
+
+3. ```js
+   class Vehicle {
+     constructor(year) {
+       this.year = year;
+     }
+   }
+   
+   class Truck extends Vehicle {
+     constructor(year, bedType) {
+       super(year);
+       this.bedType = bedType;
+     }
+   }
+   
+   class Car extends Vehicle {}
+   
+   let truck1 = new Truck(2003, 'Short');
+   console.log(truck1.year);
+   console.log(truck1.bedType);
+   ```
+
+4. ```js
+   class Vehicle {
+     startEngine() {
+       return 'Ready to go!';
+     }
+   }
+   
+   class Truck {
+     startEngine(speed) {
+       return super.startEngine + `Drive ${speed}, please!`;
+     }
+   }
+   
+   let truck1 = new Truck();
+   console.log(truck1.startEngine('fast'));
+   
+   let truck2 = new Truck();
+   console.log(truck2.startEngine('slow'));
+   ```
+
+5. ```js
+   let walkMixin = {
+     walk() {
+       console.log(`Let's go for a walk!`);
+     }
+   };
+   
+   class Cat {
+     constructor(name) {
+       this.name = name;
+     }
+   
+     greet() {
+       return `Hello! My name is ${this.name}!`;
+     }
+   }
+   
+   Object.assign(Cat.prototype, walkMixin);
+   
+   let kitty = new Cat("Sophie");
+   console.log(kitty.greet());
+   console.log(kitty.walk());
+   ```
+
+6. ```js
+   const swimMixin = {
+     swim() {
+       return `${this.name} is swimming.`;
+     }
+   }
+   
+   class Fish {
+     constructor(name) {
+       this.name = name;
+     }
+   }
+   
+   class Dog {
+     constructor(name) {
+       this.name = name;
+     }
+   }
+   
+   class Maltese extends Dog {}
+   
+   Object.assign(Fish.prototype, swimMixin);
+   Object.assign(Maltese.prototype, swimMixin);
+   
+   let dog1 = new Maltese("Buddy");
+   let fish1 = new Fish("Nemo");
+   
+   console.log(dog1.swim());
+   console.log(fish1.swim());
+   ```
+
+7. g
+
+8. ```js
+   const towMixin = {
+     tow() {
+       return "I can tow a trailer!";
+     }
+   }
+   
+   class Vehicle {
+     constructor(year) {
+       this.year = year;
+     }
+   }
+   
+   class Truck extends Vehicle {
+     constructor(year) {
+       super(year);
+       Object.assign(this, towMixin); // adds a copy of the mixed-in methods directly to each new instance object.
+     }
+   }
+   
+   class Car extends Vehicle {}
+   
+   let truck = new Truck(2002);
+   console.log(truck.year);
+   console.log(truck.tow());
+   
+   let car = new Car(2015);
+   console.log(car.year);
+   ```
+
+9. 
 
 ### Object Creation Patterns
 
 ##### 1: Ancestors
 
+https://launchschool.com/exercises/7f3cd322
+
+Implement an `ancestors` method that returns the prototype chain (ancestors) of a calling object as an array of object names. Here's an example output:
+
+```javascript
+// name property added to make objects easier to identify
+let foo = {name: 'foo'};
+let bar = Object.create(foo);
+bar.name = 'bar';
+let baz = Object.create(bar);
+baz.name = 'baz';
+let qux = Object.create(baz);
+qux.name = 'qux';
+
+qux.ancestors();  // returns ['baz', 'bar', 'foo', 'Object.prototype']
+baz.ancestors();  // returns ['bar', 'foo', 'Object.prototype']
+bar.ancestors();  // returns ['foo', 'Object.prototype']
+foo.ancestors();  // returns ['Object.prototype']
+```
+
+```js
+// my solution
+Object.prototype.ancestors = function() {
+  let ancestors = [];
+  let obj = this;
+  while (Object.getPrototypeOf(obj) !== null) {
+    let ancestor = Object.getPrototypeOf(obj);
+    if ('name' in ancestor) {
+      ancestors.push(ancestor.name);
+    } else {
+      ancestors.push(`Object.prototype`);
+    }
+    obj = ancestor;
+  }
+  console.log(ancestors);
+}
+```
+
+- Be mindful when adding methods to built-in Objects (e.g, `String.prototype`, `Object.prototype`. It may lead to confusing code and can have unintended consequences.
+
+```js
+// their solution (recursive)
+Object.prototype.ancestors = function ancestors() {
+  let ancestor = Object.getPrototypeOf(this);
+
+  if (Object.prototype.hasOwnProperty.call(ancestor, 'name')) {
+    return [ancestor.name].concat(ancestor.ancestors());
+  }
+
+  return ['Object.prototype'];
+};
+```
+
+The problem lends itself well to a recursive solution. The resulting array is incrementally built by recursively calling on the `Object.prototype.ancestors` method. The base case is when `ancestor` does not have a `name` property anymore because it means that `ancestor` is `Object.prototype` already. When this is the case, there are no more prototype objects to add. The key for this solution is recognizing that the value of `this` is the calling object and that we have to add the `ancestors` method on `Object.prototype` so that all objects have access to it.
+
 ##### 2: Classical Object Creation
 
+https://launchschool.com/exercises/a66716f6
+
+Implement the following diagram using the pseudo-classical approach. Subclasses should inherit all of the superclass's methods. Reuse the constructors of the superclass when implementing a subclass.
+
+
+
+![img](https://dbdwvr6p7sskw.cloudfront.net/js-exercises/object_creation_patterns/Classical.png)
+
+
+
+For the methods, you can have it log out anything you want.
+
+```js
+// test code
+let person = new Person('foo', 'bar', 21, 'gender');
+console.log(person instanceof Person);     // logs true
+person.eat();                              // logs 'Eating'
+person.communicate();                      // logs 'Communicating'
+person.sleep();                            // logs 'Sleeping'
+console.log(person.fullName());            // logs 'foo bar'
+
+let doctor = new Doctor('foo', 'bar', 21, 'gender', 'Pediatrics');
+console.log(doctor instanceof Person);     // logs true
+console.log(doctor instanceof Doctor);     // logs true
+doctor.eat();                              // logs 'Eating'
+doctor.communicate();                      // logs 'Communicating'
+doctor.sleep();                            // logs 'Sleeping'
+console.log(doctor.fullName());            // logs 'foo bar'
+doctor.diagnose();                         // logs 'Diagnosing'
+
+let graduateStudent = new GraduateStudent('foo', 'bar', 21, 'gender', 'BS Industrial Engineering', 'MS Industrial Engineering');
+// logs true for next three statements
+console.log(graduateStudent instanceof Person);
+console.log(graduateStudent instanceof Student);
+console.log(graduateStudent instanceof GraduateStudent);
+graduateStudent.eat();                     // logs 'Eating'
+graduateStudent.communicate();             // logs 'Communicating'
+graduateStudent.sleep();                   // logs 'Sleeping'
+console.log(graduateStudent.fullName());   // logs 'foo bar'
+graduateStudent.study();                   // logs 'Studying'
+graduateStudent.research();                // logs 'Researching'
+```
+
+The solution is a bit long, but it's not complicated. The points to note are the following:
+
+- Use of `Function.prototype.call` to have the subclass "inherit" properties from the parent class.
+- Use of `Function.prototype = Object.create(obj)` to "inherit" methods from the parent class.
+- Use of `Function.prototype.constructor` to manually reset the property to point back to the appropriate constructor.
+
+```js
+// solution using constructor/prototype pattern of pseudo-classical inheritance.
+function Person(firstName, lastName, age, gender) {
+  this.firstName = firstName; 
+  this.lastName = lastName;
+  this.age = age; 
+  this.gender = gender;
+}
+
+Person.prototype.fullName = function () {
+  return `${this.firstName} ${this.lastName}`;
+}
+
+Person.prototype.communicate = function () {
+  console.log('communicating');
+}
+
+Person.prototype.eat = function() {
+  console.log('eating');
+}
+
+Person.prototype.sleep = function() {
+  console.log('sleeping');
+}
+
+
+function Doctor(firstName, lastName, age, gender, specialization) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.specialization = specialization;
+}
+
+Doctor.prototype = Object.create(Person.prototype);
+Doctor.prototype.constructor = Doctor;
+
+Doctor.prototype.diagnose = function () {
+  console.log('diagnosing');
+}
+
+function Student(firstName, lastName, age, gender, degree) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.degree = degree;
+}
+
+Student.prototype = Object.create(Person.prototype);
+Student.prototype.constructor = Student;
+
+Student.prototype.study = function () {
+  console.log('studying');
+}
+
+function GraduateStudent(firstName, lastName, age, gender, degree, graduateDegree) {
+  Student.call(this, firstName, lastName, age, gender, degree);
+  this.graduateDegree = graduateDegree;
+}
+
+GraduateStudent.prototype = Object.create(Student.prototype);
+GraduateStudent.prototype.constructor = GraduateStudent;
+
+GraduateStudent.prototype.research = function () {
+  console.log('researching');
+}
+```
+
+
+
 ##### 3: Circular Queue
+
+https://launchschool.com/exercises/1becc424
+
+```js
+// easier solution
+class CircularQueue {
+  constructor(buffer) {
+    this.buffer = buffer;
+    this.arr = [];
+  }
+
+  enqueue(num) {
+    if (this.arr.length < this.buffer) {
+      this.arr.push(num);
+    } else {
+      this.dequeue();
+      this.arr.push(num);
+    }
+  }
+
+  dequeue() {
+    return this.arr.shift() || null; 
+  }
+}
+```
+
+```js
+// using fill()
+class CircularQueue {
+  constructor(bufferSize) {
+    this.bufferSize = bufferSize;
+    this.queue = new Array(bufferSize).fill(null);
+  }
+
+  enqueue(obj) {
+    if (this.queue.every(elem => elem !== null)) {
+      this.dequeue();
+    }
+    let positionOfNull = this.queue.indexOf(null);
+    this.queue[positionOfNull] = obj;
+  }
+
+  dequeue() {
+    if (this.queue.every(elem => elem === null)) return null;
+    let oldestObj = this.queue.shift();
+    this.queue.push(null);
+    return oldestObj;
+  }
+}
+```
 
 # Redo Quizzes
 
@@ -1359,6 +2238,31 @@ Book.prototype.read = function() {
 ```
 
 Objects created by this constructor have `title` and `author` properties, as well as a `read` method. However, we now need to add an `allTitles` method that returns an array of the titles of all the books created by the constructor. Think about where the array and the method should live and then update the code to create the array and implement the method.
+
+```js
+function Book(title, author) {
+  this.title = title;
+  this.author = author;
+}
+
+Book.titles = [];
+
+Book.prototype.read = function() {
+  console.log(`Reading ${this.title}`);
+};
+
+Book.allTitles = function() {
+  return Book.titles;
+}
+
+let book1 = new Book('A', 'A author');
+book1.read(); // Reading C
+let book2 = new Book('B', 'B Author');
+book2.read(); // Reading A
+console.log(Book.allTitles()); // ['A', 'B'];
+```
+
+
 
 ##### 4
 

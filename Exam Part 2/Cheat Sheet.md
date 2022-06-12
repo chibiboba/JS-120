@@ -1556,11 +1556,12 @@ console.log(answer); // false
 
 - Must use instance object to invoke instance properties or methods of a constructor, rather than call the constructor directly. 
 
-- **Instance Properties** : properties of an instance object, either as part of an object or anywhere in the object's prototype chain. 
+- **Instance Properties** : properties of an instance object, either as part of an instance object or anywhere in the object's prototype chain. 
 
   - Properties of instances created by a constructor. 
   - May be stored directly on the instance, or its prototype. Its prototype is `Constructor.prototype`
-  - For classes, instance properties must be defined in methods. (see example below)
+  - For classes, instance properties must be defined in methods. (see example below).
+  - Instance properties are called using an instance of a constructor or class. 
 
 - **Instance Methods**:  (object methods / methods) :stored either as part of an object or anywhere in the object's prototype chain.
 
@@ -1569,6 +1570,7 @@ console.log(answer); // false
   - Ordinary methods -- those defined on a prototype object -- are sometimes called **instance methods** or **object methods** since you need an instance of (an object) the type. More commonly, they are simply called **methods**.
   - The methods that use this syntax: `Constructor.prototype.method` are the **instance** methods for the Constructor type. 
     - `forEach` is an instance method of the`Array` constructor. 
+  - Instance methods are only available when there's an instance of a constructor / class.
 
 - Constructor and prototype pattern
 
@@ -1620,7 +1622,7 @@ console.log(answer); // false
 
 [Exam part 1 question 3](https://launchschool.com/exams/19f6d031#qna)
 
-- static keyword defines static properties and methods. 
+- `static` keyword defines static properties and methods. 
 
 - <u>Must use constructor name</u> to invoke static properties and methods. 
 
@@ -2663,7 +2665,7 @@ Uses
 
 - When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for <u>function calls</u> is assigned to `undefined` instead of the global object.
 
-  - CoderPad runs JavaScript code in *strict mode*. The implicit execution context is `undefined`, **not** the global object. 
+  - CoderPad runs JavaScript code in *strict mode*. The implicit execution context for function calls is `undefined`, **not** the global object. 
 
   - If you wish to practice on your own system instead of on CoderPad, add `"use strict";` to the top of your JavaScript code:
 
@@ -3049,6 +3051,8 @@ foo.call(john)
 
 #### Context Loss 2: Nested Functions: inner function not using surrounding context
 
+- Inner function is invoked as a standalone function. 
+
 ```js
 let obj = {
   a: 'hello',
@@ -3064,6 +3068,24 @@ let obj = {
 
 obj.foo();        // => undefined undefined
 ```
+
+```js
+let greeter = {
+  a: 'hello',
+  b: 'world',
+  greet() {
+    function sayHello() {
+      console.log(`${this.a} ${this.b}`);
+    }
+
+    sayHello();
+  }
+};
+
+greeter.greet(); // logs 'undefined undefined'
+```
+
+
 
 ##### Solution 1 : Preserve context with variable in outer scope 
 
@@ -3415,13 +3437,15 @@ obj.foo();
 // => 3 hello world
 ```
 
-# Concepts for Object Creation Patterns
-
 # Inheritance
 
+Summary
+
 - Inheritance describes two related but distinct forms of inheritance: prototypal and pseudo-classical inheritance.
-- Why inheritance
-  - Inheritance reduces complexity. 
+
+##### Why inheritance
+
+- Inheritance reduces complexity. 
 
 
 ### Prototypal Inheritance vs pseudo-classical inheritance (4)
@@ -3507,7 +3531,10 @@ SubType.prototype = Object.create(SuperType.prototype);
 SubType.prototype.constructor = SubType; // restoring constructor property
 ```
 
-- Constructor reuse: Use `call` to use the super-type constructor inside subtype. Invoke the `SuperType` constructor with its execution context explicitly set to the execution context of `SubType`.
+- Constructor reuse: 
+  - Use `Function.prototype.call` to have the subclass "inherit" properties from the parent class.
+  - Use `call` to use the super-type constructor inside subtype. Invoke the `SuperType` constructor with its execution context explicitly set to the execution context of `SubType`.
+
 
 ```js
 function SubType(parameter1) {
@@ -4486,6 +4513,101 @@ let preparers = [new Chef(), new Decorator(), new Musician()];
       - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
     - Prototypes can be overridden by assigning inheriting objects their own properties
 
+# Concepts for Object Creation Patterns (summarized)
+
+#### Inheritance
+
+- Inheritance describes two related but distinct forms of inheritance: prototypal and pseudo-classical inheritance
+
+##### Prototypal inheritance
+
+- A simple form of inheritance that works with one object at a time, which is why it's often called **object inheritance** or **prototypal delegation**. 
+
+- Use `Object.create` to create an object that inherits properties from from a prototype object. The newly created object has access to all properties and methods on the prototype object. 
+- An objects internal `[[prototype]]` property points to the prototype object, and the object can delegate method calls to the prototype object. 
+- Factory functions &  OLOO object creation patterns use prototypal inheritance.
+
+##### pseudo-classical inheritance
+
+- In pseudo-classical inheritance, a constructor's prototype object (the object referenced by its `prototype` property) inherits from another constructor's prototype. That is, a sub-type inherits from a super-type.
+- Also known as **constructor inheritance**
+- The **constructor/prototype** <u>object creation pattern</u> and **class** <u>object creation pattern</u> use pseudo-classical inheritance.
+
+- Syntax
+
+  - Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then <u>restore the constructor</u> property of the **sub-type**'s prototype object back to the **sub-type** function. 
+    - This must be done before you add new methods to the `subtype.prototype`
+    - Reminder: Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself.
+
+  ```js
+  SubType.prototype = Object.create(SuperType.prototype);
+  SubType.prototype.constructor = SubType; // restoring constructor property
+  ```
+
+  - Constructor reuse: 
+    - Use `Function.prototype.call` to have the subclass "inherit" properties from the parent class.
+    - Use `call` to use the super-type constructor inside subtype. Invoke the `SuperType` constructor with its execution context explicitly set to the execution context of `SubType`.
+
+
+  ```js
+  function SubType(parameter1) {
+    SuperType.call(this, parameter1, parameter2);
+  }
+  ```
+
+  - `class` and the `extends` keyword is an alternative form of pseudo-classical inheritance. 
+    - Unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
+
+    - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
+
+#### Mix-Ins: 
+
+- Definition: A mix-in is an object that defines the common behavior between multiple classes. 
+
+- Definition:  Mix-ins are used to share behavior between otherwise unrelated classes.
+
+- It defines the methods to be "mixed in " to a function, constructor, or class. This grants  function/constructor/class  access to all of the methods in the object. 
+
+  - The **`Object.assign()`** Merges two or more objects into a single object returns a reference to the modified object. 
+    - `Object.assign` is used to copy the methods and properties of source objects into the target object. 
+
+    - copying all [enumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable) [own properties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty) from one or more *source objects* to a *target object*. It returns a reference to the modified <u>target</u> object
+
+- Syntax
+
+
+  ```
+  Object.assign(targetObj, ...sources)
+  Object.assign(Constructor.prototype, mixIn, mixIn...)
+  ```
+
+```js
+// class syntax
+// adds a copy of the mixed-in methods directly to each new object --> not ideal
+let mixIn {};
+
+class Cat {
+  constructor(name) {
+    Object.assign(this, mixin);
+  }
+}
+```
+
+
+
+#### Polymorphism
+
+- Definition: Polymorphism refers to the ability of objects of <u>different types</u> to respond <u>in different ways to</u> the <u>same</u> method invocation. 
+  - It's a crucial concept that can lead to more maintainable code. 
+- Polymorphism through inheritance: 
+
+  - Definition:  **overriding** a method inherited from a superclass.
+  - An example is the `toString()` method
+    - `toString()` returns a string representation of an object `[object Type]`
+    - `toString()` can be overridden by creating a function in place of it. 
+- Polymorphism through **Duck-typing**: 
+  - Definition: Objects of <u>different unrelated types</u> use the same method ***name*** to perform different but related functions. 
+
 # Object Creation Patterns
 
 - The assessment requires detailed knowledge of all of these object creation patterns, including how to implement them and their nuances.
@@ -4881,6 +5003,8 @@ human.house(); // Sara lives in a house.
 
 ## Constructor Functions
 
+Description words: To instantiate a new `Cat` object, we use the keyword `new` in front of the function call. This keyword turns the function call into a constructor call.
+
 Summary: Like factory functions, constructors are also functions that create objects of the same **type**. Constructors are functions that create and return an instance object of the constructor function. The instance object inherits from the Constructor's `prototype` object. Constructors use the **constructor/prototype pattern** to create objects: the constructor function defines <u>state</u> for the instance object, and constructor's prototype object defines <u>shared behaviors</u> (common methods) in the instance objects. 
 
 ------
@@ -4931,15 +5055,13 @@ Summary: Like factory functions, constructors are also functions that create obj
 
 ##### `Constructor` property 
 
-- `obj.constructor` can be used to find out the name of the constructor function that created an object.
+- Definition: Returns a <u>reference</u>(not string name!) to the constructor function that created the instance object. 
 
-- `constructor` property
+- Syntax
 
   ```js
   obj.constructor 
   ```
-
-- Returns a <u>reference</u>(not string name!) to the constructor function that created the instance object. 
 
 - Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
 
@@ -4960,6 +5082,15 @@ Summary: Like factory functions, constructors are also functions that create obj
   // Can use this method if we don't know the name of an object's constructor. 
   ```
 
+- `Constructor.name` 
+
+  - Constructors have a name property that returns the function's name (as a string) as specified when it was created. 
+
+    ```js
+    console.log("Hello".constructor.name); // string
+    console.log([1, 2, 3].constructor.name); // array
+    console.log({ name: 'Srdjan' }.constructor.name); // object
+    ```
 
 ##### Other notes about constructor
 
@@ -4992,12 +5123,28 @@ Summary: Like factory functions, constructors are also functions that create obj
 
 ##### Properties & operators 
 
+- `Constructor.name` 
+
+  - Constructors have a name property that returns the function's name (as a string) as specified when it was created. 
+
+    ```js
+    console.log("Hello".constructor.name); // string
+    console.log([1, 2, 3].constructor.name); // array
+    console.log({ name: 'Srdjan' }.constructor.name); // object
+    ```
+
 - The **`typeof`** operator returns a string indicating the type of the unevaluated operand.
 
   ```js
   console.log(typeof Array); // 'function'
   console.log(typeof Function); // 'function'
   console.log(typeof Object); // 'function'
+  ```
+
+  ```js
+  console.log(typeof "Hello"); // string
+  console.log(typeof [1,2,3]); // object
+  console.log(typeof {name: 'Srdjan'}); // object
   ```
 
 - `instanceof`   
@@ -5020,16 +5167,6 @@ Summary: Like factory functions, constructors are also functions that create obj
   ```
 
   - The `instanceof` operator requires the object to the right to have a `prototype` property, such as a function object. In most causes, that means the object on the right is a constructor or class. 
-
-- `Constructor.name` 
-
-  - Constructors have a name property that returns the function's name (as a string) as specified when it was created. 
-
-    ```js
-    console.log("Hello".constructor.name); // String
-    console.log([1, 2, 3].constructor.name); // Array
-    console.log({ name: 'Srdjan' }.constructor.name); // Object
-    ```
 
 ##### Advantage of constructor 
 
@@ -5252,9 +5389,6 @@ human.house(); // Sara lives indoors.
 
 #### Precision of Language
 
-- Constructor Method
-  - The constructor method initializes a new `Constructor Name` object by assigning the instance properties to the arguments. 
-
 - Example
 
 ```js
@@ -5271,7 +5405,34 @@ class Dog {
 
 This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
 
+
+
+"Upon instantiation, assigns the passed in argument to `year` property"
+
 #### Syntax & Rules
+
+- Constructor Method
+
+  - When defining a class, you usually need to define the `constructor` method.
+  - The method executes certain statements when a new instance object is initialized.
+
+  - The constructor method initializes a new `Constructor Name` object by assigning the instance properties to the arguments. 
+
+- Example
+
+  ```js
+  class Dog {
+    constructor(name) {
+      this.name = name;
+    }
+  
+    sayHello() {
+      console.log(`Woof! My name is ${this.name}.`)
+    }
+  }
+  ```
+
+  This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
 
 - Naming convention: Like constructors and prototypes, class names are capitalized. Use **PascalCase** for constructor functions and classes. 
 
@@ -5295,7 +5456,7 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
   obj.sayHi(); //=> logs 'Hi!'
   ```
 
-<u>Difference between function and class</u>
+##### Difference between function and class
 
 - Classes are functions
 
@@ -5317,7 +5478,7 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
   - Hoisting is an internal step performed by the engine; it doesn't actually move code around. 
 - Classes look similar to the simplified (concise) method definition / compact method syntax that you can use in object literals.
 
-<u>Class vs constructor/prototype</u>
+##### Class vs constructor/prototype
 
 - Similarities between class and constructor/prototype pattern
 
@@ -5396,6 +5557,52 @@ let Rectangle = class {
 // This code defines a `Rectangle` class with two methods. The `constructor` method initializes a new `Rectangle` object by assigning `this.length` to the argument `length` and `this.width` to the argument `width`. The instance method `getArea()` returns the product of instance properties`this.length` and `this.width`.  
 ```
 
+#### Instance and Static Properties on Class
+
+- **Instance properties**: properties stored directly on an instance object. or anywhere in the instance object's prototype chain.
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+    	this.length = length; // instance properties
+    	this.width = width;
+    }
+    
+    getArea() { // instance method, compact method syntax
+       return this.length * this.width;
+    }
+    
+    getArea2 = function() {
+      // not using compact method syntax also works
+    }
+    
+    value = 2; // invalid code, instance properties must be defined in methods.
+  }
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  ```
+
+- **Static properties** are defined and accessed directly on the <u>constructor</u> or class,  not on an instance or a prototype.
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+      this.length = length;
+      this.width = width;
+    }
+  
+  	static getArea() {
+      return 'A rectangle is a shape with 4 sides'; // static method
+    }
+    
+    static DESCRIPTION = 'A rectangle is a shape with 4 sides'; // static property 
+  }
+  
+  let rect = new Rectangle();
+  console.log(Rectangle.getArea());
+  ```
+
 #### Inheritance with Classes / Subtyping with Classes
 
 ##### Definition
@@ -5403,7 +5610,7 @@ let Rectangle = class {
 - The `extends` keyword is used to denote inheritance between classes.
   - The `extends` keyword signifies that the class named to the left of `extends` should inherit from the class specified to the right of `extends`.
 
-- Class inheritance is alternative form of pseudo-classical inheritance. 
+- Class inheritance is alternative form of **pseudo-classical inheritance**. 
 - However, unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
   - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
   - In class inheritance, the subclass inherits <u>all the properties and methods</u> that a new object(instance object) created from the parent constructor function would have access to, including the instance properties assigned to instance objects.
@@ -5415,6 +5622,12 @@ Why class inheritance
 ##### `Super`
 
 - Outside the `constructor` method, `super` keyword refers to the parent class. 
+
+  - `super` keyword can be used to call functions on the object's parent. 
+
+  - `super` allows us to override a property, but still have access to functionality from a parent class.
+
+  - 
 
 - When called inside the `constructor` method, the `super` keyword refers to the <u>constructor method</u> for the parent class. 
 
@@ -5450,19 +5663,19 @@ Why class inheritance
   - **When a sub-class is invoked, the parent constructor is automatically executed.** 
 
 - When does `super` need to called in subclass `constructor` method?
-  
+
   - If subclass's `constructor` method requires arguments that differ from `constructor` method in superclass, `super` must be called inside the subclass `constructor` method.
-  
+
     - In particular, if the superclass's constructor creates any object properties, `super` must be called to set those properties on the subclass.
-  
+
   - Also, you must call `super` in subclass' constructor  before you use `this` in that constructor.  
-  
+
     - This ensures that subclass inherits <u>all the methods and properties</u> from parent class. 
-  
+
     - For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
-  
+
   - Whenever you create `constructor` method in the subclass, you will need to call `super`. 
-  
+
 
 **<u>Don't want method overriding</u>**
 
@@ -5575,6 +5788,8 @@ student.enrollInCourse('JS120'); // logs 'Kim has enrolled in course JS120.'
 In this example, the `Student` class inherits from the `Person` class. That gives student objects access to methods of the `Person` class and extends person objects further by adding a `semester` property and an `enrollInCourse` method. Notice that we've reused `Person`'s constructor inside the `Student` constructor, and calling `super` with `name` and `age` since the `Student` constructor expects those arguments. We also assign the `semester` argument to the `semester` property after `super` returns.
 
 Note that this most recent example uses class expressions instead of class declarations.
+
+
 
 #### Code Example
 
