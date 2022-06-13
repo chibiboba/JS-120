@@ -3,7 +3,7 @@
 Important
 
 - [x] Exercise Sets
-- [ ] Their prompts
+- [x] Their prompts
 - [ ] Area of Focus
 
 Extra
@@ -12,7 +12,7 @@ Extra
 
 - [ ] Quizzes?
 
-- [ ] Rest of exam 1?
+- [x] Rest of exam 1?
 
   
 
@@ -240,7 +240,7 @@ Answer:
 
 Answer: 
 
-- Definition: `Object.assign` is a static object method that copies all enumerable own properties from one or more *source objects* to a *target object*. It then returns the a reference to the modified target object, or the same object is only one argument is passed. 
+- Definition: `Object.assign` is a static object method that copies all <u>enumerable</u> <u>own</u> properties from one or more *source objects* to a *target object*. It then returns the a reference to the modified target object, or the same object is only one argument is passed. 
 
 - Syntax
 
@@ -277,27 +277,685 @@ Answer:
 
 # Areas of Focus
 
-### this
+# this
 
 - Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
 
-### Understanding context loss
+# Understanding context loss
 
 - “What are the ways that context can be lost, and how can context loss be prevented in these situations?”
 - A complete response needs to clearly indicate the differences between “Implicit” and “Explicit” execution context.
 
-### `Function` Prototype methods and context
+# `Function` Prototype methods and context
 
 - The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
 
-### Object creation patterns
+# Object creation patterns
 
 - The assessment requires detailed knowledge of all of these object creation patterns, including how to implement them and their nuances.
 - Needless to say, being able to demonstrate this knowledge with examples on the fly requires a lot of practice.
 - A good way to practice is to start from scratch and try to produce a functionally identical hierarchy of objects using each different object creation pattern. This practice is most effective if the hierarchy includes features such as inheritance, mix-ins, and polymorphism in order to illustrate how to implement these aspects in the different patterns.
 - Lacking any and all creativity, I usually practiced with something like creating a hierarchy of vehicles using Factory Functions, Objects Linking Other Objects, Constructor Functions, and ES6 Classes. 
 
-### Applying knowledge in unusual ways
+## Concepts for Object Creation Patterns
+
+#### Inheritance
+
+- Inheritance describes two related but distinct forms of inheritance: prototypal and pseudo-classical inheritance. 
+- Why inheritance
+  - Inheritance reduces complexity and conserves memory.
+
+- Prototypal Inheritance vs pseudo-classical inheritance (4)
+  - Both use prototypal delegation under the hood. 
+    -  If the requested property isn't found, the object delegates the request to the object's prototype object.
+    -  If the requested property isn't there either, the prototype object delegates the request to its own prototype object. 
+    -  This process follows the prototype chain until the property or method is found or the end of the prototype chain is found.
+  - JavaScript does not have classes in the traditional sense. Prototypal inheritance is used to link objects together.
+
+##### Prototypal inheritance
+
+- A simple form of inheritance that works with one object at a time, which is why it's often called **object inheritance** or **prototypal delegation**. 
+- An objects internal `[[prototype]]` property points to the prototype object, and the object can delegate method calls to the prototype object. 
+- Syntax
+  - Use `Object.create` to create an object that inherits properties from from a prototype object.
+  - The method takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
+  -  The newly created object has access to all properties and methods on the prototype object. 
+  - The **inheriting object** (b) doesn't receive properties or methods of its own. Instead, it **delegates** property and method access to its prototype. 
+
+- Factory functions &  OLOO object creation patterns use prototypal inheritance.
+
+##### pseudo-classical inheritance
+
+- In pseudo-classical inheritance, a constructor's prototype object (the object referenced by its `prototype` property) inherits from another constructor's prototype. That is, a sub-type inherits from a super-type.
+
+- Also known as **constructor inheritance**
+
+- The **constructor/prototype** <u>object creation pattern</u> and **class** <u>object creation pattern</u> use pseudo-classical inheritance.
+
+- Syntax
+
+  - Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then <u>restore the constructor</u> property of the **sub-type**'s prototype object back to the **sub-type** function. 
+    - This must be done before you add new methods to the `subtype.prototype`
+    - Reminder: Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself.
+
+  ```js
+  SubType.prototype = Object.create(SuperType.prototype);
+  SubType.prototype.constructor = SubType; // restoring constructor property
+  ```
+
+  - Constructor reuse: 
+    - Use `Function.prototype.call` to have the subclass "inherit" properties from the parent class.
+    - Use `call` to use the super-type constructor inside subtype. Invoke the `SuperType` constructor with its execution context explicitly set to the execution context of `SubType`.
+
+
+  ```js
+function SubType(parameter1) {
+  SuperType.call(this, parameter1, parameter2);
+}
+  ```
+
+  - `class` and the `extends` keyword is an alternative form of pseudo-classical inheritance. 
+    - Unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
+
+    - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
+
+#### Mix-Ins: 
+
+- Definition
+
+  - A mix-in is an object that defines the common behavior between multiple classes / constructors.
+  - Mix-ins are used to share behavior between otherwise unrelated classes. 
+  - When two more more classes share common behavior, you can move that behavior into a mix-in object.
+
+- When to use mix-ins
+
+  - Mix-ins work best in a "has -a" relationship. 
+  - The mix-in pattern works best when an object has a capability that another object needs.
+  - When you want to endow your objects(Constructor.prototype) with some capability, a mix-in may be the correct choice.
+  - Use mix-in if you want to extend the abilities of a parent class. 
+
+- Why mixins
+
+  - JavaScript objects can only inherit from one other object. 
+  - Limitation of single inheritance: limitation that objects can only have one prototype object - can only directly 'inherit' from one super-type object. This limitation makes it difficult to model certain domains using class or constructor-based inheritance. Mix-ins addresses this limitation. It's the only real workaround for the lack of multiple inheritance short of duplication. 
+  - Mix-ins are useful for organizing similar methods that may be relevant to multiple classes. 
+  - Mix-ins are a pattern that adds methods and properties from one object to another. 
+  - It's not  inheritance / delegation with prototypes; the mix-in pattern copies the properties of one object to another with `Object.assign` or some similar technique.
+
+- Literal definition:  A mix-in is an object that defines one or more methods that can be "mixed in" to a function, constructor, or class. This grants that class access to all of the methods in the object.
+
+  - The mix-in pattern involves creating a mix-in object containing certain methods, and using `Object.assign()` to *mix*(copy the methods and properties of that object) *into* another object.
+  - How it works: Move code shared by 2 (or more) classes into a mix-in object then `Object.assign` the `.prototype` object of all the classes which share the code, with the mix-in Object. 
+
+- Syntax
+
+  ```js
+  Object.assign(targetObj, ...sources)
+  Object.assign(Constructor.prototype, mixIn, mixIn...)
+  ```
+
+  ```js
+  // class syntax
+  // adds a copy of the mixed-in methods directly to each new object --> not ideal
+  let mixIn {};
+  
+  class Cat {
+    constructor(name) {
+      Object.assign(this, mixin);
+    }
+  } 
+  ```
+
+#### Mix-ins vs Inheritance
+
+We suggest a balance of mix-in and classical inheritance pattern: 
+
+1. Inheritance works best when there is an "**is a**" relationship between two classes.
+
+   - Inheritance works well when one object type is positively a sub-type of another object. 
+
+   - In our example, it's natural for a penguin to also be a swimming bird. These types have an **is a** relationship: a penguin *is a* swimming bird. 
+2. Mix-ins work best in a "**has - a** " relationship
+
+   - The mix-in pattern works best when an object has a capability that another object needs.
+   - When you want to endow your objects(Constructor.prototype) with some capability, a mix-in may be the correct choice.
+   - Use mix-in if you want to extend the abilities of a parent class. 
+
+#### Polymorphism
+
+- Definition: Polymorphism refers to the ability of objects of <u>different types</u> to respond <u>in different ways to</u> the <u>same</u> method invocation. 
+  - It's a crucial concept that can lead to more maintainable code. 
+- Polymorphism through inheritance: 
+
+  - Definition:  **overriding** a method inherited from a superclass.
+  - An example is the `toString()` method
+    - `toString()` returns a string representation of an object `[object Type]`
+    - `toString()` can be overridden by creating a function in place of it. 
+- Polymorphism through **Duck-typing**: 
+  - Definition: Objects of <u>different unrelated types</u> use the same method ***name*** to perform different but related functions. 
+
+## Hierarchy of objects template
+
+```js
+/* 
+animal
+	- property: name
+	- makeNoise(): 'growls'
+cat 'inherits' from animals factory function
+	- property: name
+	- makeNoise(): 'meows' (polymorphism through inheritance: overriding a method inherited from a superclass.)
+human
+	- property: name
+	- makeNoise(): 'talks' (polymorphism through ducktyping: objects of different unrelated types use the same method name to perform different but related functions.)
+mixin object called mixIn
+	- house() : cats and humans both live indoors. 
+*/
+```
+
+- animals
+  - property: name
+  - method: `makeNoise()` : 'growls'
+- cat --> (inheritance)
+  - property: name
+  - method: `makeNoise()`: 'meows' (polymorphism through **inheritance**: overriding a method inherited from a superclass.)
+- human
+  - property: name
+  - method: `makeNoise()`: 'talks' (polymorphism through **duck-typing**: objects of different unrelated types use the same method name to perform different but related functions.)
+- mix-in object.
+  - house(): cats and humans live indoors. 'has - a ' relationship vs 'is - a' relationship. Cats and humans both have this capability, but are not related to each other. 
+
+## Factory Functions
+
+- Definition: Factory functions are functions that create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of the factory function specifies the differences between the objects with arguments. 
+  - So the factory function handles the similarities (similar methods) , while each invocation specifies the differences between the object properties with arguments.
+  - Instance objects created from factory functions have the same exact methods, whereas the property values of each object is customized based on the arguments. 
+- Why factory functions
+  - factory functions are useful to extract code (methods) into one place so multiple objects can use it. 
+  - Factory functions provide a simple way to automate the creation of related objects based on a predefined template. 
+- Advantages of factory function
+
+  - Automates the creation of objects, creating multiple objects of a particular type.
+  - Reuses Code
+  - Can create objects with private state
+    - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+- Disadvantage of object factory
+
+  - Wastes memory: Each Object created by the factory function has a copy of all the methods, which can be redundant and memory intensive. This can have a significant performance impact, especially on smaller devices with limited memory.
+  - Can't identify which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
+    - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
+    - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics.
+
+- Inheritance with factory functions
+
+  - Factory functions do not use prototypes or prototypal inheritance. 
+  - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
+
+  - Mix-ins with factory functions: Can use `Object.assign` to mix the return object of one factory function into the instance object of another factory function. 
+
+
+Hierarchy of objects practice
+
+```js
+/* 
+animal
+	- property: name
+	- makeNoise(): 'growls'
+cat 'inherits' from animals factory function
+	- property: name
+	- makeNoise(): 'meows' (polymorphism through inheritance: overriding a method inherited from a superclass.)
+human
+	- property: name
+	- makeNoise(): 'talks' (polymorphism through ducktyping: objects of different unrelated types use the same method name to perform different but related functions.)
+mixin object
+	- house() : cats and humans both live indoors. 
+*/
+```
+
+##### Notes
+
+- Definition: Factory functions are functions that create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of the factory function specifies the differences between the objects with arguments. 
+
+- Instance objects created from factory functions have the same exact methods, whereas the property values of each object is customized based on the arguments. 
+
+- Factory functions don't use prototypal inheritance, so one factory function doesn't inherit from another factory function. Rather, one factory function can reuse another factory function by using `Object.assign` to mix the object returned by a factory function into instance object of another factory function. 
+  - So here we mix the instance object of `animals` factory function into the instance object of `cats`. 
+- Polymorphism through inheritance: We override the `makeNoise` method that is inherited from the animals factory function
+- Polymorphism through ducktyping: Objects of unrelated types(the instance objects of `cats` and `humans` factory functions) use the same method name `makeNoise` to perform different but related functions. 
+- We use a mix-in object called `house` to endow the Cats and Humans factory functions with an `indoors()` capability. This demonstrates a 'has -a' relationship rather than an 'is-a' relationship. Cats and Human objects have this capability but they are not related objects. 
+
+Test code
+
+```js
+let animal = animals('bobo');
+animal.makeNoise(); // bobo growls
+
+let cat = cats('fluffy');
+cat.makeNoise(); //fluffy meows
+cat.house(); //fluffy lives indoors.
+
+let human = humans('sara'); 
+human.makeNoise(); //sara talks
+human.house(); //sara lives indoors
+```
+
+##### Completed Code
+
+```js
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives indoors`);
+  }
+};
+
+function animals (name) {
+  return {
+    name: name,
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    },
+  };
+}
+
+function cats (name) {
+  let obj = {}; // obj is the instance object of cats factory function
+  let animal = animals(name);
+  Object.assign(obj, animal, mixIn);
+  obj.makeNoise = function () { // polymorphism through inheritance
+    console.log(`${this.name} meows`);
+  }
+  return obj;
+}
+
+function humans (name) {
+  let obj = { // obj is the instance object of humans factory function
+    name: name,
+    makeNoise() { // polymorphism through ducktyping
+      console.log(`${this.name} talks`);
+    },
+  };
+  Object.assign(obj, mixIn);
+  return obj;
+}
+
+let animal = animals('Bobo');
+animal.makeNoise(); // Bobo growls
+
+let cat = cats('Fluffy');
+cat.makeNoise(); //Fluffy meows
+cat.house(); //Fluffy lives indoors
+
+let human = humans('Sara'); 
+human.makeNoise(); //Sara talks
+human.house(); //Sara lives indoors
+```
+
+## Objects Linking Other Objects
+
+[reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
+
+- How it works: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An initializer method (`init`) defined on the prototype is used to customize the state of each new object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
+
+- Syntax
+
+  ```js
+  let newObj = Object.create(prototypeObj).init(state)
+  ```
+
+- Detail:   
+
+  - OLOO lets us define a parent object from which we can create objects with shared behavior. All shared properties, the properties common to all objects are extracted to defined on this parent object. All objects of the same type then inherit from that prototype. 
+  - Other objects can be created from the parent object using `Object.create(obj)`. 
+  - An `init()` method defined on the parent object is used to initialize newly created objects with its own properties . 
+  - Note that OLOO doesn't use functions. Instead it uses a parent object as prototype, then `Object.create` to create new objects that inherit from that prototype. 
+
+- Compare the two creation patterns
+
+  ```js
+  // OLOO
+  let newObj = Object.create(obj).init();
+  
+  // pseudo-classical(constructor inheritance)
+  let newObj = new Obj(); // newObj is an instance of Obj
+  ```
+
+- Init: The initializer method customizes the state(properties) for each object. 
+  - `init` is a function that initializes  property values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
+    - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
+  - Similar to the constructor method in classes
+
+##### **Advantage of OLOO over Factory Function**
+
+- You can use both factory functions and the OLOO pattern to bulk create objects of the same type. 
+- OLOO pattern has one significant advantage over factory functions: memory efficiency. 
+  - Since all objects created with the OLOO pattern inherit methods from a single prototype object, the objects that inherit from that prototype object share the same methods. 
+  - Factory functions, on the other hand, create copies of all the methods for each new object. That can have a significant performance impact, especially on smaller devices with limited memory.
+
+- An advantage of the factory pattern is that it lets us create objects with private state. 
+  - Objects created with the factory function can have private state. Any state stored in the body of the factory function instead of in the returned object is private to the returned object. They can't be accessed or modified unless one of the object methods exposes the state. With OLOO, there is no way to define private state. All object state can be accessed and modified by outside code.
+
+##### **Inheritance (subtyping) with OLOO**
+
+- OLOO uses prototypal inheritance in two ways. It uses prototypal inheritance to create new objects, and it also uses prototypal inheritance to make a prototype object inherit from another prototype object. The latter is called subtyping. 
+
+- Syntax: 
+
+  - Chaining subtypes requires different `init` method names to prevent infinite looping. 
+
+  ```js
+  let superType = {
+    initialize(property) {
+      this.property = property;
+      return this;
+    }
+  };
+  
+  let subType = Object.create(superType);
+  
+  subType.init = function(property) {
+    return this.initialize(property); // think of this as super, we are calling on parent initializer method
+    // use different initializer method names to prevent infinite loop here
+  };
+  
+  // creating a subType object
+  // code essentially does what super() does in class syntax
+  let subTypeObj = Object.create(SubType).init(property);
+  ```
+
+- Syntax 2:  If subType has its own properties to be set
+
+  - Chaining more subtypes requires different `init` method names to prevent infinite looping. 
+
+  ```js
+  let superType = {
+    initialize(property1) {
+      this.property1 = property1;
+      return this;
+    },
+  };
+  
+  let subType = Object.create(superType);
+  
+  subType.init = function(property1, property2) {
+    let copyOfSuperType = this.initialize(property1); 
+    this.property2 = property2;
+    Object.assign(this, copyOfSuperType);
+    return this;
+  };
+  
+  // creating a subType object
+  // code essentially does what super() does in class syntax
+  let subTypeObj = Object.create(subType).init(property1, property2);
+  ```
+
+##### Notes
+
+- OLOO defines a parent object from which we can create objects with shared behavior. All shared properties (methods), the properties common to all objects are extracted to defined on this parent object. All objects of the same type then inherit from that prototype. 
+- How it works: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An initializer method called `init` defined on the prototype is used to customize the state of each new object: initializing newly created objects with their own properties.  `init` then returns `this`, a reference to the calling object, which is the newly created object.
+
+- Let's create 3 prototype objects `animals` `cats` and `humans`.  Let's start with the `animals` prototype object. 
+
+  - We use `Object.create` to create an instance object `animal` that inherits from the `animals` prototype object. The `init` method is invoked by the `animal` instance object, which delegates the method access to `animals` prototype object.
+
+  ```js
+  let animals = {
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    },
+  
+    init(name) {
+      this.name = name;
+      return this;
+    },
+  };
+  
+  let animal = Object.create(animals).init('Bobo');
+  animal.makeNoise(); // Bobo growls
+  ```
+
+- Next we create a `cats` prototype object. The `cats` prototype object should inherit from the `animals` prototype object. This code demonstrates inheritance/ subtyping with OLOO. 
+
+  - We create an initializer method on `cats` called `initialize`. 
+  - The `cats` initializer method `initialize` calls on the parent initializer method `init` to set the `name` property on `cats` object.
+  - Chaining subtypes requires different initializer method names to prevent infinite looping. The initializer method is called `initialize` for `cats` prototype, versus `init` on the `animals` prototype. 
+
+  ```js
+  let cats = Object.create(animals);
+  cats.initialize = function(name) { 
+    return this.init(name); 
+  }
+  ```
+
+- To demonstrate polymorphism through inheritance, we override the `makeNoise()` method inherited from `animals` prototype object.
+
+  ```js
+  cats.makeNoise = function () {
+    console.log(`${this.name} meows`);
+  }
+  ```
+
+- Test code
+
+  ```js
+  let cat = Object.create(cats).init('Fluffy');
+  cat.makeNoise(); // Fluffy meows
+  ```
+
+- We should create the mix-in object `mixIn ` and then mix it into the `cats` prototype object.
+
+  ```js
+  let mixIn = {
+    house() {
+      console.log(`${this.name} lives indoors`);
+    }
+  };
+  
+  Object.assign(cats, Mixin);
+  ```
+
+- Code now looks like this
+
+  ```js
+  let animals = {
+    makeNoise() {
+      console.log(`${this.name} growls`);
+    },
+  
+    init(name) {
+      this.name = name;
+      return this;
+    },
+  };
+  
+  let animal = Object.create(animals).init('Bobo');
+  animal.makeNoise(); // Bobo growls
+  
+  let mixIn = {
+    house() {
+      console.log(`${this.name} lives indoors`);
+    }
+  };
+  
+  let cats = Object.create(animals);
+  Object.assign(cats, mixIn);
+  
+  cats.initialize = function(name) { 
+    return this.init(name); 
+  }
+  
+  cats.makeNoise = function () {
+    console.log(`${this.name} meows`);
+  }
+  
+  let cat = Object.create(cats).init('Fluffy');
+  cat.makeNoise(); // Fluffy meows
+  cat.house(); // Fluffy lives indoors
+  ```
+
+- Next we create the `humans` prototype object.
+
+  - This code demonstrates polymorphism through ducktyping: Unrelated prototype objects `humans` and `cats` use the same method name `makeNoise` to perform different but related functions. 
+
+  ```js
+  let humans = {
+    makeNoise() { 
+      console.log(`${this.name} talks`);
+    }, 
+  
+    init(name) {
+      this.name = name;
+      return this;
+    }
+  };
+  ```
+
+- We should mix the mix-in object into the `humans` object.
+
+  ```js
+  Object.assign(humans, mixIn);
+  ```
+
+- Then add some test code
+
+  ```js
+  let human = Object.create(humans).init('Sara');
+  human.makeNoise(); // Sara talks
+  human.house(); // Sara lives in a house.
+  ```
+
+Test Code
+
+```js
+let animal = Object.create(animals).init('Bobo');
+animal.makeNoise(); // Bobo growls
+
+let cat = Object.create(cats).initialize('Fluffy');
+cat.makeNoise(); // Fluffy meows
+cat.house(); // Fluffy lives indoors
+
+let human = Object.create(humans).init('Sara');
+human.makeNoise(); // Sara talks
+human.house(); // Sara lives indors
+```
+
+##### Completed Code
+
+```js
+let animals = {
+  makeNoise() {
+    console.log(`${this.name} growls`);
+  },
+
+  init(name) {
+    this.name = name;
+    return this;
+  },
+};
+
+let animal = Object.create(animals).init('Bobo');
+animal.makeNoise(); // Bobo growls
+
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives indoors`);
+  }
+};
+
+let cats = Object.create(animals);
+Object.assign(cats, mixIn);
+
+cats.initialize = function(name) { 
+  return this.init(name); 
+}
+
+cats.makeNoise = function () {
+  console.log(`${this.name} meows`);
+}
+
+let cat = Object.create(cats).init('Fluffy');
+cat.makeNoise(); // Fluffy meows
+cat.house(); // Fluffy lives indoors
+
+let humans = {
+  makeNoise() {
+    console.log(`${this.name} talks`);
+  }, 
+
+  init(name) {
+    this.name = name;
+    return this;
+  }
+};
+
+Object.assign(humans, mixIn);
+
+let human = Object.create(humans).init('Sara');
+human.makeNoise(); // Sara talks
+human.house(); // Sara lives indoors
+```
+
+Completed Code moving test code to bottom
+
+```js
+let animals = {
+  makeNoise() {
+    console.log(`${this.name} growls`);
+  },
+
+  init(name) {
+    this.name = name;
+    return this;
+  },
+};
+
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives indoors`);
+  }
+};
+
+let cats = Object.create(animals);
+Object.assign(cats, mixIn);
+
+cats.initialize = function(name) { 
+  return this.init(name); 
+}
+
+cats.makeNoise = function () {
+  console.log(`${this.name} meows`);
+}
+
+let humans = {
+  makeNoise() {
+    console.log(`${this.name} talks`);
+  }, 
+
+  init(name) {
+    this.name = name;
+    return this;
+  }
+};
+
+Object.assign(humans, mixIn);
+
+let animal = Object.create(animals).init('Bobo');
+animal.makeNoise(); // Bobo growls
+
+let cat = Object.create(cats).init('Fluffy');
+cat.makeNoise(); // Fluffy meows
+cat.house(); // Fluffy lives indoors
+
+let human = Object.create(humans).init('Sara');
+human.makeNoise(); // Sara talks
+human.house(); // Sara lives indoors
+```
+
+## Constructor Functions
+
+## ES6 Classes
+
+
+
+# Applying knowledge in unusual ways
 
 - All that said, one thing that can help is to keep a running list of anything that seems unusual while going through the course materials
   - Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
@@ -462,6 +1120,7 @@ console.log(user2.name);   // => John Doe
 Solution
 
 ```js
+// using instanceof 
 function User(first, last) {
   if (!(this instanceof User)) {
     return new User(first, last); // need return statement to avoid side effects
@@ -471,6 +1130,19 @@ function User(first, last) {
   
 }
 ```
+
+```js
+// using isPrototypeOf
+function User(first, last) {
+  if (!(User.prototype.isPrototypeOf(this))) {
+    return new User(first, last);
+  }
+  
+  this.name = `${first} ${last}`;
+}
+```
+
+
 
 ##### Q: What does this code log, and why does it log what it does?
 
@@ -492,6 +1164,19 @@ Answer : This code logs undefined. On line 7, `foo` is assigned to the `foo` met
 ##### Q: Create your own `Array.from` 
 
 Answer: 
+
+- Definition: `Array.from` Takes an array-like object as argument and returns a new array with the equivalent element values.
+
+- Syntax
+
+  ```terminal
+  > Array.from({0: 'a', 1: 'b', 2: 'c', length: 3})
+  ['a', 'b', 'c']
+  
+  > Array.from(‘string’)
+  [‘s’, ‘t’, ‘r’, ‘i’, ‘n’, ‘g’]
+  
+  ```
 
 ```js
 
@@ -618,6 +1303,24 @@ console.log(fakeCat instanceof Cat); // logs true
 console.log(fakeCat.name);           // logs undefined
 console.log(fakeCat.speaks());       // logs undefined says meowwww.
 ```
+
+```js
+class Cat {
+  constructor(name) {
+    this.name = name;
+  }
+  speaks() {
+    return `${this.name} says meowwww.`;
+  }
+}
+
+let fakeCat = Object.create(Cat.prototype) // your implementation
+console.log(fakeCat instanceof Cat); // logs true
+console.log(fakeCat.name);           // logs undefined
+console.log(fakeCat.speaks());       // logs undefined says meowwww.
+```
+
+
 
 # JS 120 Exercise Sets
 

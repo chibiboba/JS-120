@@ -4637,12 +4637,9 @@ class Cat {
   - So the factory function handles the similarities (similar methods) , while each invocation specifies the differences between the object properties with arguments. 
   - Each object created by a factory function has an own copy of all the methods, which is redundant and memory intensive. 
   - Factory functions provide a simple way to automate the creation related objects based on a predefined template. 
-  - One factory function can reuse another factory function by mixing the object created by that factory function into itself using `Object.assign`. 
   - Factory functions do not use prototypes.
-  
 - Why factory functions
   - factory functions are useful to extract code into one place so multiple objects can use it
-  
 - Advantages of factory function
 
   - Automates the creation of objects, creating multiple objects of a particular type.
@@ -4660,67 +4657,11 @@ class Cat {
 ##### Inheritance with factory functions
 
 - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
-- Factory functions can create objects with prototypal inheritance.??
-
 - Mix-ins with factory functions
 
   - Can use `Object.assign` to mix the return object of one factory function into the instance object of another factory function. 
 
 ##### Code Example
-
-```js
-function animals (name) {
-  return {
-    name: name, 
-    makeNoise() {
-      console.log(`${this.name} growls`);
-    }
-  };
-}
-
-function cats(name) {
-  let animal = animals(name);
-  let obj = {};
-  Object.assign(obj, animal, mixIn); // mix-ins
-  obj.makeNoise = function () { // polymorphism through inheritance
-    console.log(`${this.name} meows`);
-  }
-  return obj;
-}
-
-function humans (name) {
-  let obj = {
-    name: name,
-    walk () {
-      console.log(`${this.name} can walk.`);
-    }
-  };
-  Object.assign(obj, mixIn);
-  obj.makeNoise = function() { // polymorphism through duck-typing
-    console.log(`${this.name} talks`);
-  }
-  return obj;
-}
-
-// functions are hoisted.
-let mixIn = {
-  house() {
-    console.log(`${this.name} lives in a house`);
-  },
-};
-
-let animal = animals('bobo'); 
-animal.makeNoise();  // bobo growls
-
-let cat = cats('fluffy');
-cat.makeNoise(); // fluffy meows
-cat.house(); // fluffy lives in a house
-console.log(cat.hasOwnProperty('eep'));
-
-let human = humans('sara');
-human.makeNoise();  // sara talks
-human.house(); // sara lives in a house
-```
 
 ```js
 function animals (name) {
@@ -4779,7 +4720,7 @@ human.house(); // sara lives in a house
 
 [reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
 
-- How it works: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An `init` method defined on the prototype is used to customize the state of each object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
+- How it works: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An `init` method defined on the prototype is used to customize the state of each new object: initializing newly created objects with their own properties.  `init` returns `this`, a reference to the calling object. 
 
 - Syntax
 
@@ -4895,7 +4836,7 @@ let carPrototype = { // is an object, not a function.
 
 - Syntax: 
 
-  - Chaining subtypes requires different `init` method names to prevent infinite looping. 
+  - Chaining subtypes requires different `init` (initializer) method names to prevent infinite looping. 
 
   ```js
   let superType = {
