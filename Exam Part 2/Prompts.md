@@ -3,7 +3,7 @@
 Important
 
 - [x] Exercise Sets
-- [x] Their prompts
+- [x] Their prompts -1
 - [ ] Area of Focus
 
 Extra
@@ -12,7 +12,7 @@ Extra
 
 - [ ] Quizzes?
 
-- [x] Rest of exam 1?
+- [ ] Rest of exam 1?
 
   
 
@@ -953,14 +953,31 @@ human.house(); // Sara lives indoors
 
 Definition: 
 
-- Like factory functions, constructors are also functions that create objects of the same **type**. Constructors are functions that create and return an instance object of the constructor function. 
+- Like factory functions, constructors are also functions that create objects of the same **type**. Constructors are functions that create and return an instance object of the constructor function.
+- Constructors vs ordinary functions 
+  -  We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
   - Every constructor has a `prototype` property that references an object called the Constructor's `prototype` object.
-  - The instance object inherits from the Constructor's `prototype` object. 
+  - The instance object created by the constructor inherits from the Constructor's `prototype` object. 
     - The instance object's internal `[[Prototype]]`or `__proto__` property will reference the constructor's `prototype` property. 
     - This lets us set properties on the constructor's `prototype` object so that all instance objects created by the constructor will share them. 
-  -  We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
   -  Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
-- Constructors use the **constructor/prototype pattern** to create objects: the constructor function defines <u>state</u> for the instance object, and constructor's prototype object defines <u>shared behaviors</u> (common methods) in the instance objects.
+  - Use `this` to set object's properties and methods. 
+  - Don't supply an explicit return value, because the constructor returns the newly created instance object provided that no errors occur.
+
+##### Advantage of constructor 
+
+- Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
+- Constructors use prototypal inheritance which allows for memory efficiency. 
+- Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+  - constructors have a prototype property that references an object that instance objects inherit from. 
+  - So properties defined on the constructor `prototype` object are shared through the prototype chain. 
+  - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
+- Prototypes can be overridden by assigning inheriting objects their own properties. 
+
+##### Object creation with constructors: constructor/ prototype pattern
+
+- Constructors use the **constructor/prototype pattern** to create objects, also known as **pseudo-classical** object construction.
+- Definition: the constructor function defines <u>state</u> for the instance object, and constructor's prototype object defines <u>shared behaviors</u> (common methods) in the instance objects.
   - A constructor creates an instance object with its own properties.
   - The instance object inherits methods from the constructor's `prototype` object, referenced by `Constructor.prototype`. 
 

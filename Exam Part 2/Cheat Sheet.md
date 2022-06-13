@@ -5053,13 +5053,66 @@ Summary: Like factory functions, constructors are also functions that create obj
 
 - Who can be a constructor
 
-  - almost every JavaScript function that you create. 
-  - Exception: arrow functions cannot be called with `new` since they lose their surrounding context as the value of `this`. 
-  - Exception: Calling a method defined with concise syntax won't work.  
-  - Many (but not all) built-in objects and methods are incompatible with `new`
+  - **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
+
+    - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe.  `String`, `Number` and `Boolean` is not:
+
+  - You can use `new` to call almost any JavaScript function that you create. 
+
+  - You can also use `new` on methods that you define in objects. Consider:
+
+    ```js
+    let foo = {
+      Car: function(make, model, year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+      }
+    };
+    
+    let car1 = new foo.Car('Toyota', 'Camry', 2019);
+    car1.make; //=> 'Toyota'
+    ```
+
+- Who can't be a constructor
+
+  - You cannot call arrow functions with `new` since they use their surrounding context as the value of `this`:
+
+    ```js
+    let Car = (make, model, year) => {
+      this.make = make;
+      this.model = model;
+      this.year = year;
+    }
+    
+    new Car(); // TypeError: Car is not a constructor
+    ```
+
+  - Calling a method defined with concise syntax (also called a concise method) won't work:
+
+    ```js
+    let foo = {
+      Car(make, model, year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+      }
+    };
+    
+    new foo.Car(); //=> Uncaught TypeError: foo.Car is not a constructor
+    ```
+
+  - Many -- but not all -- built-in objects and methods are incompatible with `new`:
+
+    ```js
+    new console.log(); //=> Uncaught TypeError: console.log is not a constructor
+    new Math();        //=> Uncaught TypeError: Math is not a constructor
+    new parseInt("3"); //=> Uncaught TypeError: parseInt is not a constructor
+    
+    new Date();        //=> 2019-06-26T02:50:20.191Z
+    ```
 
 - **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
-
   - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe. `String`, `Number` and `Boolean` is not:
 
 ##### Properties & operators 
@@ -5072,6 +5125,18 @@ Summary: Like factory functions, constructors are also functions that create obj
     console.log("Hello".constructor.name); // string
     console.log([1, 2, 3].constructor.name); // array
     console.log({ name: 'Srdjan' }.constructor.name); // object
+    ```
+    
+  - Note that the `name` property is directly on the constructor and not the constructor's `prototype` object.
+
+    ```js
+    function Cat() {}
+    
+    let cat = new Cat();
+    
+    console.log(Cat.name); // Cat
+    console.log(Cat.hasOwnProperty('name')); // true
+    console.log(Cat.prototype.hasOwnProperty('name')); // false
     ```
 
 - The **`typeof`** operator returns a string indicating the type of the unevaluated operand.
