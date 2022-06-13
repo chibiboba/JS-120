@@ -951,6 +951,61 @@ human.house(); // Sara lives indoors
 
 ## Constructor Functions
 
+Definition: 
+
+- Like factory functions, constructors are also functions that create objects of the same **type**. Constructors are functions that create and return an instance object of the constructor function. 
+  - Every constructor has a `prototype` property that references an object called the Constructor's `prototype` object.
+  - The instance object inherits from the Constructor's `prototype` object. 
+    - The instance object's internal `[[Prototype]]`or `__proto__` property will reference the constructor's `prototype` property. 
+    - This lets us set properties on the constructor's `prototype` object so that all instance objects created by the constructor will share them. 
+  -  We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
+  -  Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
+- Constructors use the **constructor/prototype pattern** to create objects: the constructor function defines <u>state</u> for the instance object, and constructor's prototype object defines <u>shared behaviors</u> (common methods) in the instance objects.
+  - A constructor creates an instance object with its own properties.
+  - The instance object inherits methods from the constructor's `prototype` object, referenced by `Constructor.prototype`. 
+
+##### Inheritance with constructors
+
+- The constructor/prototype pattern forms the basis of **pseudo-classical inheritance**, also called **constructor inheritance**. 
+
+- In **pseudo-classical inheritance**, a constructor's prototype object (the object referenced by its `prototype` property) inherits from another constructor's prototype. That is, a sub-type inherits from a super-type.
+
+- We are creating a link without executing code in the parent constructor function. 
+
+- This lets us inherit only the properties that have been defined on the parent constructor function's `prototype` object, not instance methods or properties on the parent constructor. 
+
+Syntax
+
+- Use `Object.create` to make one constructor a **sub-type** of the other, the **super-type**. Then <u>restore the constructor</u> property of the **sub-type**'s prototype object back to the **sub-type** function. 
+  - This must be done before you add new methods to the `subtype.prototype`
+  - Reminder: Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself.
+
+```js
+SubType.prototype = Object.create(SuperType.prototype);
+SubType.prototype.constructor = SubType; // restoring constructor property
+```
+
+- Constructor reuse: Use `call` to use the super-type constructor inside subtype. Invoke the `SuperType` constructor with its execution context explicitly set to the execution context of `SubType`.
+
+```js
+function SubType(parameter1) {
+  SuperType.call(this, parameter1, parameter2);
+}
+```
+
+
+
+##### Notes
+
+-  
+
+##### Completed Code
+
+```js
+```
+
+
+
 ## ES6 Classes
 
 

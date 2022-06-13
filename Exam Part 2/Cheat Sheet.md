@@ -4964,7 +4964,7 @@ Summary: Like factory functions, constructors are also functions that create obj
 - Second definition: constructors are an <u>object form of functions</u> used to create objects in JavaScript.
 - Rules  & things
   - Naming convention: Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
-  - `obj.constructor` can be used to find out the name of the constructor function that created an object.
+  - `obj.constructor.name` can be used to find out the name of the constructor function that created an object.
   - Inheritance can be emulated by changing where a functions `.prototype` property points to (Just remember to restore where the `.constructor` property points to).
 - Constructors vs ordinary functions
   - Like factory functions, constructors are also functions that create objects of the same **type**.
