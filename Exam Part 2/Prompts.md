@@ -16,265 +16,6 @@ Extra
 
   
 
-# Questions
-
-- Practice problems Factory functions # 4
-
-- Constructor property can be used to create new objects 
-
-  ```js
-  let rex = new Terrier();
-  let spot = new rex.constructor(); // is invocation syntax necessary? 
-  ```
-
-# Their prompts
-
-[reference](https://medium.com/launch-school/my-study-tips-for-the-js129-assessment-646b7f652c9f)
-
-##### Q: See if an Object came from a constructor.
-
-```js
-// Example constructors
-function Car(color, year) {
-  this.color = color;
-  this.year = year; 
-}
-function Dog(name) {
-  this.name = name;
-}
-
-// Objects to test with
-let myCar = new Car('blue', 2020);
-let myDog = new Dog('Fido');
-
-// Possible solutions
-
-// Using 'instanceof' operator
-console.log(myCar instanceof Car); // logs true
-console.log(myDog instanceof Car); // logs false
-
-// Using 'isPrototypeOf' method
-console.log(Car.prototype.isPrototypeOf(myCar)); // logs true
-console.log(Car.prototype.isPrototypeOf(myDog)); // logs false
-
-// Compare the constructor property of the created object to the constructor function
-console.log(myCar.constructor === Car); // logs true
-console.log(myDog.constructor === Dog); // logs true
-console.log(myDog.constructor === Car); // logs false
-```
-
-- This example illustrates that there are several ways to complete the task and provides code examples of how they work. That’s enough to get to the conscious competence level, but it still might be difficult to completely explain what is going on.
-- The next step is to think about *how* the code does what it does, with the goal of understanding well enough to teach it. A good way to develop that understanding is to create functions to duplicate the behavior provided by built-in abstractions like `isPrototypeOf` and `instanceof`
-- For example, here’s what I came up with for `instanceof`. This function iterates through the prototype chain of `obj`, comparing each prototype to the `prototype` property of `constructorFunction`. It returns true if any of them match and false if no match is found:
-
-```js
-function isInstanceOf(obj, constructorFunction) {
-  while (obj) {
-    obj = Object.getPrototypeOf(obj);
-    if (obj === constructorFunction.prototype) return true;
-  }
-
-  return false;
-```
-
-##### Q: See if an Object came from a constructor (practice)
-
-```js
-// Example constructors
-function Cat() {}
-
-function Dog() {}
-
-let fluffy = new Cat();
-let bobo = new Dog();
-
-// instanceof
-console.log(fluffy instanceof Cat);
-console.log(bobo instanceof Dog);
-
-// isPrototypeOf
-console.log(Cat.prototype.isPrototypeOf(fluffy)); 
-console.log(Dog.prototype.isPrototypeOf(bobo));
-
-// constructor property
-console.log(fluffy.constructor === Cat);
-console.log(bobo.constructor === Dog);
-```
-
-
-
-------
-
-##### Q: See if an Object came from a constructor --> create your own `instanceof`
-
-Answer: 
-
-- Definition: The operator `instanceof` tests to see if the prototype property of a constructor appears anywhere in the prototype chain of an object. The return value is a `boolean` value. Thus it requires the object to the right to be a constructor function or class. 
-
-- Syntax
-
-  ```js
-  object instanceof Constructor
-  ```
-
-- my own `instanceOf`
-
-  ```js
-  function isInstanceOf(obj, constructorFunction) {
-    while (obj) { // loops until it reaches null
-      obj = Object.getPrototypeof(obj);
-      if (obj === constructorFunction.prototype) return true;
-    }
-    
-    return false;
-  }
-  ```
-
-------
-
-##### Q: See if an object is in the prototype chain of another object --> create your own `isPrototypeOf`
-
-Answer: 
-
-- Definition: `Object.prototype.isPrototypeOf()` is an instance object method that determines whether the object is part of another object’s prototype chain. 
-
-- Syntax
-
-  ```js
-  obj2.isPrototypeOf(obj1)
-  ```
-
-- my own `isPrototypeOf`
-
-  ```js
-  function prototypeOf (obj, prototypeObj) {
-    while (obj) { // loops until it reaches null
-      obj = Object.getPrototypeOf(obj);
-      if (obj === prototypeObj) return true;
-    }
-    
-    return false;
-  }
-  ```
-
-- Testing
-
-  ```js
-  // Example constructors
-  function Cat() {}
-  
-  let fluffy = new Cat();
-  
-  function isPrototypeOf (obj, prototypeObj) {
-    while (obj) { // loops until it reaches null
-      obj = Object.getPrototypeOf(obj);
-      if (obj === prototypeObj) return true;
-    }
-    
-    return false;
-  }
-  
-  console.log(isPrototypeOf(fluffy, Cat.prototype)); // true
-  ```
-
-------
-
-##### Q: See if an object contains a property as one of its own -> create your own `hasOwnProperty`
-
-Answer: 
-
-- Definition: `Object.prototype.hasOwnProperty()` is an instance method that takes name of a property as string and returns a `boolean` indicating whether the object has the specified property as its own property (as opposed to inheriting it).
-
-- Syntax
-
-  ```js
-  obj.hasOwnProperty(string)
-  ```
-
-- My own
-
-  ```js
-  // Object.getOwnPropertyNames
-  function hasOwnProperty(obj, property) {
-    let arr = Object.getOwnPropertyNames(obj);
-    return arr.includes(property);
-  }
-  ```
-
-- Test code
-
-  ```js
-  let a = {1: 1};
-  console.log(hasOwnProperty(a, '1')); // true
-  ```
-
-  
-
-------
-
-##### Q: Return all the property names of an object -> create your own `Object.getOwnPropertyNames`
-
-Answer: 
-
-- Definition: `Object.getOwnPropertyNames()` is a static Object method that returns an array of all of the object's “own” properties (keys) regardless if they’re enumerable or not. 
-
-- Syntax
-
-  ```js
-  Object.getOwnPropertyNames(obj)
-  ```
-
-- own version
-
-  ```js
-  function getOwnPropertyNames(obj) {
-    
-  }
-  ```
-
-  
-
-------
-
-##### Q: Copy all properties from one object to another -> create your own `Object.assign`
-
-Answer: 
-
-- Definition: `Object.assign` is a static object method that copies all <u>enumerable</u> <u>own</u> properties from one or more *source objects* to a *target object*. It then returns the a reference to the modified target object, or the same object is only one argument is passed. 
-
-- Syntax
-
-  ```js
-  Object.assign(targetObj, obj)
-  Object.assign(Constructor.prototype, mixIn, mixIn ...)
-  ```
-
-- own `Object.assign`
-
-  ```js
-  function assignObj(targetObj, sourceObj = {}) { // in case one object is passed
-    let sourceObjKeys = Object.keys(sourceObj);
-    sourceObjkeys.forEach(key => {
-      targetObj[key] = sourceObj[key];
-    });
-    return targetObj;
-  }
-  ```
-
-- Test code
-
-  ```js
-  function Cat() {}
-  let fluffy = new Cat();
-  
-  console.log(assignObj({1: 1}, {2: 2})); // {'1': 1, '2': 2}
-  console.log(assignObj(Cat.prototype, {2: 2})) // {'2': 2}
-  ```
-
-  
-
-------
-
 # Areas of Focus
 
 # this
@@ -297,7 +38,7 @@ Answer:
 - A good way to practice is to start from scratch and try to produce a functionally identical hierarchy of objects using each different object creation pattern. This practice is most effective if the hierarchy includes features such as inheritance, mix-ins, and polymorphism in order to illustrate how to implement these aspects in the different patterns.
 - Lacking any and all creativity, I usually practiced with something like creating a hierarchy of vehicles using Factory Functions, Objects Linking Other Objects, Constructor Functions, and ES6 Classes. 
 
-## Concepts for Object Creation Patterns
+# Concepts for Object Creation Patterns
 
 #### Inheritance
 
@@ -319,7 +60,7 @@ Answer:
 - Syntax
   - Use `Object.create` to create an object that inherits properties from from a prototype object.
   - The method takes an object called the **prototype object** as argument, and returns a new object that inherits properties from the prototype object. 
-  -  The newly created object has access to all properties and methods on the prototype object. 
+  - The newly created object has access to all properties and methods on the prototype object. 
   - The **inheriting object** (b) doesn't receive properties or methods of its own. Instead, it **delegates** property and method access to its prototype. 
 
 - Factory functions &  OLOO object creation patterns use prototypal inheritance.
@@ -358,6 +99,8 @@ function SubType(parameter1) {
     - Unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
 
     - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
+
+------
 
 #### Mix-Ins: 
 
@@ -421,6 +164,8 @@ We suggest a balance of mix-in and classical inheritance pattern:
    - When you want to endow your objects(Constructor.prototype) with some capability, a mix-in may be the correct choice.
    - Use mix-in if you want to extend the abilities of a parent class. 
 
+------
+
 #### Polymorphism
 
 - Definition: Polymorphism refers to the ability of objects of <u>different types</u> to respond <u>in different ways to</u> the <u>same</u> method invocation. 
@@ -434,7 +179,9 @@ We suggest a balance of mix-in and classical inheritance pattern:
 - Polymorphism through **Duck-typing**: 
   - Definition: Objects of <u>different unrelated types</u> use the same method ***name*** to perform different but related functions. 
 
-## Hierarchy of objects template
+------
+
+# Hierarchy of objects template
 
 ```js
 /* 
@@ -464,7 +211,7 @@ mixin object called mixIn
 - mix-in object.
   - house(): cats and humans live indoors. 'has - a ' relationship vs 'is - a' relationship. Cats and humans both have this capability, but are not related to each other. 
 
-## Factory Functions
+# Factory Functions
 
 - Definition: Factory functions are functions that create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of the factory function specifies the differences between the objects with arguments. 
   - So the factory function handles the similarities (similar methods) , while each invocation specifies the differences between the object properties with arguments.
@@ -589,7 +336,7 @@ human.makeNoise(); //Sara talks
 human.house(); //Sara lives indoors
 ```
 
-## Objects Linking Other Objects
+# Objects Linking Other Objects
 
 [reference](https://launchschool.com/lessons/d5964d17/assignments/3db48c51)
 
@@ -619,6 +366,7 @@ human.house(); //Sara lives indoors
   ```
 
 - Init: The initializer method customizes the state(properties) for each object. 
+
   - `init` is a function that initializes  property values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
     - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
   - Similar to the constructor method in classes
@@ -690,6 +438,7 @@ human.house(); //Sara lives indoors
 ##### Notes
 
 - OLOO defines a parent object from which we can create objects with shared behavior. All shared properties (methods), the properties common to all objects are extracted to defined on this parent object. All objects of the same type then inherit from that prototype. 
+
 - How it works: In OLOO, we have a prototype object and use `Object.create` to create new objects that inherit from that prototype. An initializer method called `init` defined on the prototype is used to customize the state of each new object: initializing newly created objects with their own properties.  `init` then returns `this`, a reference to the calling object, which is the newly created object.
 
 - Let's create 3 prototype objects `animals` `cats` and `humans`.  Let's start with the `animals` prototype object. 
@@ -949,39 +698,285 @@ human.makeNoise(); // Sara talks
 human.house(); // Sara lives indoors
 ```
 
-## Constructor Functions
+# Constructor Functions
 
-Definition: 
+#### Constructors: 
 
-- Like factory functions, constructors are also functions that create objects of the same **type**. Constructors are functions that create and return an instance object of the constructor function.
-- Constructors vs ordinary functions 
-  -  We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
-  - Every constructor has a `prototype` property that references an object called the Constructor's `prototype` object.
+- Definition: Constructors are functions that create and return an instance object of the constructor function.  Like factory functions, constructors are also functions that create objects of the same **type**. 
+- constructor vs ordinary functions
+  - We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
+  - Every constructor has a `prototype` property that references an object called the **Constructor's `prototype` object / function prototype.** 
   - The instance object created by the constructor inherits from the Constructor's `prototype` object. 
     - The instance object's internal `[[Prototype]]`or `__proto__` property will reference the constructor's `prototype` property. 
     - This lets us set properties on the constructor's `prototype` object so that all instance objects created by the constructor will share them. 
-  -  Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
+  - Naming convention: Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
   - Use `this` to set object's properties and methods. 
   - Don't supply an explicit return value, because the constructor returns the newly created instance object provided that no errors occur.
+- Return value of a constructor
+  - If there is an explicit return <u>object</u>, then that object is returned. 
+  - In all other situations, constructor returns the newly created object (of the type associated with the constructor), provided <u>no errors</u> occur. 
+  - In particular, Constructor ignores primitive return values and returns the newly created object instead. 
+
+
+##### `new` keyword
+
+- Summary of what `new` does
+  - If used before a function, it invokes an existing function as a constructor and returns the instance of the constructor function. 
+  - Also used to create arrays and objects. 
+- What `new` does. 
+  1. It creates an entirely new object(the **instance**), with its **own** properties. 
+  2. It sets the prototype of the new object( instance object's `__proto__` property) to the object that is referenced by the constructor's `prototype` property. 
+  3. It sets the implicit execution context(value of `this` ) inside the function to point to the new object. 
+     - Since `this` refers to the new object, we use it within the function to set the object's properties and methods. 
+  4. It invokes the constructor function. 
+  5. Finally, once the function finishes running `new` returns the new object "automatically"; we don't explicitly return anything.
+- What `new` doesn't do.
+  - It does not create a new function. 
 
 ##### Advantage of constructor 
 
-- Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` property
+- Can determine an Object's type(which constructor created the object) using `instanceof` or `constructor` or `isPrototypeOf`properties. 
+
 - Constructors use prototypal inheritance which allows for memory efficiency. 
-- Saves memory because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
-  - constructors have a prototype property that references an object that instance objects inherit from. 
+
+- How constructors use prototypal inheritance: because constructors create objects that inherit from constructor's prototype object. So instance objects created by a constructor can have own properties as well as inherited properties, unlike factory functions where inheriting objects must have an own copy of every property.
+  - constructors have a `prototype` property that references an object that instance objects inherit from. 
   - So properties defined on the constructor `prototype` object are shared through the prototype chain. 
   - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
+
 - Prototypes can be overridden by assigning inheriting objects their own properties. 
 
-##### Object creation with constructors: constructor/ prototype pattern
+##### Other notes about constructor
+
+- Calling a constructor without `new`
+
+  - Function acts like ordinary function
+  - Since functions that don't return an explicit value return `undefined`, calling constructor without `new` also returns undefined. 
+
+- Creating a Constructor function that you can use with or without `new` operator
+
+  ```js
+  function Constructor(parameter) {
+    if (!this instanceOf Constructor) {
+      return new Constructor(paramter); // need return statement to avoid side effects 
+    }
+    this.parameter = parameter;
+  }
+  ```
+
+- Who can be a constructor
+
+  - **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
+
+    - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe.  `String`, `Number` and `Boolean` is not:
+
+  - You can use `new` to call almost any JavaScript function that you create. 
+
+  - You can also use `new` on methods that you define in objects. Consider:
+
+    ```js
+    let foo = {
+      Car: function(make, model, year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+      }
+    };
+    
+    let car1 = new foo.Car('Toyota', 'Camry', 2019);
+    car1.make; //=> 'Toyota'
+    ```
+
+- Who can't be a constructor
+
+  - You cannot call arrow functions with `new` since they use their surrounding context as the value of `this`:
+
+    ```js
+    let Car = (make, model, year) => {
+      this.make = make;
+      this.model = model;
+      this.year = year;
+    }
+    
+    new Car(); // TypeError: Car is not a constructor
+    ```
+
+  - Calling a method defined with concise syntax (also called a concise method) won't work:
+
+    ```js
+    let foo = {
+      Car(make, model, year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+      }
+    };
+    
+    new foo.Car(); //=> Uncaught TypeError: foo.Car is not a constructor
+    ```
+
+  - Many -- but not all -- built-in objects and methods are incompatible with `new`:
+
+    ```js
+    new console.log(); //=> Uncaught TypeError: console.log is not a constructor
+    new Math();        //=> Uncaught TypeError: Math is not a constructor
+    new parseInt("3"); //=> Uncaught TypeError: parseInt is not a constructor
+    
+    new Date();        //=> 2019-06-26T02:50:20.191Z
+    ```
+
+##### `Constructor` property 
+
+- Definition: Returns a <u>reference</u>(not string name!) to the constructor function that created the instance object. 
+
+- Syntax
+
+  ```js
+  obj.constructor 
+  ```
+
+- `constructor` property is located on a constructor's `prototype` object.
+
+- Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
+
+  ```js
+  function func() {
+  }
+  console.log(func.prototype.hasOwnProperty('constructor')); // true
+  ```
+
+- Careful: this could be reassigned, and needs to be restored when using pseudo-classical inheritance pattern by pointing the subtype's `prototype` object's  `constructor` property back to the subtype. 
+
+- `constructor` property can be used to create new objects 
+
+  ```js
+  let rex = new Terrier();
+  let spot = new rex.constructor(); // is invocation syntax necessary? 
+  // is the equivalent of calling new Terrier();
+  // Can use this method if we don't know the name of an object's constructor. 
+  ```
+
+##### Properties & operators
+
+- `constructor.name` 
+
+  - constructors have a name property that returns the function's name (as a string) as specified when it was created.
+
+  ```js
+  console.log("Hello".constructor.name); // string
+  console.log([1, 2, 3].constructor.name); // array
+  console.log({ name: 'Srdjan' }.constructor.name); // object
+  ```
+
+  - Note that the `name` property is directly on the constructor and not the constructor's `prototype` object.
+
+  ```js
+  function Cat() {}
+  
+  let cat = new Cat();
+  
+  console.log(Cat.name); // Cat
+  console.log(Cat.hasOwnProperty('name')); // true
+  console.log(Cat.prototype.hasOwnProperty('name')); // false
+  ```
+
+- The **`typeof`** operator returns a string indicating the type of the unevaluated operand.
+
+  ```js
+  console.log(typeof Array); // 'function'
+  console.log(typeof Function); // 'function'
+  console.log(typeof Object); // 'function'
+  ```
+
+  ```js
+  console.log(typeof "Hello"); // string
+  console.log(typeof [1,2,3]); // object
+  console.log(typeof {name: 'Srdjan'}); // object
+  ```
+
+- `instanceof`  
+
+  - Definition: This operator tests to see if the `prototype` property of a constructor appears anywhere in the prototype chain of an object. The return value is a Boolean value. 
+
+  ```js
+  Object instanceof Constructor
+  ```
+
+  - The `instanceof` operator requires the object to the right to have a `prototype` property, such as a function object. In most cases, that means the object on the right is a constructor or class. 
+
+  ```js
+  let Animal = {};
+  let Cat = Object.create(Animal);
+  let fluffy = Object.create(Cat);
+  console.log(fluffy instanceof Animal); // TypeError: Right-hand side of 'instanceof' is not callable 
+  ```
+
+
+##### Constructor's `prototype` property
+
+- Also known as **constructor's prototype object / function prototype / `prototype` property**
+- `Constructor.prototype` references the constructor's prototype object.
+  - The constructor stores the prototype object in its `prototype` property; that is, if the constructor's name is `Foo`, then `Foo.prototype` references the constructor's prototype object.
+- The **constructor's prototype object** is the object that the the instance object(inheriting object) created by a constructor inherits from. 
+  - When you call a function `Foo` with the `new` keyword, JavaScript sets the new object's prototype to the current value of `Foo`'s `prototype` property. 
+  - The inheriting object's prototype references `Foo.prototype`.
+  - Even if you assign `constructor.prototype` to a different object, the instance object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
+  - Even if we define a methods on the constructor's`prototype` object after we create an instance object, it becomes available to that instance object. That is because objects hold a reference to their prototype object, if the prototype object changes in some way, the changes are reflected in the inheriting object as well. 
+- Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword.
+- Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
+
+- Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
+
+##### Terminology confusion:
+
+- <u>**An object's prototype**</u>: 
+  - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
+
+  - Referenced by  dunder proto `__proto__` or hidden `[[Prototype]]` property
+
+  - An **object's prototype**  is what an inheriting object's `[[Prototype]]` or `__prototype__` property references. 
+    - It is the object that the current object inherits from. 
+    - If `bar` is an object, then the object from which `bar` inherits is the **object prototype**. 
+
+- Why it's confusing
+
+  - By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
+
+  - The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
+  - In other words, If a function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property. 
+
+#### Object creation with constructors: constructor/ prototype pattern
 
 - Constructors use the **constructor/prototype pattern** to create objects, also known as **pseudo-classical** object construction.
-- Definition: the constructor function defines <u>state</u> for the instance object, and constructor's prototype object defines <u>shared behaviors</u> (common methods) in the instance objects.
-  - A constructor creates an instance object with its own properties.
-  - The instance object inherits methods from the constructor's `prototype` object, referenced by `Constructor.prototype`. 
 
-##### Inheritance with constructors
+- In this pattern, we use a constructor function to define <u>state</u> and prototype object to define <u>shared behaviors</u> (common methods) in the instance objects. 
+
+  -  A constructor creates an instance object with its own properties.
+  -  The instance object inherits methods from the constructor's prototype object, referenced by `Constructor.prototype`. 
+
+- Example 1
+
+  ```js
+  function Rectangle(length, width) {
+    this.length = length; // instance properties
+    this.width = width;
+  }
+  
+  Rectangle.prototype.getArea = function() { // instance method
+    return this.length * this.width;
+  };
+  
+  Rectangle.prototype.value = 2; // instance property
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  
+  // notice that adding method to constructor.prototype is outside the constructor function
+  
+  // notice we are using instance object to invoke the method
+  ```
+
+#### Inheritance with constructors
 
 - The constructor/prototype pattern forms the basis of **pseudo-classical inheritance**, also called **constructor inheritance**. 
 
@@ -1010,35 +1005,96 @@ function SubType(parameter1) {
 }
 ```
 
-
-
-##### Notes
+#### Notes
 
 -  
 
-##### Completed Code
+#### Completed Code
 
 ```js
+
 ```
 
 
 
-## ES6 Classes
+# ES6 Classes
 
 
 
 # Applying knowledge in unusual ways
 
-- All that said, one thing that can help is to keep a running list of anything that seems unusual while going through the course materials
-  - Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
-    -  the `addStudent` method in `school` function creates a collaborator object and returns it.
-  - Unusual things about the `new` keyword
-  - Unusual things about arrow functions
-  - Pass a class as an argument and return a new object from a function. 
+All that said, one thing that can help is to keep a running list of anything that seems unusual while going through the course materials
+
+- Use an object method to create and store a collaborator object— and then be able to reference that created object ([see this exercise](https://launchschool.com/exercises/4a1f0eb3))
+  -  the `addStudent` method in `school` function creates a collaborator object and returns it.
+- Pass a class as an argument and return a new object from a function. 
+
+#### Unusual things about the `new` keyword
+
+<u>Who can be a constructor</u>
+
+- **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
+
+  - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe.  `String`, `Number` and `Boolean` is not:
+
+- You can use `new` to call almost any JavaScript function that you create. 
+
+- You can also use `new` on methods that you define in objects. Consider:
+
+  ```js
+  let foo = {
+    Car: function(make, model, year) {
+      this.make = make;
+      this.model = model;
+      this.year = year;
+    }
+  };
   
-- `forEach` is not considered the enclosing function for arrow functions, why?
+  let car1 = new foo.Car('Toyota', 'Camry', 2019);
+  car1.make; //=> 'Toyota'
+  ```
+
+<u>Who can't be a constructor</u>
+
+- You cannot call arrow functions with `new` since they use their surrounding context as the value of `this`:
+
+  ```js
+  let Car = (make, model, year) => {
+    this.make = make;
+    this.model = model;
+    this.year = year;
+  }
   
-- Unusual: don't use arrow functions as methods on an object, else it will take global object (even in strict mode) as the surrounding context. 
+  new Car(); // TypeError: Car is not a constructor
+  ```
+
+- Calling a method defined with concise syntax (also called a concise method) won't work:
+
+  ```js
+  let foo = {
+    Car(make, model, year) {
+      this.make = make;
+      this.model = model;
+      this.year = year;
+    }
+  };
+  
+  new foo.Car(); //=> Uncaught TypeError: foo.Car is not a constructor
+  ```
+
+- Many -- but not all -- built-in objects and methods are incompatible with `new`:
+
+  ```js
+  new console.log(); //=> Uncaught TypeError: console.log is not a constructor
+  new Math();        //=> Uncaught TypeError: Math is not a constructor
+  new parseInt("3"); //=> Uncaught TypeError: parseInt is not a constructor
+  
+  new Date();        //=> 2019-06-26T02:50:20.191Z
+  ```
+
+#### Unusual things about arrow functions
+
+- Don't use arrow functions as methods on an object, else it will take global object (even in strict mode) as the surrounding context. 
 
   ```js
   let obj = {
@@ -1053,6 +1109,267 @@ function SubType(parameter1) {
   obj.foo(); // => undefined
   // Arrow functions ignore method invocation rule for implicit execution context, and use lexical scoping instead. The surrouding context here is the global object, not obj. 
   ```
+
+- `forEach` is not considered the enclosing function for arrow functions, why?
+- Arrow functions cannot be called with `new` since they lose their surrounding context as the value of `this`. 
+
+# Questions
+
+- Practice problems Factory functions # 4
+
+- Constructor property can be used to create new objects 
+
+  ```js
+  let rex = new Terrier();
+  let spot = new rex.constructor(); // is invocation syntax necessary? 
+  ```
+
+# Their prompts
+
+[reference](https://medium.com/launch-school/my-study-tips-for-the-js129-assessment-646b7f652c9f)
+
+##### Q: See if an Object came from a constructor.
+
+```js
+// Example constructors
+function Car(color, year) {
+  this.color = color;
+  this.year = year; 
+}
+function Dog(name) {
+  this.name = name;
+}
+
+// Objects to test with
+let myCar = new Car('blue', 2020);
+let myDog = new Dog('Fido');
+
+// Possible solutions
+
+// Using 'instanceof' operator
+console.log(myCar instanceof Car); // logs true
+console.log(myDog instanceof Car); // logs false
+
+// Using 'isPrototypeOf' method
+console.log(Car.prototype.isPrototypeOf(myCar)); // logs true
+console.log(Car.prototype.isPrototypeOf(myDog)); // logs false
+
+// Compare the constructor property of the created object to the constructor function
+console.log(myCar.constructor === Car); // logs true
+console.log(myDog.constructor === Dog); // logs true
+console.log(myDog.constructor === Car); // logs false
+```
+
+- This example illustrates that there are several ways to complete the task and provides code examples of how they work. That’s enough to get to the conscious competence level, but it still might be difficult to completely explain what is going on.
+- The next step is to think about *how* the code does what it does, with the goal of understanding well enough to teach it. A good way to develop that understanding is to create functions to duplicate the behavior provided by built-in abstractions like `isPrototypeOf` and `instanceof`
+- For example, here’s what I came up with for `instanceof`. This function iterates through the prototype chain of `obj`, comparing each prototype to the `prototype` property of `constructorFunction`. It returns true if any of them match and false if no match is found:
+
+```js
+function isInstanceOf(obj, constructorFunction) {
+  while (obj) {
+    obj = Object.getPrototypeOf(obj);
+    if (obj === constructorFunction.prototype) return true;
+  }
+
+  return false;
+```
+
+##### Q: See if an Object came from a constructor (practice)
+
+```js
+// Example constructors
+function Cat() {}
+
+function Dog() {}
+
+let fluffy = new Cat();
+let bobo = new Dog();
+
+// instanceof
+console.log(fluffy instanceof Cat);
+console.log(bobo instanceof Dog);
+
+// isPrototypeOf
+console.log(Cat.prototype.isPrototypeOf(fluffy)); 
+console.log(Dog.prototype.isPrototypeOf(bobo));
+
+// constructor property
+console.log(fluffy.constructor === Cat);
+console.log(bobo.constructor === Dog);
+```
+
+
+
+------
+
+##### Q: See if an Object came from a constructor --> create your own `instanceof`
+
+Answer: 
+
+- Definition: The operator `instanceof` tests to see if the `prototype` property of a constructor appears anywhere in the prototype chain of an object. The return value is a `boolean` value. In most cases, that means the object on the right is a constructor or class. 
+
+- Syntax
+
+  ```js
+  object instanceof Constructor
+  ```
+
+- my own `instanceOf`
+
+  ```js
+  function isInstanceOf(obj, constructorFunction) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeof(obj);
+      if (obj === constructorFunction.prototype) return true;
+    }
+    
+    return false;
+  }
+  ```
+
+------
+
+##### Q: See if an object is in the prototype chain of another object --> create your own `isPrototypeOf`
+
+Answer: 
+
+- Definition: `Object.prototype.isPrototypeOf()` is an instance object method that determines whether the object is part of another object’s prototype chain. 
+
+- Syntax
+
+  ```js
+  obj2.isPrototypeOf(obj1)
+  ```
+
+- my own `isPrototypeOf`
+
+  ```js
+  function prototypeOf (obj, prototypeObj) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeOf(obj);
+      if (obj === prototypeObj) return true;
+    }
+    
+    return false;
+  }
+  ```
+
+- Testing
+
+  ```js
+  // Example constructors
+  function Cat() {}
+  
+  let fluffy = new Cat();
+  
+  function isPrototypeOf (obj, prototypeObj) {
+    while (obj) { // loops until it reaches null
+      obj = Object.getPrototypeOf(obj);
+      if (obj === prototypeObj) return true;
+    }
+    
+    return false;
+  }
+  
+  console.log(isPrototypeOf(fluffy, Cat.prototype)); // true
+  ```
+
+------
+
+##### Q: See if an object contains a property as one of its own -> create your own `hasOwnProperty`
+
+Answer: 
+
+- Definition: `Object.prototype.hasOwnProperty()` is an instance method that takes name of a property as string and returns a `boolean` indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+
+- Syntax
+
+  ```js
+  obj.hasOwnProperty(string)
+  ```
+
+- My own
+
+  ```js
+  // Object.getOwnPropertyNames
+  function hasOwnProperty(obj, property) {
+    let arr = Object.getOwnPropertyNames(obj);
+    return arr.includes(property);
+  }
+  ```
+
+- Test code
+
+  ```js
+  let a = {1: 1};
+  console.log(hasOwnProperty(a, '1')); // true
+  ```
+
+  
+
+------
+
+##### Q: Return all the property names of an object -> create your own `Object.getOwnPropertyNames`
+
+Answer: 
+
+- Definition: `Object.getOwnPropertyNames()` is a static Object method that returns an array of all of the object's “own” properties (keys) regardless if they’re enumerable or not. 
+
+- Syntax
+
+  ```js
+  Object.getOwnPropertyNames(obj)
+  ```
+
+- own version
+
+  ```js
+  function getOwnPropertyNames(obj) {
+    
+  }
+  ```
+
+  
+
+------
+
+##### Q: Copy all properties from one object to another -> create your own `Object.assign`
+
+Answer: 
+
+- Definition: `Object.assign` is a static object method that copies all <u>enumerable</u> <u>own</u> properties from one or more *source objects* to a *target object*. It then returns the a reference to the modified target object, or the same object is only one argument is passed. 
+
+- Syntax
+
+  ```js
+  Object.assign(targetObj, obj)
+  Object.assign(Constructor.prototype, mixIn, mixIn ...)
+  ```
+
+- own `Object.assign`
+
+  ```js
+  function assignObj(targetObj, sourceObj = {}) { // in case one object is passed
+    let sourceObjKeys = Object.keys(sourceObj);
+    sourceObjkeys.forEach(key => {
+      targetObj[key] = sourceObj[key];
+    });
+    return targetObj;
+  }
+  ```
+
+- Test code
+
+  ```js
+  function Cat() {}
+  let fluffy = new Cat();
+  
+  console.log(assignObj({1: 1}, {2: 2})); // {'1': 1, '2': 2}
+  console.log(assignObj(Cat.prototype, {2: 2})) // {'2': 2}
+  ```
+
+
+------
 
 # Problems about prototypes
 
@@ -1170,6 +1487,77 @@ if (Object.getPrototypeOf(obj) && obj.isPrototypeOf(car)) {
 ------
 
 # My Prompts
+
+##### Q: Explain the difference between the constructor's prototype object and an object's prototype.
+
+- <u>Constructor's `prototype` property</u>
+
+  - Also known as **constructor's prototype object / function prototype / `prototype` property**
+
+  - `Constructor.prototype` references the constructor's prototype object.
+    - The constructor stores the prototype object in its `prototype` property; that is, if the constructor's name is `Foo`, then `Foo.prototype` references the constructor's prototype object.
+
+  - The **constructor's prototype object** is the object that the the instance object(inheriting object) created by a constructor inherits from. 
+    - When you call a function `Foo` with the `new` keyword, JavaScript sets the new object's prototype to the current value of `Foo`'s `prototype` property. 
+    - The inheriting object's prototype references `Foo.prototype`.
+    - Even if you assign `constructor.prototype` to a different object, the instance object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
+    - Even if we define a methods on the constructor's`prototype` object after we create an instance object, it becomes available to that instance object. That is because objects hold a reference to their prototype object, if the prototype object changes in some way, the changes are reflected in the inheriting object as well. 
+
+  - Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword.
+
+  - Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
+
+  - Note: constructors <u>don't inherit</u> from the constructor's prototype object.
+
+- <u>**An object's prototype**</u> 
+
+  - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
+
+  - Referenced by  dunder proto `__proto__` or hidden `[[Prototype]]` property
+
+  - An **object's prototype**  is what an inheriting object's `[[Prototype]]` or `__prototype__` property references. 
+    - It is the object that the current object inherits from. 
+    - If `bar` is an object, then the object from which `bar` inherits is the **object prototype**. 
+
+Why it's confusing
+
+- By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
+- The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
+  - In other words, If a function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property. 
+
+##### Q: Determining an Object's type
+
+- Many object-oriented languages, like Java or C++, have a strong notion of object types. In most such languages, it's easy to determine the object's type, such as a dog or car. 
+- JavaScript, however, treats objects and their types in a looser, more dynamic way. You can't determine the specific type of arbitrary JavaScript objects; they are dynamic structures with a type of `object`, no matter what properties and methods they have. 
+- However, we can get some useful information about an object if we know which constructor created it.
+
+- Remember that the `new` operator creates a new object. Suppose that you call the Car constructor with `new`. Informally, we can say that the resulting object is a car. More formally, we can say that the object is an **instance** of a `Car`.
+
+The `instanceof` operator lets us determine whether a given constructor created an object:
+
+```js
+let civicArgs = {
+  make: 'Honda',
+  model: 'Civic',
+  year: 2016,
+  color: 'black',
+  passengers: 5,
+  convertible: false,
+  mileage: 16000
+};
+
+let civic = new Car(civicArgs);
+
+if (civic instanceof Car) {
+  console.log("It's a car!");
+} else {
+  console.log("It's not a car.");
+}
+```
+
+One effect that we didn't mention when talking about the `new` operator is that the object it returns contains some information (the prototype chain) that ties it back to the constructor that created the object. The `instanceof` operator uses that information to determine what constructor created the object. 
+
+Definition: The operator `instanceof` tests to see if the `prototype` property of a constructor appears anywhere in the prototype chain of an object. The return value is a `boolean` value. 
 
 ##### Q: Write a constructor function that you can use with or without the `new` operator. 
 

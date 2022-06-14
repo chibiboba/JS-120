@@ -621,12 +621,69 @@ typeof myFunc; // => "function"
 # Higher-order functions 2
 
 - **Higher-order function**:  are functions that return another function or take another function as an argument. 
+
 - Higher-order functions let the programmer use powerful and flexible abstractions.
   - abstracts away similar structures of functions and leave specific mapping up to function's caller. 
-  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. 
+  - `map` does this : it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. It does that by providing a function as an argument. 
+  
   - `map` method, along with several other array methods, are higher-order functions since it takes another function as argument. 
-- Function factories are higher- order functions
+  
+- Function factories can be higher- order functions. 
+
+  - You can think of a function that returns another function as a function factory: it creates and returns a new function.
+  - Typically, the function factory uses the arguments you pass to it to determine the specific job performed by the function it returns.
+
 - All higher-order functions are first class functions. 
+
+- Example
+
+  - Let's pretend that we don't have a `map` method on JavaScript arrays. If we want to implement some code that squares all the elements of an array, we'd probably come up with something like this:
+
+  ```js
+  function mapNumsToSquares(nums) {
+    let squaredArray = [];
+  
+    for (let index = 0; index < nums.length; index++) {
+      let current = nums[index];
+      squaredArray.push(current * current);
+    }
+  
+    return squaredArray;
+  }
+  ```
+
+  - Suppose that we need another function that uppercases all the elements in an array of strings. The solution may look like this:
+
+  ```js
+  function uppercaseStrings(strings) {
+    let capStrings = [];
+  
+    for (let index = 0; index < strings.length; index++) {
+      let current = strings[index];
+      capStrings.push(current.toUpperCase());
+    }
+  
+    return capStrings;
+  }
+  ```
+
+  - The only significant difference between these two functions is line 6 of each function where we either square a number or uppercase a string; everything else follows the same general structure:
+
+    - Declare and initialize the result array.
+
+    - Iterate over the input array.
+      - Add mapped values to the result.
+
+    - Return the result.
+
+  - That's what `map` does for us: it abstracts away the mechanics of mapping an array and leaves the details for the developer to provide at runtime. It does that by providing a function as an argument. The result is much more powerful and versatile:
+
+    ```js
+    arrayOfNums.map(num => num * num);
+    arrayOfStrings.map(string => string.toUpperCase());
+    ```
+
+    
 
 #### First Class Functions
 
@@ -904,6 +961,7 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 - Looking up a property in the prototype chain is the basis for prototypal inheritance, or property sharing through the prototype chain. Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
 - When you access a property on an object, JavaScript looks for the property first in the object, and if it's not a property directly owned by that object, JavaScript looks for it in that object's prototype chain, all the way up to `Object.prototype`.If `Object.prototype` also doesn't define the property, the property access evaluates to `undefined`. 
+
 - In detail, when I try to access a property on an object, JavaScript first looks for an "own" property with that name on the object. 
   - If the object does not define the specified property, JavaScript looks for it in through the prototype chain. 
   - This means searching object's prototype(the object pointed to by the internal `[[prototype]]`  or `__proto__`  property) then if it can't find, it looks for it in the prototype's prototype.  
@@ -922,7 +980,9 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
     - It assumes that the property belongs to the object named to the left of the property name. 
     - Even if the prototype chain already has a property with that name, it assigns the "own" property. 
 
-- ```js
+- Code examples
+
+  ```js
   let a = {
     prop1: 1,
   }
@@ -935,7 +995,7 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
   - On line 8, JS doesn't find property `prop1` on `b`, so it looks for the property in `b`'s prototype, `a`. In other words, `b` delegates the property access of `prop1` to it's prototype object `a`. JavaScript finds `prop1` in `a` and returns that value.  and `a`'s prototype object is the default prototype. 
 
-- ```js
+  ```js
   let a = {
     foo: 1,
   };
@@ -952,6 +1012,21 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
   
   // A downstream object overrides an inherited property if it has a property with the same name. Object b inherits property `foo` from object a, but because it has an own property with the same name 'foo', object b overrides the inherited property. 
   ```
+
+###### Code example of prototype chain
+
+```js
+let a = {one : 1};
+let b = {two : 2};
+let c = {three: 3};
+
+Object.setPrototypeOf(b, a);
+Object.setPrototypeOf(c, b);
+
+console.log(c.one); // 1
+```
+
+On line 8, when JavaScript tries to access `one` on object `c`, it doesn't find it on `c` directly so it looks through `c`'s prototype chain. It first looks in `c`'s prototype `b`, referenced by `c`'s internal `[[prototype]]` property. We can access `b` using `c.__proto__`or the `Object` constructor method`Object.getPrototypeOf(c) `. It doesn't find it on `b`, so it looks for the property on `b`'s prototype. It goes through the entire prototype chain until it reaches `Object.prototype`, if `Object.prototype` doesn't define the property, then it returns `undefined`. 
 
 ###### Implications
 
@@ -4440,6 +4515,24 @@ let preparers = [new Chef(), new Decorator(), new Musician()];
 
 # Objects
 
+### Determining an Object's type
+
+- Many object-oriented languages, like Java or C++, have a strong notion of object types. In most such languages, it's easy to determine the object's type, such as a dog or car. 
+- JavaScript, however, treats objects and their types in a looser, more dynamic way. You can't determine the specific type of arbitrary JavaScript objects; they are dynamic structures with a type of `object`, no matter what properties and methods they have. 
+- However, we can get some useful information about an object if we know which constructor created it.
+
+- Remember that the `new` operator creates a new object. Suppose that you call the Car constructor with `new`. Informally, we can say that the resulting object is a car. More formally, we can say that the object is an **instance** of a `Car`.
+
+- The `instanceof` operator lets us determine whether a given constructor created an object:
+
+  ```js
+  object instanceof Constructor
+  ```
+
+- One effect that we didn't mention when talking about the `new` operator is that the object it returns contains some information that ties it back to the constructor that created the object. The `instanceof` operator uses that information to determine what constructor created the object. 
+
+- Definition: The operator `instanceof` tests to see if the `prototype` property of a constructor appears anywhere in the prototype chain of an object. The return value is a `boolean` value. 
+
 ### Object creation
 
 - Objects can be initialized using [`new Object()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/Object), [`Object.create()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create), or using the **object literal syntax** / *literal* notation (*initializer* notation). An object initializer is a comma-delimited list of zero or more pairs of property names and associated values of an object, enclosed in curly braces (`{}`).
@@ -4994,45 +5087,6 @@ Summary: Like factory functions, constructors are also functions that create obj
 - What `new` doesn't do.
   - It does not create a new function. 
 
-##### `Constructor` property 
-
-- Definition: Returns a <u>reference</u>(not string name!) to the constructor function that created the instance object. 
-
-- Syntax
-
-  ```js
-  obj.constructor 
-  ```
-
-- Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
-
-  ```js
-  function func() {
-  }
-  console.log(func.prototype.hasOwnProperty('constructor')); // true
-  ```
-
-  - Careful: this could be reassigned, and needs to be restored when using pseudo-classical inheritance pattern by pointing the subtype's `prototype` object's  `constructor` property back to the subtype. 
-
-- Constructor property can be used to create new objects 
-
-  ```js
-  let rex = new Terrier();
-  let spot = new rex.constructor(); // is invocation syntax necessary? 
-  // is the equivalent of calling new Terrier();
-  // Can use this method if we don't know the name of an object's constructor. 
-  ```
-
-- `Constructor.name` 
-
-  - Constructors have a name property that returns the function's name (as a string) as specified when it was created. 
-
-    ```js
-    console.log("Hello".constructor.name); // string
-    console.log([1, 2, 3].constructor.name); // array
-    console.log({ name: 'Srdjan' }.constructor.name); // object
-    ```
-
 ##### Other notes about constructor
 
 - Calling a constructor without `new`
@@ -5115,6 +5169,38 @@ Summary: Like factory functions, constructors are also functions that create obj
 - **scope-safe constructors**: designed to return the same result whether its called with `new` or without new. 
   - Most, but not all, of JavaScript's built-in constructors, such as `Object`, `RegExp`, and `Array`, are scope-safe. `String`, `Number` and `Boolean` is not:
 
+##### `Constructor` property 
+
+- Definition: Returns a <u>reference</u>(not string name!) to the constructor function that created the instance object. 
+
+- Syntax
+
+  ```js
+  obj.constructor 
+  ```
+
+- `constructor` property is located on a constructor's `prototype` object.
+
+- Every <u>function</u> object has a `prototype` property that points to an object that contains a `constructor` property. The `constructor` property points back to the function itself. If `Kumquat` is a constructor function, then `Kumquat.prototype.constructor === Kumquat`.
+
+  ```js
+  function func() {
+  }
+  console.log(func.prototype.hasOwnProperty('constructor')); // true
+  ```
+
+- Careful: this could be reassigned, and needs to be restored when using pseudo-classical inheritance pattern by pointing the subtype's `prototype` object's  `constructor` property back to the subtype. 
+
+- `constructor` property can be used to create new objects 
+
+  ```js
+  let rex = new Terrier();
+  let spot = new rex.constructor(); // is invocation syntax necessary? 
+  // is the equivalent of calling new Terrier();
+  // Can use this method if we don't know the name of an object's constructor. 
+  ```
+
+
 ##### Properties & operators 
 
 - `Constructor.name` 
@@ -5186,10 +5272,8 @@ Summary: Like factory functions, constructors are also functions that create obj
 
 ##### Constructors with Prototypes: terminology confusion
 
-- Constructor `prototype` property 
-
+- <u>Constructor `prototype` property</u> 
   - Known as **constructor's prototype object** /  **function prototype** / **`prototype` property**
-  - Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword. 
   - `Constructor.prototype` references the constructor's prototype object.
     - The constructor stores the prototype object in its `prototype` property; that is, if the constructor's name is `Foo`, then `Foo.prototype` references the constructor's prototype object.
   - The **constructor's prototype object** is the object that the the instance object(inheriting object) created by a constructor inherits from. 
@@ -5197,26 +5281,25 @@ Summary: Like factory functions, constructors are also functions that create obj
     - The inheriting object's prototype references `Foo.prototype`.
     - Even if you assign `constructor.prototype` to a different object, the instance object's prototype does not change: it's still the original constructor's prototype object defined during the constructor's invocation. 
     - Even if we define a methods on the constructor's`prototype` object after we create an instance object, it becomes available to that instance object. That is because objects hold a reference to their prototype object, if the prototype object changes in some way, the changes are reflected in the inheriting object as well. 
+  - Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword. 
   - Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
   - Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
 - <u>**An object's prototype**</u>: 
-
   - In most cases, when we talk about a **prototype** without being more explicit, we mean an **object prototype**.
-
+  
   - Referenced by  dunder proto `__proto__` or hidden `[[Prototype]]` property
-
+  
   - An **object's prototype**  is what an inheriting object's `[[Prototype]]` or `__prototype__` property references. 
     - It is the object that the current object inherits from. 
     - If `bar` is an object, then the object from which `bar` inherits is the **object prototype**. 
-    - By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
-    - The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
-      - In other words, If a function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property. 
 
-##### Terminology Confusion: prototype
+Why it's confusing
 
-- An object's prototype is not the same as constructor's prototype object, but often times an object's prototype references the Constructor's prototype object, given that the constructor is the constructor function that created the object. 
-  - Object's `__proto__` or hidden `[[prototype]]` references an object's prototype. It also references `constructor.prototype`.
-- A constructor's `[[prototype]]` !== `constructor.prototype` , but the inheriting object's `[[prototype]]` references `constructor.prototype`. 
+- By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
+- The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
+  - In other words, If a function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property. 
+
+
 
 #### Object creation with constructors: constructor/prototype pattern
 
