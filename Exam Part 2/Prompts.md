@@ -5,8 +5,13 @@ Important
 - [x] Exercise Sets
 - [x] Their prompts -1
 - [ ] Area of Focus
+  - [x] Finish classes
+  - [ ] This
+  - [ ] Understanding context loss
+  - [ ] FUnction prototype methods and context
 
-Extra
+
+Extra - study together
 
 - [ ] My own Exercises
 
@@ -18,18 +23,952 @@ Extra
 
 # Areas of Focus
 
+##### Global object
+
+- This global object is the **implicit execution context** for function invocations, and when `this` is outside a function.
+
+- JavaScript creates a global object when it starts running. 
+  - In Node.js, the global object is the object named `global`. [object global]
+  - In the browser, it's the `window` object. 
+- If you don't provide an explicit execution context, JavaScript uses the global object as the value for `this`. However, you can access the global object anywhere merely by using its name (`global` or `window`).
+- Undeclared variables are added to the global object as property. 
+  - When you assign a value to a variable without using `let` `const` or `var` keywords, the variable gets added to global object as property. 
+- The global object is available everywhere in a JavaScript program, including both the top level and inside other functions and methods. 
+- Global properties / methods
+  - global: `global` object is itself a property of the `global` object. 
+  - Infinity
+  - NaN
+  - undefined
+  - global
+  - isFinite
+  - console
+  - log
+
 # this
 
-- Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
+##### Summary
+
+- Definition of `this`: `this` is a keyword that refers to an object that is the current execution context of a function or method that is running. 
+- **Execution context**: is the environment (an object) in which a function executes.
+
+- There are two ways to set execution context when calling a function or method
+
+  1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. 
+  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+
+There are many ways that JS provides an implicit execution context. 
+
+- If `this` is <u>outside a function definition</u>, keyword `this` is bound to the global object. Which means that the implicit execution context is the global object. 
+
+  ```js
+  // in strict mode
+  let obj = {
+    prop: this,
+  };
+  
+  console.log(obj.prop); // logs the global object
+  ```
+
+- If `this`  is <u>used as part of a function definition</u>, and the execution context depends on how the function is invoked, not how or where the function is defined.
+
+  - Regular function calls use <u>global object</u> as implicit execution context. 
+
+    ```js
+    // regular function call
+    function func() {
+      console.log(this);
+    }
+    
+    func(); // logs undefined, because we are in strict mode.
+    ```
+
+    ```js
+    // another form of regular function call where we assign a method to a variable and invoke the function as a standalone function
+    let obj = {
+      func () { // compact method syntax
+        console.log(this);
+      }
+    }
+    
+    let foo = obj.func;
+    foo(); // undefined
+    ```
+
+  - Method calls use the <u>calling object</u> as its implicit execution context. 
+
+    ```js
+    // method call
+    let obj = {
+      prop: function () {
+        console.log(this);
+      },
+    };
+    
+    obj.prop(); //  logs { func: [Function: func] } which is obj
+    ```
+
+  - When strict mode is enabled, the implicit execution context/ implicit `this` for regular function calls is assigned to `undefined` instead of the global object. 
+
+    ```js
+    function foo() {
+      console.log(this);
+    }
+    
+    foo(); // undefined
+    ```
+
+- A constructor call with `new` uses the <u>newly created instance object</u> as its implicit execution context. 
+
+  - When we instantiate a new `Cat` object, the constructor logs the `cat` instance object because inside the constructor function, the implicit execution context , the value of `this` is the instance object. 
+
+  ```js
+  function Cat () {
+    this.property = 'property';
+    console.log(this);
+  }
+  
+  let cat = new Cat(); // Cat {property: 'property'};
+  ```
+
+- Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
+
+  - An arrow function, once created, always has the same context as the function that surrounded it when it was created.
+
+    - Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
+  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**. 
+
+  ```js
+  let obj = {
+    prop: function () {
+    let foo = () => {
+        console.log(this);
+      };
+      foo();
+    },
+  }
+  
+  obj.prop(); // logs obj because obj is the surrounding context for the arrow function. 
+  ```
+
+  - Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
+
+    ```js
+    let obj = {
+      a: 5,
+    
+      foo: () => {
+        console.log(this); // this refers to global object
+      },
+    };
+    
+    obj.foo(); // => undefined
+    // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+    ```
+
+------
+
+Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
+
+##### Definition
+
+-  `this` is  a **keyword**  that refers to an object that is the current **execution context** of a function or method that is running. 
+-  **Execution context**: the environment (an **object**) in which a function executes. 
+-  The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
+
+##### Implications
+
+- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
+- `this` keyword is available to every function in JS, because every JS function call has an execution context.
+  - All JS functions and methods execute within an execution context , aka the `this` binding. 
+- Clarification: `this` is not a variable. It is a keyword.
+
+##### Value of `this` / execution context rules
+
+- If `this` is <u>outside a function definition</u>, keyword `this` is bound to the global object. 
+
+  - Code example
+
+    ```js
+    // in coderpad
+    let obj = {
+      prop: this,
+    };
+    
+    console.log(obj.prop); // logs the global object
+    ```
+
+  - Even in strict mode, `this` at the top level scope, the global scope. So it's bound to the global object, not `undefined`. 
+
+  ```js
+  "use strict";
+  
+  let obj = {
+    foo: this,
+  };
+  
+  console.log(obj.foo); // logs the global object, not undefined
+  ```
+
+  - `this` in the global scope is still the global object. 
+
+    ```JS
+    let obj = { foo: this, }; // this is the this of the top-level scope
+    ```
+
+  - The braces of an object literal doesn't create a scope. Its simply a syntax that is a shorter version of saying
+
+    ```JS
+    let obj = new Object();
+    obj.foo = this; // this of this top-level scope
+    ```
+
+  - Inside a function `this` is is different depending on how the function is called. The function gets its own scope and its own `this` binding.
+
+    ```JS
+    function foo() { console.log(this); } // the this here is inside the function, bound when called
+    foo(); // determines the value of this, in strict mode this call binds to undefined
+    ```
+
+- If `this`  is <u>used as part of a function definition</u>, and the execution context depends on how the function is invoked, not how or where the function is defined.
+
+  - Context binding is not based on lexical scoping rules that variables use. `this` depends on how a function or method is invoked. 
+
+  - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
+    
+    - In Node, global object is `global` and in browser, global object is `window`. 
+
+    - In strict mode, regular function calls use `undefined` as their <u>implicit</u> execution context, while method calls <u>implicitly</u> use the calling object as their context. 
+    
+      ```js
+      // regular function call
+      function func() {
+        console.log(this);
+      }
+      
+      func(); // logs undefined, because we are in strict mode.
+      ```
+    
+      ```js
+      // method call
+      let obj = {
+        prop: function () {
+          console.log(this);
+        },
+      };
+      
+      obj.prop(); //  logs { func: [Function: func] } which is obj
+      ```
+    
+      ```js
+      // another form of regular function call where we assign a method to a variable and invoke the function as a standalone function
+      let obj = {
+        func () { // compact method syntax
+          console.log(this);
+        }
+      }
+      
+      let foo = obj.func;
+      foo(); // undefined
+      ```
+    
+    - You can override the implicit execution context behavior by setting the execution context <u>explicitly</u> with either `call`,  `apply`, or `bind`.   
+    
+    - Arrow functions are also exceptions. Arrow functions use lexical scoping. 
+
+- When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for <u>function calls</u> is assigned to `undefined` instead of the global object.
+
+  - CoderPad runs JavaScript code in *strict mode*. The implicit execution context for function calls is `undefined`, **not** the global object. 
+
+  - If you wish to practice on your own system instead of on CoderPad, add `"use strict";` to the top of your JavaScript code:
+
+    ```js
+    "use strict"; // the quotes are required
+    
+    function foo() {
+      console.log(this);
+    }
+    
+    foo(); // undefined
+    ```
+
+- **Arrow functions** inherit execution context from the surrounding context. 
+
+  - That means that an arrow function defined inside another function always has the same context as the outer function's context. 
+
+  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**. 
+
+  - **enclosing function invocation** (surrounding scope): the most <u>immediate</u> function scope in which the arrow function is defined. 
+
+    - This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
+    - The execution context of this enclosing function is determined by  how it is invoked. 
+    - Tricky: `forEach` is not considered the enclosing function for arrow functions, why? Because arrow functions are passed as arguments to `forEach` - it's not defined inside `forEach`. 
+
+  - An arrow function, once created, always has the same context as the function that surrounded it when it was created.
+
+    - Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
+
+  - My example: 
+
+    ```js
+    let obj = {
+      prop: function () {
+        let foo = () => {
+          console.log(this); // logs obj because obj is the surrounding context for the foo arrow function. 
+        }
+        foo();
+      },
+    };
+    
+    obj.prop();
+    ```
+
+  - Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
+
+    ```js
+    let obj = {
+      a: 5,
+    
+      foo: () => {
+        console.log(this); // this refers to global object
+        console.log(this.a);
+      },
+    };
+    
+    obj.foo(); // => undefined
+    // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+    ```
+
+  - This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
+  - The surrounding context is the **global object**. The reason for that is simple: the `let` statement in this example is in the program's top level code, so its context is the global object. That means `this` inside the object literal is also the global object, so `this` on line 5 refers to the global object, not `obj`. 
+  - Note that `this` in `obj.foo` is not determined by how the method is called. 
+    - We call the method on line 9, and we seem to be telling JavaScript to use `obj` as the context. 
+    - Instead, the context ends up being the global object. 
+    - That seems to contradict our repeated statements that the context is determined entirely by how a function or method is invoked. That's clearly not the case here; it certainly violates the rule.
+    - However, you won't usually see code like this in practice.
+    - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
+
+# `Function` Prototype methods and context
+
+- The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
+
+- In practice, you use the `call`, `apply`, and `bind` methods to set an explicit execution context. You can also set the execution context explicitly with functions that accept an argument that specifies the context for a callback function. For instance, `Array.prototype.forEach` (and several other `Array.prototype` methods) take a `thisArg` argument that lets you set the context for the callback explicitly.
+
+##### `call`
+
+- Definition: `call` invokes a function or method with an explicit execution context - the first argument passed to it 
+
+  - `call` and `apply` don't change a function's logic or return values; they merely change what object the method uses for its context.
+
+- Syntax
+
+  ```js
+  someObject.someMethod.call(context, arg1, arg2 …)
+  someObject.someMethod.call(context, ...args);
+  function.call(context)
+  
+  // using non-mutating array methods on strings
+  string = anyArray.arrayMethod.call(string, callbackFn).join('');
+  string = [].arrayMethod.call(string, callbackFn).join('');
+  ```
+
+- Can also pass a second array argument using spread operator. 
+
+  ```js
+  function.call(context, ...args);
+  ```
+
+##### `apply`
+
+- Definition: `apply` calls a function or method with an explicit execution context(the first argument passed to it), and optionally passes an array of arguments to the called function or method. 
+
+  - Arguments are passed as an array, whereas in `call`, arguments are passed separately. 
+
+- Syntax
+
+  ```js
+  someObject.someMethod.apply(context, [arg1, arg2, arg3…])
+  function.apply(context)
+  ```
+
+- Don't need `apply` anymore because we can just use spread operator to pass an array argument into `call`. 
+
+##### `bind`
+
+- Definition: `Bind` returns a new function that is permanently bound to the context passed to  it as first argument. 
+
+  - Once a function's context gets bound using `bind`, its context can't be changed, even with `call` and `apply`
+  - Hard binds a function to an explicit execution context. 
+  - We have to call on the new function using `()`. 
+
+- Syntax
+
+  ```js
+  newFunc = someObject.someMethod.bind(context)
+  // Or 
+  function.bind(context)
+  ```
+
+- Unlike `call` and `apply`, `bind` doesn't invoke the function used to call it. Instead it returns a new function that is permanently bound to the context argument.  
+
+  - What's important is to recognize that `bind`'s context is the <u>original</u> function and it <u>returns a new function</u> that is permanently bound to the context passed to `bind` as first argument. 
+  - When we call this new function using `()`, this new function calls on the original function/method using `apply` or `call`, passing the permanent context to it. The original function and its context is not changed.
+  - `bind`'s execution context is the original function, because it is invoked using method invocation. Method invocations always use the calling function as its implicit execution context. But `bind` explicitly sets the execution context for the new function. 
+
+- You cannot alter the execution context of the resulting function, even if you use `call` `apply` or call `bind` a second time. 
+
+  ```js
+  function sumNum(num1) {
+    return this.num + num1;
+  }
+  
+  let obj = {
+    num: 42
+  };
+  
+  let sumNum2 = sumNum.bind(obj);
+  sumNum2(5); // => 47
+  // new function sumNum2 is permanently bound to obj. 
+  ```
+
+- You can pass that method around and call it without worrying about losing its context since it's permanently bound to the provided object. 
+
+  ```js
+  let object = {
+    a: 'hello',
+    b: 'world',
+    foo: function() {
+      return this.a + ' ' + this.b;
+    },
+  };
+  
+  let bar = object.foo;
+  bar();                                // "undefined undefined" 
+  																			// undefined because there is no 'a' property in the global object
+  
+  let baz = object.foo.bind(object);
+  baz();                                // "hello world"
+  																			// baz is permanently bound to object, so the context / 'this' now refers to object 
+  // baz calls on foo, passing permanent object context to it. 
+  ```
+
+  ```js
+  let object2 = {
+    a: 'hi',
+    b: 'there',
+  };
+  
+  baz.call(object2);  // "hello world" - `this` still refers to `object`
+  ```
+
+- JavaScript implements `bind` method like this: 
+
+  ```js
+  Function.prototype.bind = function (...args) {
+    let fn = this; // bind's context is the original function function ()
+    let context = args.shift();
+  
+    return function () {  										// bind returns a function function(), which is permanently bound to context. 
+      return fn.apply(context, args); // this function calls the original function fn. using apply. 
+    };
+  };
+  ```
+
+  - This code shows why binding makes permanent changes -- no mater what you do to the returned function, you can't change the value of `context`. 
+
+- It's also important to know that `bind` does not contradict the statement that context is determined entirely based on how you call a function or method, not where you call it or how you define it. 
+
+  - Technically, `bind` defines a new function. However, when we call that function, its implementation -- as shown above-- calls the original function using `apply`. 
+  - Therefore, it's still the "how" of the call that determines the context, not the definition or location. 
+
+> - A trap is thinking that `bind` permanently alters the original function. 
+> - It's important to remember that `bind` returns a new function, and the new function is permanently context-bound to the object provided as the first argument to `bind`. 
+> - The original function isn't changed and doesn't have its context changed. 
+
+##### Advantage and disadvantage of `bind`
+
+- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
+- The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
+
+------
+
+# Difference between Implicit and Explicit execution context
+
+- **Execution context**:  the **environment** in which a function executes.
+
+- There are two basic ways to set the context when calling a function or method
+
+  1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. 
+
+  2. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+
+     There are many ways that JS provides an implicit execution context. 
+
+     - Outside of a function definition, the implicit execution context is the global object.
+     
+     - Regular function calls use <u>global object</u> as implicit execution context. 
+     - Method calls use the <u>calling object</u> as its implicit execution context. 
+     - When strict mode is enabled, the implicit execution context/ implicit `this` for regular function calls is assigned to `undefined` instead of the global object. 
+     - A constructor call with `new` uses the <u>newly created object</u> as its implicit execution context. 
+     - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
 
 # Understanding context loss
 
 - “What are the ways that context can be lost, and how can context loss be prevented in these situations?”
 - A complete response needs to clearly indicate the differences between “Implicit” and “Explicit” execution context.
 
-# `Function` Prototype methods and context
+### Context Loss 1 : Method is copied out of an object and used elsewhere.
 
-- The JS120 “*Functions and Execution Context*” lesson covers the `Function` prototype methods of `call`, `bind`, and `apply`. These methods can be used to set the context of a function. Just like with `Object` methods, I found it helpful to reproduce their behavior with my own functions in order to fully understand how they work.
+- When we take a method out of an object and execute it as a function or method on another object, the function's context is no longer the original object.
+
+  - My example
+
+  ```js
+  let obj = {
+    method() {
+      console.log(this);
+    }
+  };
+  
+  obj.method(); // context is obj
+  let foo = obj.method; // strips context
+  foo(); // context is now undefined, because we are in strict mode.
+  ```
+
+##### Best Solution
+
+- Hard-bind the method's context by using `bind`
+
+```js
+let foo = obj.method.bind(obj); // bind returns a function
+foo(); // foo references a function that is permanently bound to obj.
+
+// using call
+let foo = obj.method; 
+foo.call(obj);
+```
+
+##### Unideal solutions
+
+- Use `call`
+
+  - problem is if you pass it to another function or don't execute function right away, the context passed to `call` may be out of scope by then. 
+
+    ```js
+    function repeatThreeTimes(func) {
+      func(); // can't use func.call(john); john is out of scope
+      func();
+      func();
+    }
+    
+    function foo() {
+      let john = {
+        firstName: 'John',
+        lastName: 'Doe',
+        greetings: function() {
+          console.log('hello, ' + this.firstName + ' ' + this.lastName);
+        },
+      };
+    
+      repeatThreeTimes(john.greetings); // Strips context
+    }
+    
+    foo();
+    
+    // => hello, undefined undefined
+    // => hello, undefined undefined
+    // => hello, undefined undefined
+    ```
+
+- Change the original function to accept context object as second parameter, then pass context to original function when calling it
+
+  - problem is you can't always change function or methods, and not good to pass a lot of arguments to functions
+  - JS built-in methods like `forEach` `map` `filter` use this technique by taking a callback function as argument and optional `thisArg` context object that is used as the callback's execution context. 
+
+### Context Loss 2: Nested Functions: inner function not using surrounding context
+
+- Inner function is invoked as a standalone function. 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    function bar() {
+      console.log(this.greeting);
+    }
+    
+    bar(); //bar is invoked as standalone function. THus its execution context is the undefined, not `obj` object. 
+  },
+}
+
+obj.foo(); // raises a TypeError: cannot read properties of undefined.
+```
+
+- Inner function `bar` loses surrounding context.
+
+##### Solution 1 : Preserve context with variable in outer scope 
+
+- `let self = this` in the outer function
+
+- Set `this` to a variable to access the correct context object. 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    let self = this;
+    function bar() {
+      console.log(self.greeting);
+    }
+    
+    bar(); // bar's execution context is undefined, because its invoked as a standalone function. But since self references the surrounding context, it will log `hello`.
+  },
+}
+
+obj.foo(); // logs 'hello'
+```
+
+##### Solution 2 : Call Inner function with explicit context
+
+- `call` or `apply`
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    function bar() {
+      console.log(this.greeting);
+    }
+    
+    bar.call(this); // call invokes bar with `obj` as explicit execution context.
+  },
+}
+
+obj.foo(); // logs 'hello'
+```
+
+- We won't show an example of `apply` since you can always use `call` in its place if you use the spread operator to expand `apply`'s array argument.
+
+##### Solution 3: use `bind`
+
+- Advantage of `bind` is that you can do it once and then call it as often as needed without an explicit context. 
+
+- call `bind` on inner function and get a new function with its execution context permanently set to the object. 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    function bar() {
+      console.log(this.greeting);
+    }
+    
+    bar.bind(this)(); 
+  },
+}
+
+obj.foo(); // logs 'hello'
+```
+
+- We can use a function declaration instead of a function expression, but you'll need an extra variable. 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    function bar() {
+      console.log(this.greeting);
+    }
+    
+    let qux = bar.bind(this); 
+    qux(); 
+  },
+}
+
+obj.foo(); // logs 'hello'
+```
+
+##### Solution 4: Use arrow function
+
+- Arrow functions use lexical scoping. 
+- Arrow functions ignore the rule that a function or method's execution context depends soley on how you invoke it, now on how and where it's defined. 
+- This exception comes in very handy when dealing with context loss. 
+- A property of arrow functions is that <u>they inherit their execution context from the surrounding scope</u>. 
+- An Arrow function defined inside another function always has the same context as the outer function: 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    let bar = () => {
+      console.log(this.greeting);
+    }
+		
+    bar();
+  },
+}
+
+obj.foo(); // logs 'hello'
+```
+
+- Using arrow functions like this is similar to using `bind` in that you don't have to worry about arrow functions losing their surrounding context. 
+- An arrow function, once created, always has the same context as the function that surrounded it when it was created. 
+- Of all the techniques we saw in the assignment, using arrow functions is most common these days. 
+
+##### Arrow function Exception 
+
+- Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
+
+```js
+let obj = {
+  greeting: 'hello',
+
+  foo: () => {
+    console.log(this.a);
+  },
+};
+
+obj.foo(); // => undefined
+// Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+```
+
+- This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
+- The surrounding context is the **global object**. The reason for that is simple: the `let` statement in this example is in the program's top level code, so its context is the global object. That means `this` inside the object literal is also the global object, so `this` on line 5 refers to the global object, not `obj`. 
+- Note that `this` in `obj.foo` is not determined by how the method is called. 
+  - We call the method on line 9, and we seem to be telling JavaScript to use `obj` as the context. 
+  - Instead, the context ends up being the global object. 
+  - That seems to contradict our repeated statements that the context is determined entirely by how a function or method is invoked. That's clearly not the case here; it certainly violates the rule.
+  - However, you won't usually see code like this in practice.
+  - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
+
+### **Context Loss 3: Function as argument losing surrounding context**
+
+- When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. 
+
+```js
+// In strict mode
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    });
+  },
+};
+
+obj.foo();
+// Raises a TypeError: cannot read properties of undefined (reading 'greeting')
+```
+
+```js
+// Not in strict mode
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    });
+  },
+};
+
+obj.foo(); 
+// => undefined 1
+// => undefined 2
+// => undefined 3
+```
+
+- CLARIFICATION: It's the callback function that is being executed with global object(`undefined` in strict mode) as execution context, not `forEach`. 
+- On line 5, The implicit execution context of `forEach` is its calling object, the array `[1, 2, 3]`.   But a function expression is passed to `forEach` as argument, and when functions are passed as arguments, they lose surrounding context, so the execution context is then implicitly set to the global object.  If `forEach` took a `thisArg` argument, then the execution context would be `thisArg`. 
+- SOLUTION: The problem is that `this` is bound to the global object(`undefined`) when the anonymous callback function passed to `forEach` is invoked on line 5. We want to access the object `obj` from within the anonymous function. Here we'll solve it by employing the lexical scoping of JavaScript to our advantage; specifically, the rule that a variable defined in an outer scope is available to an inner scope. (preserving context with a variable in outer scope)
+
+##### Solution 1: Preserve the Context with a Variable in Outer Scope
+
+- This solution utilizes lexical scoping rules.
+- **Lexical scoping rules**: A lexical scope in JavaScript means that a variable defined outside a function can be accessible inside another function defined after the variable declaration. 
+  -  the rule that a variable defined in an outer scope is available to an inner scope
+
+```js
+// In strict mode
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    let self = this;
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${self.greeting} ${String(number)}`);
+    });
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+##### Solution 2 : Use `bind`
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    }.bind(this)); // binds the callback function
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    let bar = function (number) { // binds the callback function
+      console.log(`${this.greeting} ${String(number)}`);
+    }.bind(this);
+    
+    [1, 2, 3].forEach(bar); 
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+ When does `bind` not work?
+
+- `Bind` needs to be used on the function that is being passed as argument, not be built -in to the function already, if this makes sense.
+
+- This code doesn't work because the function that is bound to `this` gets passed as an argument itself. 
+- `this` binding isn't set until a method is INVOKED. Execution context is set during a method invocation. So when the function is invoked, `this` references global object instead of `turk` as we intended it to. 
+
+
+```js
+// this solution doesn't work
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription: function() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }.bind(this) 
+};
+
+function logReturnVal(func) {
+  let returnVal = func();
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription); // undefined undefined is a undefined. 
+```
+
+```js
+// also doesn't work work
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription: function() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }.bind(turk) // ReferenceError: cannot access turk before initialization
+};
+
+function logReturnVal(func) {
+  let returnVal = func();
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription);
+```
+
+```js
+// This works because we bind the function that is being passed as argument. 
+let turk = {
+  firstName: 'Christopher',
+  lastName: 'Turk',
+  occupation: 'Surgeon',
+  getDescription() {
+      return this.firstName + ' ' + this.lastName + ' is a '
+                                  + this.occupation + '.';
+  }
+};
+
+function logReturnVal(func, context) {
+  let returnVal = func.call(context);
+  console.log(returnVal);
+}
+
+logReturnVal(turk.getDescription.bind(turk));
+```
+
+```js
+// This example demonstrates a solution for callback functions to retain its surrounding context when it is passed to `forEach`. This solution binds the callback  function to a permanent execution context. 
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    [1, 2, 3].forEach(function(number) {
+      console.log(String(number) + ' ' + this.a + ' ' + this.b); // why does this refer to obj? 
+    }.bind(this));
+  },
+};
+
+obj.foo();
+
+// => 1 hello world
+// => 2 hello world
+// => 3 hello world
+```
+
+- `this` on line 6 refers to `obj` because the order of method calls starts from line 11, where method `foo` is invoked by `obj` and the context is set to `obj`. Then on line 7, foo references a new function that is permanently bound to context of `this`, which still refers to `obj`. The new function invokes the original `foo` function with permanent context of `obj`, so on line 6, `this` refers to `obj`.  
+
+##### Solution 3 : Use arrow function
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(number => {
+      console.log(`${this.greeting} ${String(number)}`);
+    });
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+##### Solution 4: Use the optional `thisArg` argument
+
+- Some methods that take function arguments allow an optional argument that specifies the execution context to use for the callback function. 
+  - provides an alternative way to supply the execution context for the callback function. 
+- For example `Array.prototype.forEach` has an optional `thisArg` argument for the context. 
+- `map`, `every`, `some`, and others take this optional argument. 
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function(number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    }, this);
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3                          
+```
 
 # Object creation patterns
 
@@ -1022,6 +1961,8 @@ function SubType(parameter1) {
 }
 ```
 
+------
+
 #### Notes
 
 Let's start by writing some code for the animals constructor. As I write code, I will demonstrate how constructor functions work and their differences between factory functions.
@@ -1032,7 +1973,7 @@ Let's start by writing some code for the animals constructor. As I write code, I
 Lets set the `name`parameter as a property on the instance object.
 
 - constructor names are capitalized.
-- we use `this` to set instance object's properties and methods. 
+- we use `this` to set the instance object's properties and methods (assign the instance properties to the arguments).
 
 ```js
 function Animals(name) {
@@ -1228,7 +2169,7 @@ mixin object called mixIn
 ##### Test code
 
 ```js
-// test code
+// test code to instantiate new objects
 let animal = new Animals('Bobo');
 animal.makeNoise(); // Bobo growls
 
@@ -1299,29 +2240,615 @@ human.house(); // Sara lives indoors.
 
 # ES6 Classes
 
-#### Notes
+#### Definition
 
-##### Definition: 
-
-- The **class syntax** is syntactic sugar for creating objects that use constructors and prototypes. 
-  - **syntactic sugar** means syntax designed to be easier to read or use. 
+- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. 
+  - **syntactic sugar**  means syntax designed to be easier to read or use. 
   - ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
-
-- Why Classes?
-  - Using classes, it's possible to do everything you can with the constructor and prototype pattern. However, the class syntax is easier to read and write, and the enforced  `new` keyword helps prevent bugs.
+  - ES6 classes provide a cleaner, more compact alternative to constructors and prototypes.
+  - As with functions, they are first-class citizens and come in the form of declarations and expressions. 
+  - Functionally, classes behave almost identically to the constructors and prototypes they aim to replace. 
+- Why classes? 
+  - The reason we use classes is it that classes provide a cleaner, more compact alternative to constructors and prototypes.
+  - Functionally, classes behave almost identically to constructors and prototypes, but the class syntax is easier to read and write, and the enforced `new` keyword helps prevent bugs. 
+    - A significant difference between classes and constructor/prototype pattern : you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
   - JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
 
-Differences between class and constructor/prototype pattern
+#### Precision of Language
 
-- A significant difference: you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
+- Example
 
-- Constructor is now a method named `constructor` inside our class instead of being a standalone function.
-- Other methods have no special meaning; you can define as many as you need. 
-- There are no commas between the properties in class.
-- When we define a method, it gets placed in `Constructor.prototype` object automatically.
-- One minor difference is that `rec.constructor` may produce different results in the two patterns. For example, in Node, logging `rec.constructor` produces `[Function: Rectangle]` for the constructor/prototype example, and `[class Rectangle]` for the class example. This difference is implementation dependent, and not considered significant.
+```js
+class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    console.log(`Woof! My name is ${this.name}.`)
+  }
+}
+```
+
+This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
+
+"Upon instantiation, assigns the passed in argument to `year` property"
+
+#### Syntax & Rules
+
+- Constructor Method
+
+  - When defining a class, you usually need to define the `constructor` method.
+  - The method executes certain statements when a new instance object is initialized.
+
+  - The constructor method initializes a new `Constructor Name` object by assigning the instance properties to the arguments. 
+
+- Example
+
+  ```js
+  class Dog {
+    constructor(name) {
+      this.name = name;
+    }
+  
+    sayHello() {
+      console.log(`Woof! My name is ${this.name}.`)
+    }
+  }
+  ```
+
+  This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
+
+- Naming convention: Like constructors and prototypes, class names are capitalized. Use **PascalCase** for constructor functions and classes. 
+
+- Classes are **first- class citizens**
+
+  - Mainly means we can pass classes into functions as arguments. 
+  - But also means we can treat JavaScript classes like any other value: passed around to functions, returned from functions, assigned to variables, and used anywhere that a value is expected.
+
+  ```js
+  function createObject(classDef) {
+    return new classDef();
+  }
+  
+  class Foo {
+    sayHi() {
+      console.log('Hi!');
+    }
+  }
+  
+  let obj = createObject(Foo);
+  obj.sayHi(); //=> logs 'Hi!'
+  ```
+
+##### Class vs constructor/prototype
+
+- Similarities between class and constructor/prototype pattern
+
+  - Anything in the constructor method is the instance object's own properties, like the constructor/ prototype pattern.  
+
+  - In most situations, instantiating a new object from a class is identical to creating one with the constructor/prototype pattern:
+
+    ```js
+    let rec = new Rectangle(10, 5); 
+    ```
+
+  - You can even call methods on `Rectangle.prototype` in the same way:
+
+    ```js
+    console.log(rec.getArea());            // 50
+    ```
+
+  - The class code and instantiation is so similar to the constructor/prototype code that `typeof`  returns `'function'`, and `instanceof` works, to test whether an object is an instance of the constructor function. 
+
+    ```js
+    console.log(typeof Rectangle); // "function"
+    console.log(rec instanceof Rectangle); // true
+    ```
+
+- Differences between class and constructor/prototype pattern
+
+  - A significant difference: you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
+  - Constructor is now a method named `constructor` inside our class instead of being a standalone function.
+  - Other methods have no special meaning; you can define as many as you need. 
+  - There are no commas between the properties in class.
+  - Classes look similar to the simplified (concise) method definition / compact method syntax that you can use in object literals.
+  - When we define a method, it gets placed in `Constructor.prototype` object automatically.
+  - One minor difference is that `rec.constructor` may produce different results in the two patterns. For example, in Node, logging `rec.constructor` produces `[Function: Rectangle]` for the constructor/prototype example, and `[class Rectangle]` for the class example. This difference is implementation dependent, and not considered significant.
+
+##### Difference between function and class
+
+- Classes are functions
+
+- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
+
+  ```js
+  typeof Class // function
+  ```
+
+- Unlike functions, **<u>classes are hoisted but its values are not initialized</u>**. Therefore, classes must be defined before they can be constructed.  Code like the following will throw a [`ReferenceError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError):
+
+  ```js
+  const p = new Rectangle(); // ReferenceError
+  
+  class Rectangle {}
+  ```
+
+- **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
+
+  - Hoisting is an internal step performed by the engine; it doesn't actually move code around. 
+
+#### How to define a class
+
+- Class Declarations
+  - Class declarations begin with the `class` keyword, followed by the name of the class. The rest of the syntax looks similar to the simplified (concise) method definition that you can use in object literals.
+  - Constructor method is invoked when the class is invoked.
+
+```js
+class Rectangle {
+  constructor(length, width) { // constructor method 
+    this.length = length;
+    this.width = width;
+  }
+
+  getArea() { // is a prototype method / instance method
+    return this.length * this.width; 
+  }
+}
+
+let rec = new Rectangle(10, 5);
+console.log(typeof Rectangle);         // function
+console.log(rec instanceof Rectangle); // true
+console.log(rec.constructor);          // [class Rectangle]
+console.log(rec.getArea());            // 50
+```
+
+- Class Expressions
+  - Functions have an expression form that does not require a name after the `function` keyword. Classes have a similar expression form. 
+  - Aside from the syntax, class expressions are <u>functionally equivalent</u> to class declarations. Which you use is primarily a matter of style.
+    - This means <u>class expressions are hoisted</u>, unlike function expressions.
+    - **<u>However</u>** even though class expressions & class declarations are hoisted,  their values aren't initialized, so classes need to be defined before they are constructed. 
+
+
+```js
+let Rectangle = class {
+  constructor(length, width) {
+    this.length = length;
+    this.width = width;
+  }
+
+  getArea() { // prototype method / instance method
+    return this.length * this.width;
+  }
+};
+// This code defines a `Rectangle` class with two methods. The `constructor` method initializes a new `Rectangle` object by assigning `this.length` to the argument `length` and `this.width` to the argument `width`. The instance method `getArea()` returns the product of instance properties`this.length` and `this.width`.  
+```
+
+#### Instance and Static Properties on Class
+
+- **Instance properties**: properties stored directly on an instance object. or anywhere in the instance object's prototype chain.
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+    	this.length = length; // instance properties
+    	this.width = width;
+    }
+    
+    getArea() { // instance method, compact method syntax
+       return this.length * this.width;
+    }
+    
+    getArea2 = function() {
+      // not using compact method syntax also works
+    }
+    
+    value = 2; // invalid code, instance properties must be defined in methods.
+  }
+  
+  let rect = new Rectangle();
+  console.log(rect.getArea());
+  ```
+
+- **Static properties** are defined and accessed directly on the <u>constructor</u> or class,  not on an instance or a prototype.
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+      this.length = length;
+      this.width = width;
+    }
+  
+  	static getArea() {
+      return 'A rectangle is a shape with 4 sides'; // static method
+    }
+    
+    static DESCRIPTION = 'A rectangle is a shape with 4 sides'; // static property 
+  }
+  
+  let rect = new Rectangle();
+  console.log(Rectangle.getArea());
+  ```
+
+
+
+#### Inheritance with Classes / Subtyping with Classes
+
+- The `extends` keyword is used to denote inheritance between classes.
+  - The `extends` keyword signifies that the class named to the left of `extends` should inherit from the class specified to the right of `extends`.
+
+- Class inheritance is alternative form of **pseudo-classical inheritance**. 
+- However, unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
+  - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
+  - In class inheritance, the subclass inherits <u>all the properties and methods</u> that a new object(instance object) created from the parent constructor function would have access to, including the instance properties assigned to instance objects.
+
+Why class inheritance 
+
+- Classes reduce complexity: To reduce complexity, classes with similar behaviors can inherit from a superclass. The superclass implements the common behaviors while the inheriting classes invoke them.
+
+##### `Super`
+
+- Outside the `constructor` method, `super` keyword refers to the parent class. 
+
+  - `super` keyword can be used to call functions on the object's parent. 
+  - `super` allows us to override a property, but still have access to functionality from a parent class.
+
+- When called inside the `constructor` method, the `super` keyword refers to the <u>constructor method</u> for the parent class. 
+
+  - When called in the constructor method, `super()`invokes the parent constructor function with the execution context explicitly set to the child constructor's instance object. 
+  - We call the parent's constructor method to get access to the parent's **instance** properties and methods. 
+
+  ```js
+  class Rectangle {
+    constructor(length, width) {
+      this.length = length;
+      this.width = width;
+    }
+  }
+  
+  class Square extends Rectangle {
+    constructor(size) { // pass variables you want to the subClass
+      super(size, size); // pass variables to the parent constructor method
+    }
+  }
+  ```
+
+  - Thus, `super(size, size)` performs the same role performed by this code from our constructor/prototype example. 
+
+    ```js
+    function Square() {
+      Rectangle.call(this, size, size);
+    }
+    ```
+
+- You don't need to use `super` in every subclass `constructor`, but in most cases you do. 
+
+  - You don't need `super` if the parent constructor and subclass constructor's code / parameters are the same.
+  - **When a sub-class is invoked, the parent constructor is automatically executed.** 
+
+- When does `super` need to called in subclass `constructor` method?
+
+  - If subclass's `constructor` method requires arguments that differ from `constructor` method in superclass, `super` must be called inside the subclass `constructor` method.
+
+    - In particular, if the superclass's constructor creates any object properties, `super` must be called to set those properties on the subclass.
+
+  - Also, you must call `super` in subclass' constructor  before you use `this` in that constructor.  
+
+    - This ensures that subclass inherits <u>all the methods and properties</u> from parent class. 
+
+    - For instance, in the `Rectangle` class above, we create two properties in the `Rectangle` constructor, so we must call `super` in `Square`'s constructor.
+
+  - Whenever you create `constructor` method in the subclass, you will need to call `super`. 
+
+
+**<u>Don't want method overriding</u>**
+
+- To prevent **<u>method overriding</u>**, `super` keyword can also be used to call functions on the parent object, so we can use some functionality form parent class in the subtype class. 
+
+  - super can only call instance methods and properties on the parent object, static methods and properties must be called using the constructor name. 
+
+    ```js
+    class Vehicle {
+      startEngine() { // prototype/ instance method
+        return 'Ready to go!';
+      }
+    }
+    
+    class Truck extends Vehicle {
+      startEngine(speed) { // prototype/ instance method
+        return super.startEngine() + ` Drive ${speed}, please!`
+      }
+    }
+    
+    let truck1 = new Truck();
+    console.log(truck1.startEngine('fast'));
+    
+    let truck2 = new Truck();
+    console.log(truck2.startEngine('slow'));
+    ```
+
+  - Although using `super`  unnecessary if no method overriding occurs, since sub-type class inherits all the methods from the parent class, so we can just call on an inherited method using `this`. 
+
+    ```js
+    class Vehicle {
+      startEngine() {
+        return 'Ready to go!';
+      }
+    }
+    
+    class Truck extends Vehicle {
+      engine(speed) {
+        return this.startEngine() + ` Drive ${speed}, please!`;
+      }
+    }
+    
+    let truck1 = new Truck();
+    console.log(truck1.engine('fast'));
+    
+    let truck2 = new Truck();
+    console.log(truck2.engine('slow'));
+    ```
+
+
+##### Inheritance with class declaration
+
+```js
+class Rectangle {
+  constructor(length, width) {
+    this.length = length; // instance properties must be defined in class methods
+    this.width = width;
+  }
+
+  getArea() {
+    return this.length * this.width;
+  }
+
+  toString() {
+    return `[Rectangle ${this.width * this.length}]`;
+  }
+}
+
+class Square extends Rectangle {
+  constructor(size) {
+    super(size, size);
+  }
+
+  toString() {
+    return `[Square] ${this.width * this.length}`;
+  }
+}
+```
+
+##### Inheritance With Class Expressions
+
+```js
+let Person = class {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  sayName() {
+    console.log(`My name is ${this.name}.`);
+  }
+};
+
+let Student = class extends Person {
+  constructor(name, age, semester) {
+    super(name, age);
+    this.semester = semester;
+  }
+
+  enrollInCourse(courseNumber) {
+    console.log(`${this.name} has enrolled in course ${courseNumber}.`);
+  }
+};
+
+let student = new Student('Kim', 22, 'Fall');
+student.sayName(); // logs 'My name is Kim.'
+student.enrollInCourse('JS120'); // logs 'Kim has enrolled in course JS120.'
+```
+
+In this example, the `Student` class inherits from the `Person` class. That gives student objects access to methods of the `Person` class and extends person objects further by adding a `semester` property and an `enrollInCourse` method. Notice that we've reused `Person`'s constructor inside the `Student` constructor, and calling `super` with `name` and `age` since the `Student` constructor expects those arguments. We also assign the `semester` argument to the `semester` property after `super` returns.
+
+Note that this most recent example uses class expressions instead of class declarations.
+
+------
+
+#### Notes
+
+The **class syntax** is syntactic sugar for creating objects that use constructors and prototypes.  
+
+- **Syntactic sugar** means syntax designed to be easier to read or use. 
+
+- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
+
+Why classes?
+
+- The reason we use classes is it that classes provide a cleaner, more compact alternative to constructors and prototypes.
+- Functionally, classes behave almost identically to constructors and prototypes, but the class syntax is easier to read and write, and the enforced `new` keyword helps prevent bugs. 
+  - A significant difference between classes and constructor/prototype pattern : you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
+- JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
+
+This means that we can rewrite our code to use class syntax instead of the constructor/prototype pattern. 
+
+How to define Class
+
+- When defining a class, we usually need to define a `constructor` method. Basically the constructor is now a method named `constructor` inside our class instead of being a standalone function.
+- The `constructor` method initializes a new object by assigning the instance properties to the arguments.
+- When we define instance methods, it get placed in the constructor's prototype object automatically. 
+
+So let's rewrite our code to use the class syntax. We will use class declarations.
+
+- When we define the instance method `makeNoise`, it gets placed in the constructor's prototype object automatically. 
+- Methods look similar to the compact method syntax that we use in object literals. There are no commas between properties in a class.
+
+```js
+class Animals {
+  constructor (name) {
+    this.name = name;
+  }
+  
+  makeNoise() {
+    console.log(`${this.name} growls`);
+  }
+}
+```
+
+- Instantiating a new object is still the same as constructor/prototype pattern.
+
+```js
+// test code
+let animal = new Animals('Bobo');
+animal.makeNoise(); // Bobo growls
+```
+
+Let's rewrite all the constructors to use the class pattern.
+
+- `Cats` class inherits from the `Animals` class. 
+- We use `extends` keyword to denote inheritance between these two classes. 
+
+> - Class inheritance is alternative form of **pseudo-classical inheritance**. 
+> - However, unlike pseudo-classical inheritance with constructors and prototypes, a class created with class inheritance inherits <u>all the methods and properties</u> from the parent class/ superclass. 
+>   - In the constructor and prototype pattern, sub-type usually only inherits from the super-type's `.prototype` object. 
+>   - In class inheritance, the subclass inherits <u>all the properties and methods</u> that a new object(instance object) created from the parent constructor function would have access to, including the instance properties assigned to instance objects.
+
+```js
+class Cats extends Animals {
+  constructor(name) {
+    super(name);
+  }
+
+}
+
+```
+
+- We use the `super` keyword to refer to the constructor method for the parent class `Animals`. 
+- So instead of using `call` method, we use `super` to call on `Animals`class' constructor method with the execution context set explicitly to the instance object of `Cats` class. 
+
+> When called inside the `constructor` method, the `super` keyword refers to the <u>constructor method</u> for the parent class. 
+>
+> - When called in the constructor method, `super()`invokes the parent constructor function with the execution context explicitly set to the child constructor's instance object. 
+> - We call the parent's constructor method to get access to the parent's **instance** properties and methods. 
+
+And then the same thing, we want to do polymorphism through ducktyping, so we override the inherited `makeNoise` method by creating one on the `Cats.prototype` object. 
+
+```js
+class Cats extends Animals {
+  constructor(name) {
+    super(name);
+  }
+
+  makeNoise() {
+    console.log(`${this.name} meows`);
+  }
+}
+```
+
+We can erase this code, we don't need to restore the constructor property in class syntax.
+
+```js
+// Cats.prototype.constructor = Cats;
+```
+
+This is the rest of the code.
+
+```js
+class Humans { 
+  constructor(name) {
+    this.name = name;
+  }
+
+  makeNoise = function () {
+    console.log(`${this.name} talks`);
+  }
+}
+
+Object.assign(Humans.prototype, mixIn);
+
+
+let human = new Humans('Sara');
+human.makeNoise(); // Sara talks
+human.house(); // Sara lives indoors
+```
+
+
+
+##### Test code
+
+```js
+// test code to instantiate new objects
+let animal = new Animals('Bobo');
+animal.makeNoise(); // Bobo growls
+
+let cat = new Cats('Fluffy');
+console.log(cat.constructor.name); // Cats
+cat.makeNoise(); // Fluffy meows.
+cat.house();  // Fluffy lives indoors
+
+let human = new Humans('Sara');
+human.makeNoise(); // Sara talks
+human.house(); // Sara lives indoors
+```
 
 ##### Completed Code
+
+```js
+let mixIn = {
+  house() {
+    console.log(`${this.name} lives indoors.`);
+  }
+};
+
+class Animals {
+  constructor(name) {
+    this.name = name;
+  }
+
+  makeNoise () {
+  console.log(`${this.name} growls.`);
+  }
+}
+
+
+class Cats extends Animals { // class inheritance
+  constructor(name) {
+    super(name);
+  }
+
+  // polymorphism through inheritance, through method overriding
+  makeNoise() {
+    console.log(`${this.name} meows.`);
+  }
+}
+
+Object.assign(Cats.prototype, mixIn);
+
+class Humans {
+  constructor(name) {
+    this.name = name;
+  }
+
+  makeNoise() {
+    console.log(`${this.name} talks.`); // polymorpshim through duck-typing
+  }
+}
+
+Object.assign(Humans.prototype, mixIn);
+
+let animal = new Animals('Bobo');
+animal.makeNoise(); // Bobo growls.
+
+let cat = new Cats('Fluffy');
+cat.makeNoise(); // Fluffy meows.
+cat.house();  // Fluffy lives indoors.
+
+let human = new Humans('Sara');
+human.makeNoise(); // Sara talks.
+human.house(); // Sara lives indoors.
+```
+
+
 
 
 
@@ -1415,7 +2942,22 @@ All that said, one thing that can help is to keep a running list of anything tha
   ```
 
 - `forEach` is not considered the enclosing function for arrow functions, why?
+
+  - Because arrow functions are passed as arguments to `forEach` - it's not defined inside `forEach`. 
+
+  - Passing arrow functions to `forEach` preserves the surrounding execution con
+
 - Arrow functions cannot be called with `new` since they lose their surrounding context as the value of `this`. 
+
+  ```js
+  let Car = (make, model, year) => {
+    this.make = make;
+    this.model = model;
+    this.year = year;
+  }
+  
+  new Car(); // TypeError: Car is not a constructor
+  ```
 
 # Questions
 
@@ -1791,6 +3333,75 @@ if (Object.getPrototypeOf(obj) && obj.isPrototypeOf(car)) {
 ------
 
 # My Prompts
+
+##### Q: What is the prototype chain?
+
+##### Q: What is overriding?
+
+- Overriding is when an object lower in the prototype chain redefines a property or method higher up in the prototype chain. When we set a property on an object lower in the prototype chain, that is overriding. 
+
+  ```js
+  let a = {one: 1};
+  let b = Object.create(a);
+  b.one = 1;
+  console.log(b.hasOwnProperty('one')); // true
+  
+  // The one property in object b overrides the one property in object a.
+  // b is lower in the prototype chain because it inherits from a.
+  ```
+
+- When a class redefines a method that a superclass defines, we call this "**method overriding**."
+
+  - When method overriding occurs, instance object created by sub-type class will use that method instead of looking up the prototype chain and finding it in the super-type class.
+
+- When two objects in the same prototype chain have a property with the same name, the object that's closer to the calling object takes precedence. 
+
+  - An object can override a property of its parent by setting the property on itself.
+  - A downstream object overrides an inherited property if it has a property with the same name. 
+  - (Overriding is similar to shadowing, but it doesn't completely hide the overridden properties).
+
+- Method overriding can be prevented in class syntax by calling `Super` . 
+
+##### Q: Ways to check whether a property exists in an object?
+
+- We get `undefined`  when accessing a non-existent property. However we also get same value if we try to access a property set to `undefined`. 
+
+- There are several ways to distinguish a non-existent property from a property with value of `undefined`.
+
+  - The **`in` operator** : returns `true` if the specified property is in the specified object or its prototype chain.
+
+    - prop: A string or symbol representing a property name or array index (non-symbols will be coerced to strings).
+
+    ```js
+    // syntax, remember the quotes
+    'prop' in object 
+    'propertyName' in object
+    arrayIndex in array
+    ```
+
+  - `hasOwnProperty` : Returns a boolean indicating whether the object has the specified property as its own property (as opposed to inheriting it).
+
+    - `Object.prototype.hasOwnProperty()` method
+
+    ```js
+    obj.hasOwnproperty() // syntax
+    ```
+
+    ```js
+    Object.keys(obj) = ['7', 'false', '1, 2, 3', 'a-key'];
+    
+    'false' in obj // true
+    'true'  in obj // false
+    
+    obj.hasOwnProperty('7') // true
+    obj.hasOwnProperty('8') // true
+    ```
+
+- Other ways are to enumerate (iterate) over the properties of an object.
+
+  - `Object.keys`: Returns an array of object's <u>own</u> <u>enumerable</u> property names. 
+  - `Object.getOwnPropertyNames`: returns an array of <u>all</u> of object's <u>own</u> property names regardless if they’re enumerable or not. (including non-enumerable properties except for those which use Symbol) found directly on an object. 
+  - `for...in` iterates over <u>all</u> <u>enumerable</u> properties of an object, including those in prototype chain. 
 
 ##### Q: Explain the difference between the constructor's prototype object and an object's prototype.
 

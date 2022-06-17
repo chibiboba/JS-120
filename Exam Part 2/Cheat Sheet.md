@@ -245,7 +245,7 @@ game.behavior(); // game.start();
 - **Encapsulation** : grouping related properties and methods in a single object. 
 - It is bundling data(state) and operations related to data(behavior) into a cohesive unit, single entity called an object. 
 
-Prompt: How does encapsulation in JavaScript differ from encapsulation in most OO languages?
+##### Prompt: How does encapsulation in JavaScript differ from encapsulation in most OO languages?
 
 - In other languages, encapsulation also refers to the idea of restricting access to state and behavior. In other words, hiding details of an object from code that uses the object. An object should only expose the properties and methods that other objects need, to use the encapsulated object. JavaScript objects don't support this type of encapsulation.  JavaScript does not directly provide the means to limit exposure of methods and properties. There are ways to achieve a degree of access restriction, but it's not perfect.
 
@@ -511,7 +511,6 @@ let obj = {
    };
    ```
 
-   
 
 **Anonymous Function**: a function with no name. 
 
@@ -2721,6 +2720,8 @@ Uses
   - console
   - log
 
+------
+
 ### this
 
 ##### Definition
@@ -3051,7 +3052,7 @@ Uses
 
 ------
 
-# Understanding context loss
+## Understanding context loss
 
 - “What are the ways that context can be lost, and how can context loss be prevented in these situations?”
 - A complete response needs to clearly indicate the differences between “Implicit” and “Explicit” execution context.
@@ -3060,31 +3061,31 @@ Uses
 
 - When we take a method out of an object and execute it as a function or method on another object, the function's context is no longer the original object.
 
-```js
-let john = {
-  firstName: 'John',
-	lastName: 'Doe',
-  greetings() {
-    console.log('hello, ' + this.firstName + ' ' + this.lastName);
-  },
-};
+  - My example
 
-john.greetings();         // context is john
-let foo = john.greetings; // Strips context
-foo(); // context is now the global object
-```
+  ```js
+  let obj = {
+    method() {
+      console.log(this);
+    }
+  };
+  
+  obj.method(); // context is obj
+  let foo = obj.method; // strips context
+  foo(); // context is now undefined, because we are in strict mode.
+  ```
 
 ##### Best Solution
 
 - Hard-bind the method's context by using `bind`
 
 ```js
-let foo = john.greetings.bind(john); // bind returns a function
-foo(); // => need to invoke foo here in order to run greetings() 
+let foo = obj.method.bind(obj); // bind returns a function
+foo(); // foo references a function that is permanently bound to obj.
 
 // using call
-let foo = john.greetings; 
-foo.call(john)
+let foo = obj.method; 
+foo.call(obj);
 ```
 
 ##### Unideal solutions
@@ -3130,37 +3131,20 @@ foo.call(john)
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
+  greeting: 'hello',
+  foo: function () {
     function bar() {
-      console.log(this.a + ' ' + this.b);
+      console.log(this.greeting);
     }
-
-    bar(); // bar is invoked as standalone function on line 9. THus its execution context is the global object, not `obj` object. 
+    
+    bar(); //bar is invoked as standalone function. THus its execution context is the undefined, not `obj` object. 
   },
-};
+}
 
-obj.foo();        // => undefined undefined
+obj.foo(); // raises a TypeError: cannot read properties of undefined.
 ```
 
-```js
-let greeter = {
-  a: 'hello',
-  b: 'world',
-  greet() {
-    function sayHello() {
-      console.log(`${this.a} ${this.b}`);
-    }
-
-    sayHello();
-  }
-};
-
-greeter.greet(); // logs 'undefined undefined'
-```
-
-
+- Inner function `bar` loses surrounding context.
 
 ##### Solution 1 : Preserve context with variable in outer scope 
 
@@ -3170,20 +3154,18 @@ greeter.greet(); // logs 'undefined undefined'
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let self = this; // self references `obj`
-
+  greeting: 'hello',
+  foo: function () {
+    let self = this;
     function bar() {
-      console.log(self.a + ' ' + self.b); // Can use self instead of `this` to access the correct context object. 
+      console.log(self.greeting);
     }
-
-    bar();
+    
+    bar(); // bar's execution context is undefined, because its invoked as a standalone function. But since self references the surrounding context, it will log `hello`.
   },
-};
+}
 
-obj.foo(); // => hello world
+obj.foo(); // logs 'hello'
 ```
 
 ##### Solution 2 : Call Inner function with explicit context
@@ -3192,76 +3174,58 @@ obj.foo(); // => hello world
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
+  greeting: 'hello',
+  foo: function () {
     function bar() {
-      console.log(this.a + ' ' + this.b);
+      console.log(this.greeting);
     }
-
-    bar.call(this); // call invokes bar with `obj` as execution context.
+    
+    bar.call(this); // call invokes bar with `obj` as explicit execution context.
   },
-};
+}
 
-obj.foo(); // => hello world
+obj.foo(); // logs 'hello'
 ```
 
 - We won't show an example of `apply` since you can always use `call` in its place if you use the spread operator to expand `apply`'s array argument.
 
 ##### Solution 3: use `bind`
 
-- call `bind` on inner function and get a new function with its execution context permanently set to the object. 
 - Advantage of `bind` is that you can do it once and then call it as often as needed without an explicit context. 
 
+- call `bind` on inner function and get a new function with its execution context permanently set to the object. 
+
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let bar = function() { // anonymous function expression
-      console.log(this.a + ' ' + this.b);
-    }.bind(this); 
+  greeting: 'hello',
+  foo: function () {
+    function bar() {
+      console.log(this.greeting);
+    }
+    
+    bar.bind(this)(); 
+  },
+}
 
-    // some code
-    bar(); // bar is invoked twice in foo 
-
-    // some more code
-    bar();
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
+obj.foo(); // logs 'hello'
 ```
 
-- We're calling bind on the function expression here, then assigning the returned function to the `bar` variable. 
-- You can use a function declaration instead of a function expression, but you'll need an extra variable. 
+- We can use a function declaration instead of a function expression, but you'll need an extra variable. 
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
+  greeting: 'hello',
+  foo: function () {
     function bar() {
-      console.log(this.a + ' ' + this.b);
+      console.log(this.greeting);
     }
+    
+    let qux = bar.bind(this); 
+    qux(); 
+  },
+}
 
-    let qux = bar.bind(this); // function declaration
-
-    // some code
-    qux();
-
-    // some more code
-    qux();
-
-    // still more code
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
+obj.foo(); // logs 'hello'
 ```
 
 ##### Solution 4: Use arrow function
@@ -3274,26 +3238,17 @@ obj.foo();
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() { // outer function is foo, which is invoked with obj as implicit context
+  greeting: 'hello',
+  foo: function () {
     let bar = () => {
-      console.log(this.a + ' ' + this.b);
+      console.log(this.greeting);
     }
-
-    // some code
+		
     bar();
+  },
+}
 
-    // some more code
-    bar();
-
-    // still more code
-  }
-};
-
-obj.foo();
-// => hello world
-// => hello world
+obj.foo(); // logs 'hello'
 ```
 
 - Using arrow functions like this is similar to using `bind` in that you don't have to worry about arrow functions losing their surrounding context. 
@@ -3302,11 +3257,11 @@ obj.foo();
 
 ##### Arrow function Exception 
 
-- Don't try to use arrow functions as methods on an object. 
+- Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
 
 ```js
 let obj = {
-  a: 5,
+  greeting: 'hello',
 
   foo: () => {
     console.log(this.a);
@@ -3314,7 +3269,7 @@ let obj = {
 };
 
 obj.foo(); // => undefined
-// // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
+// Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
 ```
 
 - This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
@@ -3331,26 +3286,40 @@ obj.foo(); // => undefined
 - When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. 
 
 ```js
+// In strict mode
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b);
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
     });
   },
 };
 
 obj.foo();
-
-// => 1 undefined undefined
-// => 2 undefined undefined
-// => 3 undefined undefined
+// Raises a TypeError: cannot read properties of undefined (reading 'greeting')
 ```
 
-- CLARIFICATION: It's the callback function that is being executed with global object as context, not `forEach`. 
+```js
+// Not in strict mode
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    });
+  },
+};
+
+obj.foo(); 
+// => undefined 1
+// => undefined 2
+// => undefined 3
+```
+
+- CLARIFICATION: It's the callback function that is being executed with global object(`undefined` in strict mode) as execution context, not `forEach`. 
 - On line 5, The implicit execution context of `forEach` is its calling object, the array `[1, 2, 3]`.   But a function expression is passed to `forEach` as argument, and when functions are passed as arguments, they lose surrounding context, so the execution context is then implicitly set to the global object.  If `forEach` took a `thisArg` argument, then the execution context would be `thisArg`. 
-- SOLUTION: The problem is that `this` is bound to the global object when the anonymous callback function passed to `forEach` is invoked on line 5. We want to access the object `obj` from within the anonymous function. Here we'll solve it by employing the lexical scoping of JavaScript to our advantage; specifically, the rule that a variable defined in an outer scope is available to an inner scope. (preserving context with a variable in outer scope)
+- SOLUTION: The problem is that `this` is bound to the global object(`undefined`) when the anonymous callback function passed to `forEach` is invoked on line 5. We want to access the object `obj` from within the anonymous function. Here we'll solve it by employing the lexical scoping of JavaScript to our advantage; specifically, the rule that a variable defined in an outer scope is available to an inner scope. (preserving context with a variable in outer scope)
 
 ##### Solution 1: Preserve the Context with a Variable in Outer Scope
 
@@ -3359,31 +3328,65 @@ obj.foo();
   -  the rule that a variable defined in an outer scope is available to an inner scope
 
 ```js
+// In strict mode
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
-    let self = this; // this refers to obj, because of method invocation on line 12. 
-    [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + self.a + ' ' + self.b);
+  greeting: 'hello',
+  foo: function () {
+    let self = this;
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${self.greeting} ${String(number)}`);
     });
   },
 };
 
 obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
+// hello 1
+// hello 2
+// hello 3
 ```
 
 ##### Solution 2 : Use `bind`
 
-- Passing a function as an argument to another function also strips it of its execution context, which means the function argument gets invoked with the context set to the global object. 
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    [1, 2, 3].forEach(function (number) {
+      console.log(`${this.greeting} ${String(number)}`);
+    }.bind(this)); // binds the callback function
+  },
+};
 
-- `Bind` needs to be used on an outer function, it won't work if you use `bind` on a function that is being passed as argument. That function will lose its context and `this` will refer to the global object. 
-  - It doesn't work because the function that is bound to `this` gets passed as an argument itself. 
-  - `this` binding isn't set until a method is INVOKED. Execution context is set during a method invocation. So when the function is invoked, `this` references global object instead of `turk` as we intended it to. 
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+```js
+let obj = {
+  greeting: 'hello',
+  foo: function () {
+    let bar = function (number) { // binds the callback function
+      console.log(`${this.greeting} ${String(number)}`);
+    }.bind(this);
+    
+    [1, 2, 3].forEach(bar); 
+  },
+};
+
+obj.foo();
+// hello 1
+// hello 2
+// hello 3
+```
+
+ When does `bind` not work?
+
+- `Bind` needs to be used on the function that is being passed as argument, not be built -in to the function already, if this makes sense.
+
+- This code doesn't work because the function that is bound to `this` gets passed as an argument itself. 
+- `this` binding isn't set until a method is INVOKED. Execution context is set during a method invocation. So when the function is invoked, `this` references global object instead of `turk` as we intended it to. 
 
 
 ```js
@@ -3427,7 +3430,7 @@ logReturnVal(turk.getDescription);
 ```
 
 ```js
-// This works
+// This works because we bind the function that is being passed as argument. 
 let turk = {
   firstName: 'Christopher',
   lastName: 'Turk',
@@ -3447,14 +3450,14 @@ logReturnVal(turk.getDescription.bind(turk));
 ```
 
 ```js
-// This example demonstrates a solution for callback functions to retain its surrounding context when it is passed to `forEach`. This solution binds the outer function to a permanent execution context. 
+// This example demonstrates a solution for callback functions to retain its surrounding context when it is passed to `forEach`. This solution binds the callback  function to a permanent execution context. 
 let obj = {
   a: 'hello',
   b: 'world',
   foo: function() {
     [1, 2, 3].forEach(function(number) {
       console.log(String(number) + ' ' + this.a + ' ' + this.b); // why does this refer to obj? 
-    }.bind(this)); // binding foo method, which is an anonymous function expression. 
+    }.bind(this));
   },
 };
 
@@ -3471,20 +3474,18 @@ obj.foo();
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
+  greeting: 'hello',
+  foo: function () {
     [1, 2, 3].forEach(number => {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b); // arrow function inherits surrounding context, the surrounding context is obj. 
+      console.log(`${this.greeting} ${String(number)}`);
     });
   },
 };
 
 obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
+// hello 1
+// hello 2
+// hello 3
 ```
 
 ##### Solution 4: Use the optional `thisArg` argument
@@ -3496,20 +3497,18 @@ obj.foo();
 
 ```js
 let obj = {
-  a: 'hello',
-  b: 'world',
-  foo: function() {
+  greeting: 'hello',
+  foo: function () {
     [1, 2, 3].forEach(function(number) {
-      console.log(String(number) + ' ' + this.a + ' ' + this.b);
+      console.log(`${this.greeting} ${String(number)}`);
     }, this);
   },
 };
 
 obj.foo();
-
-// => 1 hello world
-// => 2 hello world
-// => 3 hello world
+// hello 1
+// hello 2
+// hello 3
 ```
 
 # Inheritance
@@ -5270,7 +5269,7 @@ Summary: Like factory functions, constructors are also functions that create obj
   - Instance methods are usually stored in the constructor's `prototype` object rather than directly on the instance object. 
 - Prototypes can be overridden by assigning inheriting objects their own properties. 
 
-##### Constructors with Prototypes: terminology confusion
+##### Terminology confusion
 
 - <u>Constructor `prototype` property</u> 
   - Known as **constructor's prototype object** /  **function prototype** / **`prototype` property**
@@ -5298,8 +5297,6 @@ Why it's confusing
 - By default, constructor functions set the object prototype for the objects they create to the constructor's prototype object.
 - The inheriting object's prototype, referenced by dunder proto and hidden `[[prototype]]` property, will usually reference `Constructor.prototype` (constructor `prototype` property) given that the constructor is the constructor function that created that object. 
   - In other words, If a function is used as a constructor, the returned object(instance object)'s `[[Prototype]]` will reference the constructor's prototype property. 
-
-
 
 #### Object creation with constructors: constructor/prototype pattern
 
@@ -5456,25 +5453,22 @@ cat.house();  // Fluffy lives indoors.
 let human = new Humans('Sara');
 human.makeNoise(); // Sara talks.
 human.house(); // Sara lives indoors.
-
-
 ```
 
 ## ES6 Classes
 
 #### Definition
 
-- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
-- Why classes? 
-  - Using classes, it's possible to do everything you can with the constructor and prototype pattern. However, the class syntax is easier to read and write, and the enforced `new` keyword helps prevent bugs.
-
-- The **class syntax** is **syntactic sugar** - syntax designed to be easier to read or use. 
-
+- The **class syntax**, a relatively new addition to JavaScript, is syntactic sugar (cleaner syntax) for creating objects that use constructors and prototypes. 
+  - **syntactic sugar**  means syntax designed to be easier to read or use. 
+  - ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
   - ES6 classes provide a cleaner, more compact alternative to constructors and prototypes.
   - As with functions, they are first-class citizens and come in the form of declarations and expressions. 
   - Functionally, classes behave almost identically to the constructors and prototypes they aim to replace. 
 
-  - Classes allow for static methods by using the `static` modifier.
+- Why classes? 
+  - Using classes, it's possible to do everything you can with the constructor and prototype pattern. However, the class syntax is easier to read and write, and the enforced `new` keyword helps prevent bugs.
+  - JavaScript classes make it look more like a classical OO language to make the transition smoother for developers who have experience working with other OO languages.
 
 #### Precision of Language
 
@@ -5493,8 +5487,6 @@ class Dog {
 ```
 
 This code defines a `Dog` class with two methods. The `constructor` method initializes a new `Dog` object, which it does by assigning the instance property `this.name` to the dog's name specified by the argument. The `sayHello` instance method logs a message to the console that includes the dog's name in place of `${this.name}`. The instance method `sayHello` returns `undefined`.
-
-
 
 "Upon instantiation, assigns the passed in argument to `year` property"
 
@@ -5545,28 +5537,6 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
   obj.sayHi(); //=> logs 'Hi!'
   ```
 
-##### Difference between function and class
-
-- Classes are functions
-
-- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
-
-  ```js
-  typeof Class // function
-  ```
-
-- Unlike functions, **<u>classes are hoisted but its values are not initialized</u>**. Therefore, classes must be defined before they can be constructed.  Code like the following will throw a [`ReferenceError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError):
-
-  ```js
-  const p = new Rectangle(); // ReferenceError
-  
-  class Rectangle {}
-  ```
-
-- **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
-  - Hoisting is an internal step performed by the engine; it doesn't actually move code around. 
-- Classes look similar to the simplified (concise) method definition / compact method syntax that you can use in object literals.
-
 ##### Class vs constructor/prototype
 
 - Similarities between class and constructor/prototype pattern
@@ -5593,12 +5563,37 @@ This code defines a `Dog` class with two methods. The `constructor` method initi
     ```
 
 - Differences between class and constructor/prototype pattern
-  - Constructor is now a method named `constructor` inside our class instead of being a standalone function.
-  -  Other methods have no special meaning; you can define as many as you need. 
-  - There are no commas between the properties in class.
-  - When we define a method, it gets placed in `Constructor.prototype` object automatically.
+  
   - A significant difference: you **must** use the `new` keyword to call the constructor when using a `class`. JavaScript raises a `TypeError` if you try to call the constructor without the `new` keyword.
+  - Constructor is now a method named `constructor` inside our class instead of being a standalone function.
+  - Other methods have no special meaning; you can define as many as you need. 
+  - There are no commas between the properties in class.
+  - Classes look similar to the simplified (concise) method definition / compact method syntax that you can use in object literals.
+  - When we define a method, it gets placed in `Constructor.prototype` object automatically.
   - One minor difference is that `rec.constructor` may produce different results in the two patterns. For example, in Node, logging `rec.constructor` produces `[Function: Rectangle]` for the constructor/prototype example, and `[class Rectangle]` for the class example. This difference is implementation dependent, and not considered significant.
+  
+
+##### Difference between function and class
+
+- Classes are functions
+
+- ES6 classes are merely syntactic sugar: the `class` statement gets translated behind the scenes to a constructor function and a prototype object, and the class name refers to the constructor function.
+
+  ```js
+  typeof Class // function
+  ```
+
+- Unlike functions, **<u>classes are hoisted but its values are not initialized</u>**. Therefore, classes must be defined before they can be constructed.  Code like the following will throw a [`ReferenceError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError):
+
+  ```js
+  const p = new Rectangle(); // ReferenceError
+  
+  class Rectangle {}
+  ```
+
+- **hoisting**: the engine "effectively moves" function declarations to the top of the program file in which they're defined, or the top of the function in which they are nested. 
+
+  - Hoisting is an internal step performed by the engine; it doesn't actually move code around. 
 
 #### How to define a class
 
@@ -5713,11 +5708,8 @@ Why class inheritance
 - Outside the `constructor` method, `super` keyword refers to the parent class. 
 
   - `super` keyword can be used to call functions on the object's parent. 
-
   - `super` allows us to override a property, but still have access to functionality from a parent class.
-
-  - 
-
+  
 - When called inside the `constructor` method, the `super` keyword refers to the <u>constructor method</u> for the parent class. 
 
   - When called in the constructor method, `super()`invokes the parent constructor function with the execution context explicitly set to the child constructor's instance object. 
