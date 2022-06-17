@@ -4,16 +4,18 @@ Important
 
 - [x] Exercise Sets
 - [x] Their prompts -1
-- [ ] Area of Focus
+- [x] Area of Focus
   - [x] Finish classes
-  - [ ] This
-  - [ ] Understanding context loss
-  - [ ] FUnction prototype methods and context
+  - [x] This
+  - [x] Understanding context loss
+  - [x] Function prototype methods and context
 
 
-Extra - study together
+Study together
 
 - [ ] My own Exercises
+
+- [ ] Areas of Focus
 
 - [ ] Quizzes?
 
@@ -486,8 +488,23 @@ Any time `this` occurs outside of a function definition, its value is obvious. T
 
 ##### Advantage and disadvantage of `bind`
 
-- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once. 
+- `bind` has one significant advantage: once you bind a context to a function, that binding is permanent and does not need to be repeated if it gets called more than once.  So the execution context will stay the same if that method is copied out of a function, if it's passed as an argument, or if it's a nested function. 
 - The disadvantage of `bind` is that it is no longer possible to determine the context by looking at the invocation of the final function. 
+
+```js
+let func = function () {
+  console.log(this.a);
+};
+
+let obj = {a: 1};
+
+func = func.bind(obj);
+func(); // 1
+```
+
+------
+
+## 
 
 ------
 
@@ -3604,6 +3621,30 @@ console.log({name: 'Srdjan'}.constructor.name);
 ```
 
 The `constructor` property returns a reference to the `Object` constructor function that created the instance object. This constructor function has access to `name` property which returns the function's name as specified when it was created.
+
+------
+
+##### Q: What is the advantage and disadvantage of `bind`?
+
+Answer: 
+
+- The advantage is that a function is permanently bound to a context, so the execution context will stay the same if that method is copied out of a function, if it's passed as an argument, or if it's a nested function. The binding is permanent and does not need to be repeated if the function gets called more than once. 
+- The disadvantage is that it's no longer possible to determine the context by looking at the invocation of the final function. 
+
+```js
+let func = function () {
+  console.log(this.a);
+};
+
+let obj = {a: 1};
+
+func = func.bind(obj);
+func(); // 1
+```
+
+------
+
+## 
 
 # My Own Exercises
 

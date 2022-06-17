@@ -931,6 +931,7 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
 
 - **prototype chain**: is a chain of objects that are prototypes of an object. 
 
+  - The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
   - The complete prototype chain also includes the default prototype, which is the prototype of object `a` in this case. 
   - The prototype chain ends with `Object.prototype`.
   - Since the prototype of `Object.prototype` is `null`, the complete prototype chain looks like this: 
@@ -940,10 +941,6 @@ console.log(Object.getPrototypeOf(foo).propertyIsEnumerable('baz')); // true
   ```
   
   - `null` has no prototype and acts as the final link in the prototype chain. (??)
-
-###### Summary
-
-- The prototype chain is how objects inherit properties from other objects. Each object has a private `[[Prototype]]` property which holds a link to another object called its prototype. Since the prototype of an object is also an object, the prototype can also have a prototype from which it inherits.  Objects lower in the chain inherit properties and behaviors from objects in the chain above. 
 
 ###### What it's used for
 
@@ -3052,12 +3049,12 @@ Uses
 
 ------
 
-## Understanding context loss
+# Understanding context loss
 
 - “What are the ways that context can be lost, and how can context loss be prevented in these situations?”
 - A complete response needs to clearly indicate the differences between “Implicit” and “Explicit” execution context.
 
-#### Context Loss 1 : Method is copied out of an object and used elsewhere.
+### Context Loss 1 : Method is copied out of an object and used elsewhere.
 
 - When we take a method out of an object and execute it as a function or method on another object, the function's context is no longer the original object.
 
@@ -3125,7 +3122,7 @@ foo.call(obj);
   - problem is you can't always change function or methods, and not good to pass a lot of arguments to functions
   - JS built-in methods like `forEach` `map` `filter` use this technique by taking a callback function as argument and optional `thisArg` context object that is used as the callback's execution context. 
 
-#### Context Loss 2: Nested Functions: inner function not using surrounding context
+### Context Loss 2: Nested Functions: inner function not using surrounding context
 
 - Inner function is invoked as a standalone function. 
 
@@ -3281,7 +3278,7 @@ obj.foo(); // => undefined
   - However, you won't usually see code like this in practice.
   - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
 
-#### **Context Loss 3: Function as argument losing surrounding context**
+### **Context Loss 3: Function as argument losing surrounding context**
 
 - When functions are passed as arguments to another function, they lose their surrounding context and the function argument gets invoked with the execution context set to the global object. 
 
