@@ -48,16 +48,27 @@ Study together
 
 # this
 
-##### Summary
+Prompt: Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
 
-- Definition of `this`: `this` is a keyword that refers to an object that is the current execution context of a function or method that is running. 
+##### Definition
+
+-  `this` is a keyword that refers to an object that is the current execution context of a function or method that is running. 
 - **Execution context**: is the environment (an object) in which a function executes.
 
-- There are two ways to set execution context when calling a function or method
+##### Implications
 
-  1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. 
-  
-  1. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
+- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
+- `this` keyword is available to every function in JS, because every JS function call has an execution context.
+  - All JS functions and methods execute within an execution context , aka the `this` binding. 
+- Clarification: `this` is not a variable. It is a keyword.
+
+##### Value of `this` / execution context rules
+
+There are two ways to set execution context when calling a function or method
+
+1. **Explicit**: The execution context that you set explicitly: using `call` `apply` or `bind`. Can override implicit execution context by setting it explicitely.
+
+1. **Implicit**: The execution context that JavaScript sets implicitly when your code doesn't provide an explicit context.
 
 There are many ways that JS provides an implicit execution context. 
 
@@ -74,7 +85,7 @@ There are many ways that JS provides an implicit execution context.
 
 - If `this`  is <u>used as part of a function definition</u>, and the execution context depends on how the function is invoked, not how or where the function is defined.
 
-  - Regular function calls use <u>global object</u> as implicit execution context, unless in strict mode, it uses <u>undefined.</u>
+  - **Regular function calls** (**standalone** function) use <u>global object</u> as <u>implicit</u> execution context, unless in strict mode, it uses <u>undefined.</u>
 
     ```js
     // regular function call
@@ -97,7 +108,7 @@ There are many ways that JS provides an implicit execution context.
     foo(); // undefined
     ```
 
-  - Method calls use the <u>calling object</u> as its implicit execution context. 
+  - Method calls use the <u>calling object</u> as its <u>implicit</u> execution context. 
 
     ```js
     // method call
@@ -141,11 +152,12 @@ There are many ways that JS provides an implicit execution context.
 
 - Arrow functions use the <u>surrounding scope</u> as implicit execution context. 
 
+  - Arrow functions use lexical scoping.
   - An arrow function, once created, always has the same context as the function that surrounded it when it was created.
-
+  
     - Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
-  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**. 
-
+  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**: the most <u>immediate</u> function scope in which the arrow function is defined. 
+  
   ```js
   let obj = {
     prop: function () { // anonymous function
@@ -158,9 +170,9 @@ There are many ways that JS provides an implicit execution context.
   
   obj.prop(); // logs obj because obj is the surrounding context for the arrow function. 
   ```
-
+  
   - Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
-
+  
     ```js
     let obj = {
       a: 5,
@@ -173,188 +185,6 @@ There are many ways that JS provides an implicit execution context.
     obj.foo(); // => undefined
     // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
     ```
-
-------
-
-Any time `this` occurs outside of a function definition, its value is obvious. The majority of the time, `this` will be used as part of a function definition. In these cases, what `this` refers to depends entirely on how the function is invoked.
-
-##### Definition
-
--  `this` is  a **keyword**  that refers to an object that is the current **execution context** of a function or method that is running. 
--  **Execution context**: the environment (an **object**) in which a function executes. 
--  The value of `this` changes based on how you invoke a function, not how or where you define it. Context binding is not based on lexical scoping rules. 
-
-##### Implications
-
-- Every time a function is called, JS binds some object to `this` --> **setting the binding** / setting the execution context. 
-- `this` keyword is available to every function in JS, because every JS function call has an execution context.
-  - All JS functions and methods execute within an execution context , aka the `this` binding. 
-- Clarification: `this` is not a variable. It is a keyword.
-
-##### Value of `this` / execution context rules
-
-- If `this` is <u>outside a function definition</u>, keyword `this` is bound to the global object. 
-
-  - Code example
-
-    ```js
-    // in coderpad
-    let obj = {
-      prop: this,
-    };
-    
-    console.log(obj.prop); // logs the global object
-    ```
-
-  - Even in strict mode, `this` at the top level scope, the global scope. So it's bound to the global object, not `undefined`. 
-
-  ```js
-  "use strict";
-  
-  let obj = {
-    foo: this,
-  };
-  
-  console.log(obj.foo); // logs the global object, not undefined
-  ```
-
-  - `this` in the global scope is still the global object. 
-
-    ```JS
-    let obj = { foo: this, }; // this is the this of the top-level scope
-    ```
-
-  - The braces of an object literal doesn't create a scope. Its simply a syntax that is a shorter version of saying
-
-    ```JS
-    let obj = new Object();
-    obj.foo = this; // this of this top-level scope
-    ```
-
-  - Inside a function `this` is is different depending on how the function is called. The function gets its own scope and its own `this` binding.
-
-    ```JS
-    function foo() { console.log(this); } // the this here is inside the function, bound when called
-    foo(); // determines the value of this, in strict mode this call binds to undefined
-    ```
-
-- If `this`  is <u>used as part of a function definition</u>, and the execution context depends on how the function is invoked, not how or where the function is defined.
-
-  - Context binding is not based on lexical scoping rules that variables use. `this` depends on how a function or method is invoked. 
-
-  - **Regular function** calls (**standalone** function) <u>implicitly</u> use the global object as their execution context, while **method calls** <u>implicitly</u> use the calling object as their context.
-    
-    - In Node, global object is `global` and in browser, global object is `window`. 
-
-    - In strict mode, regular function calls use `undefined` as their <u>implicit</u> execution context, while method calls <u>implicitly</u> use the calling object as their context. 
-    
-      ```js
-      // regular function call
-      function func() {
-        console.log(this);
-      }
-      
-      func(); // logs undefined, because we are in strict mode.
-      ```
-    
-      ```js
-      // method call
-      let obj = {
-        prop: function () {
-          console.log(this);
-        },
-      };
-      
-      obj.prop(); //  logs { func: [Function: func] } which is obj
-      ```
-    
-      ```js
-      // another form of regular function call where we assign a method to a variable and invoke the function as a standalone function
-      let obj = {
-        func () { // compact method syntax
-          console.log(this);
-        }
-      }
-      
-      let foo = obj.func;
-      foo(); // undefined
-      ```
-    
-    - You can override the implicit execution context behavior by setting the execution context <u>explicitly</u> with either `call`,  `apply`, or `bind`.   
-    
-    - Arrow functions are also exceptions. Arrow functions use lexical scoping. 
-
-- When **strict mode** is enabled,  the implicit execution context/ <u>implicit `this`</u> for <u>function calls</u> is assigned to `undefined` instead of the global object.
-
-  - CoderPad runs JavaScript code in *strict mode*. The implicit execution context for function calls is `undefined`, **not** the global object. 
-
-  - If you wish to practice on your own system instead of on CoderPad, add `"use strict";` to the top of your JavaScript code:
-
-    ```js
-    "use strict"; // the quotes are required
-    
-    function foo() {
-      console.log(this);
-    }
-    
-    foo(); // undefined
-    ```
-
-- **Arrow functions** inherit execution context from the surrounding context. 
-
-  - That means that an arrow function defined inside another function always has the same context as the outer function's context. 
-
-  - This means that arrow functions are permanently bound to the execution context of the **enclosing function invocation**. 
-
-  - **enclosing function invocation** (surrounding scope): the most <u>immediate</u> function scope in which the arrow function is defined. 
-
-    - This enclosing function is likely a function declaration or expression, in which case its execution context is determined by how its invoked. 
-    - The execution context of this enclosing function is determined by  how it is invoked. 
-    - Tricky: `forEach` is not considered the enclosing function for arrow functions, why? Because arrow functions are passed as arguments to `forEach` - it's not defined inside `forEach`. 
-
-  - An arrow function, once created, always has the same context as the function that surrounded it when it was created.
-
-    - Arrow functions are permanently bound to the enclosing function execution context, but it doesn't mean the context can't change. If the enclosing function context changes, it also changes. 
-
-  - My example: 
-
-    ```js
-    let obj = {
-      prop: function () {
-        let foo = () => {
-          console.log(this); // logs obj because obj is the surrounding context for the foo arrow function. 
-        }
-        foo();
-      },
-    };
-    
-    obj.prop();
-    ```
-
-  - Exception: don't use arrow functions as methods on an object, else it will take global object( even in strict mode!) as the surrounding context. 
-
-    ```js
-    let obj = {
-      a: 5,
-    
-      foo: () => {
-        console.log(this); // this refers to global object
-        console.log(this.a);
-      },
-    };
-    
-    obj.foo(); // => undefined
-    // Arrow functions ignore method invocation rule for implicit execution context, uses lexical scoping instead. The surrouding context here is the global object, not obj. 
-    ```
-
-  - This code doesn't work because arrow functions always get the value of `this` from the surrounding context. 
-  - The surrounding context is the **global object**. The reason for that is simple: the `let` statement in this example is in the program's top level code, so its context is the global object. That means `this` inside the object literal is also the global object, so `this` on line 5 refers to the global object, not `obj`. 
-  - Note that `this` in `obj.foo` is not determined by how the method is called. 
-    - We call the method on line 9, and we seem to be telling JavaScript to use `obj` as the context. 
-    - Instead, the context ends up being the global object. 
-    - That seems to contradict our repeated statements that the context is determined entirely by how a function or method is invoked. That's clearly not the case here; it certainly violates the rule.
-    - However, you won't usually see code like this in practice.
-    - In general, do not use arrow functions to write methods. As long as you don't use arrow functions as methods, you can ignore this exception. 
 
 # `Function` Prototype methods and context
 
@@ -657,9 +487,7 @@ hi.greet.call(bye); // 'bye' -> uses bye as explicit execution context
   func(); // 
   ```
 
-------
 
-## 
 
 ------
 
@@ -1416,6 +1244,7 @@ mixin object called mixIn
 - Definition: Factory functions are functions that create and return objects of a particular **type**: objects with a particular set of methods and properties. The methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of the factory function specifies the differences between the objects with arguments. 
   - So the factory function handles the similarities (similar methods) , while each invocation specifies the differences between the object properties with arguments.
   - Instance objects created from factory functions have the same exact methods, whereas the property values of each object is customized based on the arguments. 
+  - Factory functions don't use `this`, because implicit execution context will refer to either global object or `undefined`. 
 - Why factory functions & advantages
   - factory functions are useful to extract code (methods) into one place so multiple objects can use it. 
   - Factory functions automates the creation of objects, creating multiple objects of a particular type 
@@ -1428,12 +1257,15 @@ mixin object called mixIn
   - Can't identify which factory function created an object, so there's no way to be sure that you are working with the right kind of object. 
     - No way to inspect the object and learn whether we created it with a factory function, or which factory function. 
     - It's impossible to identify the specific "type" of the object; at best, you can only determine that an object has some specific characteristics.
-- Inheritance with factory functions
 
-  - Factory functions do not use prototypes or prototypal inheritance. 
-  - One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
+##### Inheritance with factory functions
 
-  - Mix-ins with factory functions: Can use `Object.assign` to mix the return object of one factory function into the instance object of another factory function. 
+- Factory functions do not use prototypes or prototypal inheritance. 
+- One factory function can reuse another factory function by using `Object.assign` to mix the object returned by another factory function into itself. 
+
+- Mix-ins with factory functions: 
+  - Can use `Object.assign` to mix the return object of one factory function into the instance object of another factory function. 
+
 
 
 Hierarchy of objects practice
@@ -1568,11 +1400,39 @@ human.house(); //Sara lives indoors
   let newObj = new Obj(); // newObj is an instance of Obj
   ```
 
-- Init: The initializer method customizes the state(properties) for each object. 
+##### Init
 
+- Init: The initializer method customizes the state(properties) for each object. 
   - `init` is a function that initializes  property values in newly created objects. It also returns `this`, which is a reference to the object that called `init`
-    - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
+  - Returns a reference to the calling object, so we are able to method chain after calling `Object.create`, to refer to that new object!!
   - Similar to the constructor method in classes
+
+##### Example
+
+```js
+let carPrototype = { // is an object, not a function. 
+  start: function() {
+    this.started = true;
+  },
+
+  stop: function() {
+    this.started = false;
+  },
+
+  init(make, model, year) { // customzies state of object, the state is the new object's 'own' properties.
+    this.make = make;
+    this.model = model;
+    this.year = year;
+    return this; // remember to return a reference to the calling object
+  },
+};
+```
+
+- Since `init` now returns a reference to the car object it was called on, we can chain `create` and `init` and assign the result to the `car1` variable:
+
+  ```js
+  let car1 = Object.create(carPrototype).init('Toyota', 'Corolla', 2016);
+  ```
 
 ##### **Advantage of OLOO over Factory Function**
 
@@ -1916,22 +1776,36 @@ human.house(); // Sara lives indoors
 - Definition: Constructors are functions that create and return an instance object of the constructor function.  
   - Like factory functions, constructors are also functions that create objects of the same **type**: which are objects with a particular set of methods and properties. Like factory functions,  the methods remain the same across the objects, while the property values can be customized by providing them as arguments. Each invocation of a constructor specifies the differences between the instance objects with arguments. 
   - However, the methods that remain the same across the objects,are not the instance object's "own" property, rather, they are inherited from the constructor's prototype object. This gets to the differences between constructors and factory functions.
+- Rules & things
+  - Naming convention: Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
+  
+  - `obj.constructor.name` can be used to find out the name of the constructor function that created an object.
+  - Inheritance can be emulated by changing where a functions `.prototype` property points to (Just remember to restore where the `.constructor` property points to).
+  
+- constructor vs ordinary functions (short)
+  - Like factory functions, constructors are also functions that create objects of the same **type**.
+  - What's different is that 
+    - Constructor names are capitalized.
+    - `new` keyword turns a function call into a constructor call. 
+    - Use `this` to set object's properties and methods. 
+    - Don't supply an explicit return value, because the constructor returns the newly created instance object provided that no errors occur.
+    - Has a `prototype` property called the function prototype. 
 
-- constructor vs ordinary functions
+- constructors vs ordinary functions (detailed)
   - We use `new` keyword / operator preceding a <u>function invocation</u> to treat the function as a constructor.
   - Every constructor has a `prototype` property that references an object called the **Constructor's `prototype` object / function prototype.** 
   - The instance object created by the constructor inherits from the Constructor's `prototype` object. 
     - The instance object's internal `[[Prototype]]`or `__proto__` property will reference the constructor's `prototype` property. 
     - This lets us set properties on the constructor's `prototype` object so that all instance objects created by the constructor will share them. 
-  - Naming convention: Capitalize the name of constructors and classes. Use **PascalCase** for constructor functions and classes. 
-  - Use `this` to set object's properties and methods. 
-  - Don't supply an explicit return value, because the constructor returns the newly created instance object provided that no errors occur.
 
-Return value of a constructor
+- Return value of a constructor
 
-- If there is an explicit return <u>object</u>, then that object is returned. 
-- In all other situations, constructor returns the newly created object (of the type associated with the constructor), provided <u>no errors</u> occur. 
-- In particular, Constructor ignores primitive return values and returns the newly created object instead. 
+  - If there is an explicit return <u>object</u>, then that object is returned. 
+
+  - In all other situations, constructor returns the newly created object (of the type associated with the constructor), provided <u>no errors</u> occur. 
+
+  - In particular, Constructor ignores primitive return values and returns the newly created object instead. 
+
 
 ##### `new` keyword
 
@@ -2144,9 +2018,10 @@ Return value of a constructor
   - Every JavaScript function has this property but JS only uses it when you call that function as a constructor using the `new` keyword.
 
   - Constructor's prototype object also contains a `constructor` property. The `constructor` property points back to the function itself.  
-
-
-  - Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
+  
+  
+    - Note: constructors <u>don't inherit</u> from the constructor's prototype object. 
+  
 
 
 - <u>**An object's prototype**</u>: 
@@ -3602,6 +3477,217 @@ if (Object.getPrototypeOf(obj) && obj.isPrototypeOf(car)) {
 ```
 
 ------
+
+# From Practice Problems
+
+##### Q: Fix code: What are solutions to this issue? 
+
+```js
+let RECTANGLE = {
+  area: function() {
+    return this.width * this.height;
+  },
+  perimeter: function() {
+    return 2 * (this.width + this.height);
+  },
+};
+
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.area = RECTANGLE.area();
+  this.perimeter = RECTANGLE.perimeter();
+}
+
+let rect1 = new Rectangle(2, 3);
+
+console.log(rect1.area);
+console.log(rect1.perimeter);
+```
+
+```terminal
+NaN
+NaN
+```
+
+Just by looking at it, the best solution is to use a mix-in. 
+
+Solutions
+
+```js
+// changing area and perimeter to become methods
+let RECTANGLE = {
+  area: function() {
+    return this.width * this.height;
+  },
+  perimeter: function() {
+    return 2 * (this.width + this.height);
+  },
+};
+
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.area = RECTANGLE.area;
+  this.perimeter = RECTANGLE.perimeter;
+}
+
+let rect1 = new Rectangle(2, 3);
+
+console.log(rect1.area());
+console.log(rect1.perimeter());
+```
+
+```js
+// using call
+let RECTANGLE = {
+  area: function() {
+    return this.width * this.height;
+  },
+  perimeter: function() {
+    return 2 * (this.width + this.height);
+  },
+};
+
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.area = RECTANGLE.area.call(this);
+  this.perimeter = RECTANGLE.perimeter.call(this);
+}
+
+let rect1 = new Rectangle(2, 3);
+
+console.log(rect1.area); // 6
+console.log(rect1.perimeter); // 10
+```
+
+```js
+// using mixin -> best solution
+let RECTANGLE = {
+  area: function() {
+    return this.width * this.height;
+  },
+  perimeter: function() {
+    return 2 * (this.width + this.height);
+  },
+};
+
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.area = RECTANGLE.area.call(this);
+  this.perimeter = RECTANGLE.perimeter.call(this);
+}
+
+Object.assign(Rectangle.prototype, RECTANGLE);
+
+let rect1 = new Rectangle(2, 3);
+
+console.log(rect1.area); // 6
+console.log(rect1.perimeter); // 10
+```
+
+##### Q: Constructors & Prototypes 
+
+1. What will the following code log to the console and why?
+
+   ```js
+   function Ninja() {
+     this.swung = true;
+   }
+   
+   let ninja = new Ninja();
+   
+   Ninja.prototype.swingSword = function() {
+     return this.swung;
+   };
+   
+   console.log(ninja.swingSword());
+   ```
+
+   Solution
+
+2. What will the following code output and why? Try to answer without running the code.
+
+   ```js
+   function Ninja() {
+     this.swung = true;
+   }
+   
+   let ninja = new Ninja();
+   
+   Ninja.prototype = {
+     swingSword: function() {
+       return this.swung;
+     },
+   };
+   
+   console.log(ninja.swingSword());
+   ```
+
+   Solution
+
+3. Implement the method described in the comments below:
+
+   ```js
+   function Ninja() {
+     this.swung = false;
+   }
+   
+   // Add a swing method to the Ninja prototype which
+   // modifies `swung` and returns the calling object
+   
+   let ninjaA = new Ninja();
+   let ninjaB = new Ninja();
+   
+   console.log(ninjaA.swing().swung);      // logs `true`
+   console.log(ninjaB.swing().swung);      // logs `true`
+   ```
+
+   Solution
+
+4. In this problem, we'll ask you to create a new instance of an object, without having direct access to the constructor function:
+
+   ```js
+   let ninjaA;
+   
+   {
+     const Ninja = function() {
+       this.swung = false;
+     };
+   
+     ninjaA = new Ninja();
+   }
+   
+   // create a `ninjaB` object here; don't change anything else
+   
+   ninjaA.constructor === ninjaB.constructor // => true
+   ```
+
+   Hint
+
+   Solution
+
+5. Since a constructor is just a function, you can call it without the `new` operator. However, that can lead to unexpected results and errors, especially for inexperienced programmers. Write a constructor function that you can use with or without the `new` operator. The function should return the same result with either form. Use the code below to check your solution:
+
+   ```js
+   function User(first, last) {
+     // ...
+   }
+   
+   let name = 'Jane Doe';
+   let user1 = new User('John', 'Doe');
+   let user2 = User('John', 'Doe');
+   
+   console.log(name);         // => Jane Doe
+   console.log(user1.name);   // => John Doe
+   console.log(user2.name);   // => John Doe
+   ```
+
+   Hint
+
+   Solution
 
 # My Prompts
 
