@@ -3669,6 +3669,31 @@ console.log(rect1.perimeter); // 10
 
    Solution
 
+   ```js
+   let ninjaB = new ninjaA.constructor();
+   ```
+
+   Does your answer use `Object.create` instead?
+
+   ```js
+   let ninjaB = Object.create(ninjaA);
+   ```
+
+   This code works as well, but there is a flaw: it puts the `swung` property in the prototype object instead of in the `ninjaB` object where it belongs. Thus, `ninjaA` and `ninjaB` are somewhat different objects:
+
+   ```plaintext
+   ninjaA:
+     swung: false 
+     constructor: Ninja
+     prototype: {}
+   
+   ninjaB:
+     constructor: Ninja
+     prototype: {
+       swung: false
+     }
+   ```
+
 5. Since a constructor is just a function, you can call it without the `new` operator. However, that can lead to unexpected results and errors, especially for inexperienced programmers. Write a constructor function that you can use with or without the `new` operator. The function should return the same result with either form. Use the code below to check your solution:
 
    ```js
@@ -3688,6 +3713,33 @@ console.log(rect1.perimeter); // 10
    Hint
 
    Solution
+
+   ```js
+   function User(first, last) {
+     if (!(this instanceof User)) {
+       return new User(first, last);
+     }
+     
+     this.name = `${first} ${last}`;
+   }
+   
+   let name = 'Jane Doe';
+   let user1 = new User('John', 'Doe');
+   let user2 = User('John', 'Doe');
+   
+   console.log(name);         // => Jane Doe
+   console.log(user1.name);   // => John Doe
+   console.log(user2.name);   // => John Doe
+   ```
+
+   
+
+##### Q: Creating a new instance of an object, without having direct access to the constructor function
+
+Solution: 
+
+- USing `constructor` property with `new`
+- Using `Object.create` --> this one doesn't work as well
 
 # My Prompts
 
@@ -5918,6 +5970,219 @@ The code logs `false`. On line 1, a string object is created and assigned to var
 
 # Practice Problems from Lessons
 
+### My Own
+
+1. 
+
+```js
+// Create a function that returns the sum of obj.num and a number passed to the function as argument, and then use call() to log that sum as obj.num. 
+let obj = {
+	 num: 42;
+}
+```
+
+```js
+// solution
+
+function sum (number) {
+  return this.num + number;
+}
+
+obj.num = sum.call(obj);
+console.log(obj.num);
+```
+
+2. Practice OLOO. Rewrite this program by using the OLOO pattern.
+
+   Practice.js
+
+```js
+function Person(firstName, lastName, age, gender) {
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.age = age;
+  this.gender = gender;
+}
+
+Person.prototype.fullName = function () {
+  return `${this.firstName} ${this.lastName}`;
+};
+
+Person.prototype.eat = function () {
+  console.log('Eating');
+};
+
+Person.prototype.communicate = function () {
+  console.log('Communicating');
+};
+
+Person.prototype.sleep = function () {
+  console.log('Sleeping');
+};
+
+function Doctor(firstName, lastName, age, gender, specialty) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.specialty = specialty;
+}
+
+Doctor.prototype = Object.create(Person.prototype);
+Doctor.prototype.constructor = Doctor;
+
+Doctor.prototype.diagnose = function () {
+  console.log(`Diagnosing`);
+};
+
+
+function Student(firstName, lastName, age, gender, undergradSubject) {
+  Person.call(this, firstName, lastName, age, gender);
+  this.undergradSubject = undergradSubject;
+}
+
+Student.prototype = Object.create(Person.prototype);
+Student.prototype.constructor = Student;
+
+Student.prototype.study = function () {
+  console.log(`Studying`);
+};
+
+
+function GraduateStudent(firstName, lastName, age, gender, undergradSubject, gradSubject) {
+  Student.call(this, firstName, lastName, age, gender, undergradSubject);
+  this.gradSubject = gradSubject;
+}
+GraduateStudent.prototype = Object.create(Student.prototype);
+GraduateStudent.prototype.constructor = GraduateStudent;
+
+GraduateStudent.prototype.research = function () {
+  console.log(`Researching`);
+};
+
+let person = Person.initialize('foo', 'bar', 21, 'gender');
+person.eat();                              // logs 'Eating'
+person.communicate();                      // logs 'Communicating'
+person.sleep();                            // logs 'Sleeping'
+console.log(person.fullName());            // logs 'foo bar'
+
+let doctor = Doctor.init('foo', 'bar', 21, 'gender', 'Pediatrics');
+
+doctor.eat();                              // logs 'Eating'
+doctor.communicate();                      // logs 'Communicating'
+doctor.sleep();                            // logs 'Sleeping'
+console.log(doctor.fullName());            // logs 'foo bar'
+doctor.diagnose();                         // logs 'Diagnosing'
+
+let graduateStudent = GraduateStudent.init2('foo', 'bar', 21, 'gender', 'BS Industrial Engineering', 'MS Industrial Engineering');
+// logs true for next three statements
+
+graduateStudent.eat();                     // logs 'Eating'
+graduateStudent.communicate();             // logs 'Communicating'
+graduateStudent.sleep();                   // logs 'Sleeping'
+console.log(graduateStudent.fullName());   // logs 'foo bar'
+graduateStudent.study();                   // logs 'Studying'
+graduateStudent.research();                // logs 'Researching'
+```
+
+```js
+/* eslint-disable max-len */
+// solution
+// Practice.j
+let Person =  {
+  initialize(firstName, lastName, age, gender) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+    this.gender = gender;
+    return this;
+  },
+
+  fullName: function() {
+    return `${this.firstName} ${this.lastName}`;
+  },
+
+  eat: function() {
+    console.log('Eating');
+  },
+
+  communicate: function() {
+    console.log('Communicating');
+  },
+
+  sleep: function() {
+    console.log('Sleeping');
+  },
+
+};
+
+
+let Doctor = Object.create(Person);
+Doctor.init = function(firstName, lastName, age, gender, specialty) {
+  let copyOfParent = this.initialize(firstName, lastName, age, gender);
+  this.specialty = specialty;
+  let newObj = Object.assign(copyOfParent, this);
+  return newObj;
+};
+
+Doctor.diagnose = function () {
+  console.log(`Diagnosing`);
+};
+
+let Student = Object.create(Person);
+Student.init = function(firstName, lastName, age, gender, undergradSubject) {
+  let copyofParent = this.initialize(this, firstName, lastName, age, gender);
+  this.undergradSubject = undergradSubject;
+  let newObj = Object.assign(copyofParent, this);
+  return newObj;
+};
+
+
+Student.study = function () {
+  console.log(`Studying`);
+};
+
+
+let GraduateStudent = Object.create(Student);
+GraduateStudent.init2 = function (firstName, lastName, age, gender, undergradSubject, gradSubject) {
+  let copyOfStudent = this.init(firstName, lastName, age, gender, undergradSubject);
+  this.gradSubject = gradSubject;
+  let newObj = Object.assign(copyOfStudent, this);
+  return newObj;
+};
+
+GraduateStudent.research = function () {
+  console.log(`Researching`);
+};
+
+let person = Person.initialize('foo', 'bar', 21, 'gender');
+person.eat();                              // logs 'Eating'
+person.communicate();                      // logs 'Communicating'
+person.sleep();                            // logs 'Sleeping'
+console.log(person.fullName());            // logs 'foo bar'
+
+let doctor = Doctor.init('foo', 'bar', 21, 'gender', 'Pediatrics');
+
+doctor.eat();                              // logs 'Eating'
+doctor.communicate();                      // logs 'Communicating'
+doctor.sleep();                            // logs 'Sleeping'
+console.log(doctor.fullName());            // logs 'foo bar'
+doctor.diagnose();                         // logs 'Diagnosing'
+
+let graduateStudent = GraduateStudent.init2('foo', 'bar', 21, 'gender', 'BS Industrial Engineering', 'MS Industrial Engineering');
+// logs true for next three statements
+
+graduateStudent.eat();                     // logs 'Eating'
+graduateStudent.communicate();             // logs 'Communicating'
+graduateStudent.sleep();                   // logs 'Sleeping'
+console.log(graduateStudent.fullName());   // logs 'foo bar'
+graduateStudent.study();                   // logs 'Studying'
+graduateStudent.research();                // logs 'Researching'
+```
+
+
+
+
+
+------
+
 ## Lesson 1
 
 #### OOP and Encapsulation
@@ -7045,6 +7310,8 @@ if (Object.getPrototypeOf(obj)) {
    }
    ```
 
+   
+
 5. Update the `createInvoice` function so that it can add payment(s) to invoices. Use the following code as a guideline:
 
    ```js
@@ -7125,8 +7392,6 @@ if (Object.getPrototypeOf(obj)) {
    ```
 
    Show Solution
-
-   On line 7, `Lizard` is invoked as a normal function. It doesn't have an explicit return value, so it returns `undefined`, which is the value of `lizzy`. On line 8, `lizzy.scamper()` evaluates to `undefined.scamper()` which throws a `TypeError`. 
 
    This code throws a `TypeError` since `scamper` is an undefined property on `lizzy`. Since `Lizard` was invoked without the `new` operator and it doesn't have an explicit return value, the return value is `undefined`. Thus, `lizzy` gets assigned to `undefined` which causes the call to `scamper` to throw an error: you can't call a method on `undefined`.
 
@@ -7288,6 +7553,8 @@ if (Object.getPrototypeOf(obj)) {
 
    Even though we define the `swingSword` method on the prototype after we create the `ninja`, all objects created by the `Ninja` constructor share the same prototype object. Thus, when we define `swingSword`, it immediately becomes available to the `ninja` object.
 
+   Even if we define a methods on the constructor's`prototype` object after we create an instance object, it becomes available to that instance object. That is because objects hold a reference to their prototype object, if the prototype object changes in some way, the changes are reflected in the inheriting object as well. 
+
 5. What will the following code output and why? Try to answer without running the code.
 
    ```js
@@ -7312,7 +7579,7 @@ if (Object.getPrototypeOf(obj)) {
    Uncaught TypeError: ninja.swingSword is not a function
    ```
 
-   We reassigned `Ninja.prototype` to an entirely new object instead of mutating the original prototype object. The prototype for the `ninja` object doesn't change; it's still the original prototype defined during the constructor's invocation. Thus, JavaScript can't find the `swingSword` method in the prototype chain of `ninja`.
+   We reassigning `Ninja.prototype` to an entirely new object instead of mutating the original prototype object. The prototype for the `ninja` object doesn't change; it's still the original prototype defined during the constructor's invocation. Thus, JavaScript can't find the `swingSword` method in the prototype chain of `ninja`.
 
 6. Implement the method described in the comments below:
 
@@ -7914,4 +8181,5 @@ This code also raises a `TypeError`. The `hi` method is defined on `Hello.protot
 
    We've moved the code shared by `Catamaran` and `WheeledVehicles` to the `Moveable` mix-in. The definitions of `Auto` and `Motorcycle` remain unchanged since they both inherit from `WheeledVehicle`.
 
-##### 
+------
+
